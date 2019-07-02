@@ -3,27 +3,24 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.utils;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-
-import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
+import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Utils {
 
     public static void copyInputStreamToFile(InputStream in, File file) {
-        try (OutputStream out = new FileOutputStream(file)) {
-            byte[] buf = new byte[1024];
-
-            int len;
-            while((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-
-            in.close();
+        try {
+            Files.copy(in, file.toPath());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -122,7 +119,7 @@ public class Utils {
             // remove roles that the user already has from roles to add
             addRoles.removeAll(member.getRoles());
             // remove roles that the user doesn't already have from roles to remove
-            removeRoles.removeIf(role1 ->  !member.getRoles().contains(role));
+            removeRoles.removeIf(role1 -> !member.getRoles().contains(role));
 
             DiscordBot.getInstance().getGuild().getController().removeRolesFromMember(member, removeRoles).queue();
             DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, addRoles).queue();

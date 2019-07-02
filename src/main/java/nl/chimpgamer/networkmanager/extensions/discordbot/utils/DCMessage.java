@@ -21,8 +21,8 @@ public enum DCMessage {
     SUGGESTION_ALERT("discord.suggestion-alert"),
     CHATLOG_ALERT("discord.chatlog-alert"),
     PLAYERS_COMMAND_RESPONSE("discord.player-command-response"),
-    PLAYERLIST_COMMAND_INVALID_SERVER("playerlist-command-invalid-server"),
-
+    PLAYERLIST_COMMAND_INVALID_SERVER("discord.playerlist-command-invalid-server"),
+    CHAT_EVENT_FORMAT("discord.chat-event-format"),
     ;
 
     private final String path;
@@ -32,6 +32,10 @@ public enum DCMessage {
     }
 
     public String getMessage() {
-        return DiscordBot.getInstance().getMessagesConfigManager().getString(this.path).replace("%newline%", "\n");
+        return getMessage(this.path);
+    }
+
+    public static String getMessage(String path) {
+        return DiscordBot.getInstance().getMessagesConfigManager().getString(path).replace("%newline%", "\n");
     }
 }

@@ -34,17 +34,22 @@ public class ConfigManager extends Config {
         this.addDefault("networkmanagerbot.discord.commands.playerlist.enabled", true);
         this.addDefault("networkmanagerbot.discord.commands.players.enabled", true);
 
-        this.addDefault("networkmanagerbot.discord.channels.staffchat", "your-staffchat-channelid-here");
-        this.addDefault("networkmanagerbot.discord.channels.adminchat", "your-adminchat-channelid-here");
-        this.addDefault("networkmanagerbot.discord.channels.events.server-status", "your-server-status-channelid-here");
+        this.addDefault("networkmanagerbot.discord.channels.staffchat", "000000000000000000");
+        this.addDefault("networkmanagerbot.discord.channels.adminchat", "000000000000000000");
+        this.addDefault("networkmanagerbot.discord.channels.events.server-status", "000000000000000000");
         //this.addDefault("networkmanagerbot.discord.channels.events.server-status.all", "your-server-status-channelid-here");
-        this.addDefault("networkmanagerbot.discord.channels.events.tickets", "your-tickets-channelid-here");
-        this.addDefault("networkmanagerbot.discord.channels.events.helpop-alerts", "your-helpop-alerts-channelid-here");
-        this.addDefault("networkmanagerbot.discord.channels.events.punishment-alerts", "your-punishment-alerts-channelid-here");
-        this.addDefault("networkmanagerbot.discord.channels.events.report-alerts", "your-punishment-alerts-channelid-here");
-        this.addDefault("networkmanagerbot.discord.channels.events.bugreport-alerts", "your-bugreport-alerts-channelid-here");
-        this.addDefault("networkmanagerbot.discord.channels.events.suggestion-alerts", "your-bugreport-alerts-channelid-here");
-        this.addDefault("networkmanagerbot.discord.channels.events.chatlog-alerts", "your-chatlog-alerts-channelid-here");
+        this.addDefault("networkmanagerbot.discord.channels.events.tickets", "000000000000000000");
+        this.addDefault("networkmanagerbot.discord.channels.events.helpop-alerts", "000000000000000000");
+        this.addDefault("networkmanagerbot.discord.channels.events.punishment-alerts", "000000000000000000");
+        this.addDefault("networkmanagerbot.discord.channels.events.report-alerts", "000000000000000000");
+        this.addDefault("networkmanagerbot.discord.channels.events.bugreport-alerts", "000000000000000000");
+        this.addDefault("networkmanagerbot.discord.channels.events.suggestion-alerts", "000000000000000000");
+        this.addDefault("networkmanagerbot.discord.channels.events.chatlog-alerts", "000000000000000000");
+        this.addDefault("networkmanagerbot.discord.channels.events.chat.all", "000000000000000000");
+
+        this.addDefault("networkmanagerbot.minecraft.commands.discord.enabled", true);
+        this.addDefault("networkmanagerbot.minecraft.commands.suggestion.enabled", true);
+        this.addDefault("networkmanagerbot.minecraft.commands.bug.enabled", true);
 
         this.save();
     }
@@ -151,6 +156,18 @@ public class ConfigManager extends Config {
 
     public String getChatLogEventChannelId() {
         return getString("networkmanagerbot.discord.channels.events.chatlog-alerts");
+    }
+
+    public Map<String, String> getChatEventChannelIds() {
+        Map<String, String> map = Maps.newHashMap();
+        for (String server : getConfiguration().getConfigurationSection("networkmanagerbot.discord.channels.events.chat").getKeys(false)) {
+            map.put(server, getString("networkmanagerbot.discord.channels.events.chat." + server));
+        }
+        return map;
+    }
+
+    public boolean isMinecraftCommandEnabled(String command) {
+        return this.getBoolean("networkmanagerbot.minecraft.commands." + command.toLowerCase() + ".enabled");
     }
 
     private DiscordBot getDiscordBot() {

@@ -4,6 +4,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.api.utils.Config;
 
 import java.io.*;
+import java.nio.file.Files;
 
 public class MessagesConfigManager extends Config {
     private final DiscordBot discordBot;
