@@ -385,3 +385,27 @@ discord:
       "title": "__Server Moderation__",
       "showTimestamp": true
     }
+  playtimetop-response: |-
+    {
+      "fields": [
+        {
+          "name": "#1",
+          "value": "%playername% - %playtime%",
+          "inline": true
+        },
+        {
+          "name": "#2",
+          "value": "%playername% - %playtime%",
+          "inline": true
+        },
+        {
+          "name": "#3",
+          "value": "%playername% - %playtime%",
+          "inline": true
+        }
+      ],
+      "description": "\n**Playtime Top 3**",
+      "color": -2551040,
+      "title": "Playtime Top 3",
+      "showTimestamp": true
+    }

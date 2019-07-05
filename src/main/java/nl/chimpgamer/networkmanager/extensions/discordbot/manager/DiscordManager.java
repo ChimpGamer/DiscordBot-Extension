@@ -3,10 +3,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.manager;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import net.dv8tion.jda.core.entities.Game;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
-import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.PlayerListCommand;
-import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.PlayersCommand;
-import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.RegisterCommand;
-import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.UnregisterCommand;
+import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.*;
 
 public class DiscordManager {
     private final DiscordBot discordBot;
@@ -26,7 +23,8 @@ public class DiscordManager {
                         new PlayerListCommand(this.getDiscordBot()),
                         new PlayersCommand(this.getDiscordBot()),
                         new RegisterCommand(this.getDiscordBot()),
-                        new UnregisterCommand(this.getDiscordBot())
+                        new UnregisterCommand(this.getDiscordBot()),
+                        new PlaytimeCommand(this.getDiscordBot())
                 );
         if (this.getDiscordBot().getConfigManager().isStatusEnabled()) {
             Game.GameType gameType;
