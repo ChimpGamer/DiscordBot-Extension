@@ -127,6 +127,10 @@ public class JsonEmbedBuilder {
         return this;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     public JsonEmbedBuilder setColor(Color color) {
         this.color = color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB();
         return this;

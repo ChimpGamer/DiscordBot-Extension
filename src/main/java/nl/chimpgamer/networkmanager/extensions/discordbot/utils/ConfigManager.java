@@ -33,6 +33,7 @@ public class ConfigManager extends Config {
 
         this.addDefault("networkmanagerbot.discord.commands.playerlist.enabled", true);
         this.addDefault("networkmanagerbot.discord.commands.players.enabled", true);
+        this.addDefault("networkmanagerbot.discord.commands.playtime.enabled", true);
 
         this.addDefault("networkmanagerbot.discord.channels.staffchat", "000000000000000000");
         this.addDefault("networkmanagerbot.discord.channels.adminchat", "000000000000000000");
@@ -102,14 +103,6 @@ public class ConfigManager extends Config {
         return getStringList("networkmanagerbot.discord.sync-ranks.ranks");
     }
 
-    public boolean isPlayerListCommandEnabled() {
-        return this.getBoolean("networkmanagerbot.discord.commands.playerlist.enabled");
-    }
-
-    public boolean isPlayersCommandEnabled() {
-        return this.getBoolean("networkmanagerbot.discord.commands.players.enabled");
-    }
-
     public String getStaffChatChannelID() {
         return getString("networkmanagerbot.discord.channels.staffchat");
     }
@@ -168,6 +161,10 @@ public class ConfigManager extends Config {
 
     public boolean isMinecraftCommandEnabled(String command) {
         return this.getBoolean("networkmanagerbot.minecraft.commands." + command.toLowerCase() + ".enabled");
+    }
+
+    public boolean isDiscordCommandEnabled(String command) {
+        return this.getBoolean("networkmanagerbot.discord.commands." + command.toLowerCase() + ".enabled");
     }
 
     private DiscordBot getDiscordBot() {

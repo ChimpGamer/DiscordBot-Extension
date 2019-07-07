@@ -24,7 +24,7 @@ public class PlayersCommand extends Command {
         if (!event.isFromType(ChannelType.TEXT)) {
             return;
         }
-        if (!this.getDiscordBot().getConfigManager().isPlayersCommandEnabled()) {
+        if (!this.getDiscordBot().getConfigManager().isDiscordCommandEnabled(this.getName())) {
             return;
         }
         Utils.sendChannelMessage(event.getTextChannel(),

@@ -7,13 +7,18 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils;
-import nl.chimpgamer.networkmanager.bungeecord.modules.NMCachedPlayers;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 public class PlaytimeCommand extends Command {
     private final DiscordBot discordBot;
@@ -21,6 +26,7 @@ public class PlaytimeCommand extends Command {
     public PlaytimeCommand(DiscordBot discordBot) {
         this.discordBot = discordBot;
         this.name = "playtime";
+        this.cooldown = 3;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.guildOnly = true;
     }
@@ -30,40 +36,78 @@ public class PlaytimeCommand extends Command {
         if (!event.isFromType(ChannelType.TEXT)) {
             return;
         }
-        this.getDiscordBot().getScheduler().runAsync(() -> {
-            JsonEmbedBuilder jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.getMessage("discord.playtimetop-response"));
-            final List<MessageEmbed.Field> fields = new LinkedList<>();
-            for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
-                String name = insertPlaytimeTopPlaceholders(field.getName());
-                String value = insertPlaytimeTopPlaceholders(field.getValue());
-                MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
-                fields.add(field1);
+        if (!this.getDiscordBot().getConfigManager().isDiscordCommandEnabled(this.getName())) {
+            return;
+        }
+
+        if (event.getArgs().isEmpty()) {
+            UUID uuid = this.getDiscordBot().getDiscordUserManager().getUuidByDiscordId(event.getAuthor().getId());
+            if (uuid == null) {
+                this.getDiscordBot().getLogger().warning(event.getAuthor().getName() + " tried to use the playtime command but is not registed!");
+                return;
             }
-            jsonEmbedBuilder.setFields(fields);
-            Utils.sendChannelMessage(event.getTextChannel(),
-                    jsonEmbedBuilder.build());
-        }, false);
+            if (this.getDiscordBot().getNetworkManager().isPlayerOnline(uuid, true)) {
+                Player player = this.getDiscordBot().getNetworkManager().getPlayer(uuid);
+                JsonEmbedBuilder jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.PLAYTIME_RESPONSE.getMessage());
+                jsonEmbedBuilder.setTitle(jsonEmbedBuilder.getTitle().replace("%playername%", player.getName()));
+                final List<MessageEmbed.Field> fields = new LinkedList<>();
+                for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
+                    String name = field.getName()
+                            .replace("%playername%", player.getName())
+                            .replace("%playtime%", TimeUtils.getTimeString(player.getLanguage(), player.getPlaytime() / 1000))
+                            .replace("%liveplaytime%", TimeUtils.getTimeString(player.getLanguage(), player.getPlaytime() / 1000));
+                    String value = field.getValue()
+                            .replace("%playername%", player.getName())
+                            .replace("%playtime%", TimeUtils.getTimeString(player.getLanguage(), player.getPlaytime() / 1000))
+                            .replace("%liveplaytime%", TimeUtils.getTimeString(player.getLanguage(), player.getPlaytime() / 1000));
+                    MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
+                    fields.add(field1);
+                }
+                jsonEmbedBuilder.setFields(fields);
+                Utils.sendChannelMessage(event.getTextChannel(),
+                        jsonEmbedBuilder.build());
+            } else {
+                this.getDiscordBot().getScheduler().runAsync(() -> {
+                    String[] result = getOfflinePlayerPlaytime(uuid);
+                    JsonEmbedBuilder jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.PLAYTIME_RESPONSE.getMessage());
+                    jsonEmbedBuilder.setTitle(jsonEmbedBuilder.getTitle().replace("%playername%", result[0]));
+                    final List<MessageEmbed.Field> fields = new LinkedList<>();
+                    for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
+                        String name = field.getName()
+                                .replace("%playername%", result[0])
+                                .replace("%playtime%", TimeUtils.getTimeString(1, Long.parseLong(result[1]) / 1000))
+                                .replace("%liveplaytime%", TimeUtils.getTimeString(1, Long.parseLong(result[1]) / 1000));
+                        String value = field.getValue()
+                                .replace("%playername%", result[0])
+                                .replace("%playtime%", TimeUtils.getTimeString(1, Long.parseLong(result[1]) / 1000))
+                                .replace("%liveplaytime%", TimeUtils.getTimeString(1, Long.parseLong(result[1]) / 1000));
+                        MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
+                        fields.add(field1);
+                    }
+                    jsonEmbedBuilder.setFields(fields);
+                    Utils.sendChannelMessage(event.getTextChannel(),
+                            jsonEmbedBuilder.build());
+                }, false);
+            }
+        }
     }
 
-    private String insertPlaytimeTopPlaceholders(String field) {
-        final NMCachedPlayers cachedPlayers = (NMCachedPlayers) this.getDiscordBot().getNetworkManager().getCacheManager().getCachedPlayers();
-        int i = 1;
-        for (Map.Entry<String, Long> entries : cachedPlayers.getTopPlayTimesUUID().entrySet()) {
-            Optional<Player> opPlayer = this.getDiscordBot().getNetworkManager().getPlayerSafe(UUID.fromString(entries.getKey()));
-            if (!opPlayer.isPresent()) {
-                continue;
+    private String[] getOfflinePlayerPlaytime(UUID uuid) {
+        String[] result = new String[]{};
+        try (Connection connection = this.getDiscordBot().getMySQL().getConnection();
+             PreparedStatement ps = connection.prepareStatement("SELECT username, playtime FROM nm_players WHERE uuid=?")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String username = rs.getString("username");
+                    long playtime = rs.getLong("playtime");
+                    result = new String[]{username, String.valueOf(playtime)};
+                }
             }
-            Player player = opPlayer.get();
-            field
-                    .replace("%position%", String.valueOf(i))
-                    .replace("%playername%", player.getRealName())
-                    .replace("%username%", player.getUserName())
-                    .replace("%nickname%", player.getNicknameOrUserName())
-                    .replace("%playtime%", TimeUtils.getTimeString(1, entries.getValue() / 1000))
-                    .replace("%liveplaytime%", TimeUtils.getTimeString(1, player.getLivePlaytime() / 1000));
-            i++;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
-        return field;
+        return result;
     }
 
     private DiscordBot getDiscordBot() {

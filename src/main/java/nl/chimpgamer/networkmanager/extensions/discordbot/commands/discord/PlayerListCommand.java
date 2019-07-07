@@ -10,6 +10,8 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 
+import java.util.Collection;
+
 public class PlayerListCommand extends Command {
     private final DiscordBot discordBot;
 
@@ -25,21 +27,26 @@ public class PlayerListCommand extends Command {
         if (!event.isFromType(ChannelType.TEXT)) {
             return;
         }
-        if (!this.getDiscordBot().getConfigManager().isPlayerListCommandEnabled()) {
+        if (!this.getDiscordBot().getConfigManager().isDiscordCommandEnabled(this.getName())) {
             return;
         }
-        String[] args = event.getArgs().split(" ");
-        if (args.length == 0) {
+
+        if (event.getArgs().isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            for (ProxiedPlayer proxiedPlayer : this.getDiscordBot().getNetworkManager().getProxy().getPlayers()) {
-                sb.append(proxiedPlayer.getName()).append(" - ").append(proxiedPlayer.getServer().getInfo().getName()).append("\n");
-            }
-            if (sb.length() > 0) {
-                sb = new StringBuilder(sb.toString().substring(0, sb.toString().length() - 2));
+            Collection<ProxiedPlayer> players = this.getDiscordBot().getNetworkManager().getProxy().getPlayers();
+            if (players.isEmpty()) {
+                sb.append("There are currently no players online!");
+            } else {
+                for (ProxiedPlayer proxiedPlayer : this.getDiscordBot().getNetworkManager().getProxy().getPlayers()) {
+                    sb.append(proxiedPlayer.getName()).append(" - ").append(proxiedPlayer.getServer().getInfo().getName()).append("\n");
+                }
             }
             String playerList = sb.toString().trim();
             Utils.sendChannelMessage(event.getTextChannel(), playerList);
-        } else if (args.length == 1) {
+            return;
+        }
+        String[] args = event.getArgs().split(" ");
+        if (args.length == 1) {
             String serverName = args[0];
             ServerInfo serverInfo = this.getDiscordBot().getNetworkManager().getProxy().getServerInfo(serverName);
             if (serverInfo == null) {

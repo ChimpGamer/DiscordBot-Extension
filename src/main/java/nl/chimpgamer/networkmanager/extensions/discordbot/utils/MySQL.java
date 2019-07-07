@@ -43,6 +43,10 @@ public class MySQL {
         }
     }
 
+    public Connection getConnection() throws SQLException {
+        return this.getNmMySQL().getConnection();
+    }
+
     private IMySQL getNmMySQL() {
         return nmMySQL;
     }
