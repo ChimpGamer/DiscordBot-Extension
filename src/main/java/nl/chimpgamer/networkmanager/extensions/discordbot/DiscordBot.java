@@ -1,18 +1,15 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot;
 
 import lombok.Getter;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import nl.chimpgamer.networkmanager.api.NMListener;
 import nl.chimpgamer.networkmanager.api.extensions.NMExtension;
 import nl.chimpgamer.networkmanager.api.manager.CommandManager;
+import nl.chimpgamer.networkmanager.api.utils.PlatformType;
 import nl.chimpgamer.networkmanager.bungeecord.NetworkManager;
-import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token;
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.mc.*;
-import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordListener;
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.NetworkManagerListeners;
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.ChatListener;
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.JoinLeaveListener;
@@ -22,7 +19,6 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserMan
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +45,7 @@ public final class DiscordBot extends NMExtension {
         // Extension startup logic
         instance = this;
 
-        if (!Methods.isBungee()) {
+        if (this.getNetworkManager().getPlatformType() != PlatformType.BUNGEECORD) {
             this.getLogger().severe("Hey, this NetworkManager extension is for BungeeCord only!");
             return;
         }
@@ -69,11 +65,11 @@ public final class DiscordBot extends NMExtension {
         this.discordUserManager.load();
 
         this.discordManager = new DiscordManager(this);
-        this.discordManager.init();
-
-        if (!this.loadJDA()) {
+        if (!this.discordManager.init()) {
             this.disable();
+            return;
         }
+
         this.registerCommands();
         this.registerListeners();
 
@@ -90,7 +86,7 @@ public final class DiscordBot extends NMExtension {
         // Extension shutdown logic
         this.unregisterListeners();
         this.getNetworkManager().getCommandManager().unregisterAllBySource(this.getInfo().getName());
-        this.stopJDA();
+        this.getDiscordManager().shutdownJDA();
     }
 
     @Override
@@ -135,33 +131,6 @@ public final class DiscordBot extends NMExtension {
 
     public void sendRedisBungee(String message) {
         this.getScheduler().runAsync(() -> this.getNetworkManager().getRedisBungee().sendChannelMessage("NetworkManagerDiscordBot", message), false);
-    }
-
-    private boolean loadJDA() {
-        try {
-            this.jda = new JDABuilder(AccountType.BOT)
-                    .setToken(getConfigManager().getDiscordToken())
-                    .setAutoReconnect(true)
-                    .addEventListener(new DiscordListener(this))
-                    .addEventListener(this.getDiscordManager().getCommandClientBuilder().build())
-                    .build();
-            return true;
-        } catch (LoginException ex) {
-            this.getNetworkManager().debug("&c|  &7" + ex.getMessage());
-            return false;
-        }
-    }
-
-    private void stopJDA() {
-        if (this.getJDA() != null) {
-            this.expireTokens();
-            this.getJDA().shutdown();
-        }
-    }
-
-    public boolean restartJDA() {
-        this.stopJDA();
-        return this.loadJDA();
     }
 
     private void expireTokens() {

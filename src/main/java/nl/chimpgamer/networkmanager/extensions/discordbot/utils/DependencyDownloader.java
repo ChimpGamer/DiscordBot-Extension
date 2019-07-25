@@ -31,7 +31,7 @@ public class DependencyDownloader {
         this.getDiscordBot().getNetworkManager().getPluginClassLoader().loadJar(file.toPath());
     }
 
-    public void downloadFile(String url, String location) throws IOException {
+    private void downloadFile(String url, String location) throws IOException {
         URL website = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) website.openConnection();
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB;     rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");

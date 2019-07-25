@@ -31,7 +31,7 @@ public class NetworkManagerBotCommand extends NMBungeeCommand {
                         sender.sendMessage(MCMessage.RELOAD_MESSAGES.getMessage());
                         break;
                     case "jda":
-                        boolean success = getDiscordBot().restartJDA();
+                        boolean success = getDiscordBot().getDiscordManager().restartJDA();
                         if (success) {
                             sender.sendMessage(MCMessage.RELOAD_JDA_SUCCESS.getMessage());
                         } else {

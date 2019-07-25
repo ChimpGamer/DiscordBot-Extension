@@ -1,5 +1,6 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners;
 
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
 import nl.chimpgamer.networkmanager.api.event.events.*;
@@ -26,12 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class NetworkManagerListeners implements NMListener {
     private final DiscordBot discordBot;
-
-    public NetworkManagerListeners(DiscordBot discordBot) {
-        this.discordBot = discordBot;
-    }
 
     @NMEvent
     public void onStaffChat(StaffChatEvent event) {

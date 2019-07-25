@@ -1,6 +1,7 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee;
 
 import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.core.entities.Member;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -14,12 +15,9 @@ import nl.chimpgamer.networkmanager.api.models.player.Player;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class JoinLeaveListener implements Listener {
     private final DiscordBot discordBot;
-
-    public JoinLeaveListener(DiscordBot discordBot) {
-        this.discordBot = discordBot;
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLogin(PostLoginEvent event) {

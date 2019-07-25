@@ -2,6 +2,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee;
 
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -9,12 +10,9 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class RedisBungeeListener implements Listener {
     private final DiscordBot discordBot;
-
-    public RedisBungeeListener(DiscordBot discordBot) {
-        this.discordBot = discordBot;
-    }
 
     @EventHandler
     public void onPubSubMessage(PubSubMessageEvent event) {
