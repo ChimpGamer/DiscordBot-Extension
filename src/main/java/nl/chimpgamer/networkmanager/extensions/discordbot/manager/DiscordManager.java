@@ -24,7 +24,8 @@ public class DiscordManager {
                         new PlayersCommand(this.getDiscordBot()),
                         new RegisterCommand(this.getDiscordBot()),
                         new UnregisterCommand(this.getDiscordBot()),
-                        new PlaytimeCommand(this.getDiscordBot())
+                        new PlaytimeCommand(this.getDiscordBot()),
+                        new UptimeCommand(this.getDiscordBot())
                 );
         if (this.getDiscordBot().getConfigManager().isStatusEnabled()) {
             Game.GameType gameType;
