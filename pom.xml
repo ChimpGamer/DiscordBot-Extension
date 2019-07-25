@@ -6,7 +6,7 @@
 
     <groupId>nl.chimpgamer.networkmanager.extensions</groupId>
     <artifactId>DiscordBot</artifactId>
-    <version>1.1.12</version>
+    <version>1.1.13</version>
 
     <build>
         <resources>
