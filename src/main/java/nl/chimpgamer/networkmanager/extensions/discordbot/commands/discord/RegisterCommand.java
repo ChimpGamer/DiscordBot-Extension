@@ -6,6 +6,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 
 import net.dv8tion.jda.core.entities.ChannelType;
 
+import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
@@ -36,7 +37,13 @@ public class RegisterCommand extends Command {
             Preconditions.checkNotNull(this.getDiscordBot().getGuild(), "The discord bot has not been connected to a discord server. Connect it to a discord server.");
 
             if (this.getDiscordBot().getGuild().getMember(event.getAuthor()) == null) {
-                Utils.sendChannelMessage(event.getChannel(), DCMessage.REGISTRATION_NOT_IN_SERVER.getMessage());
+                String message = DCMessage.REGISTRATION_NOT_IN_SERVER.getMessage();
+                // Check if message is a valid json so we can parse it to an embed.
+                if (Methods.isJsonValid(message)) {
+
+                } else {
+                    Utils.sendChannelMessage(event.getChannel(), DCMessage.REGISTRATION_NOT_IN_SERVER.getMessage());
+                }
                 return;
             }
             if (!discordUserManager.containsDiscordID(event.getAuthor().getId()) && !this.getDiscordBot().getDiscordUserManager().checkUserByDiscordId(event.getAuthor().getId())) {

@@ -16,14 +16,12 @@ public class MySQL {
         if (this.getDiscordBot().getNetworkManager().getMySQL().ping()) {
             this.getDiscordBot().getNetworkManager().debug("&c| &cSuccessfully connected with MySQL! (NetworkManagerBot)");
             this.nmMySQL = this.getDiscordBot().getNetworkManager().getMySQL();
-            this.getDiscordBot().getScheduler().runAsync(() -> {
-                try {
-                    this.create();
-                    this.getDiscordBot().getNetworkManager().debug("&c| &cDone with Creating MySQL things! (NetworkManagerBot)");
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }, false);
+            try {
+                this.create();
+                this.getDiscordBot().getNetworkManager().debug("&c| &cDone with Creating MySQL things! (NetworkManagerBot)");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         } else {
             this.getDiscordBot().error("&c| &cNo connection to Database (NetworkManagerBot)");
         }

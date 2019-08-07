@@ -96,6 +96,8 @@ public class Utils {
             return;
         }
 
+        DiscordBot.getInstance().getLogger().info("Syncing roles for " + member.getEffectiveName());
+
         Set<Role> addRoles = new HashSet<>();
         Set<Role> removeRoles = new HashSet<>();
         for (String roleName : DiscordBot.getInstance().getConfigManager().getSyncRanks()) {
@@ -121,8 +123,16 @@ public class Utils {
             // remove roles that the user doesn't already have from roles to remove
             removeRoles.removeIf(role1 -> !member.getRoles().contains(role));
 
-            DiscordBot.getInstance().getGuild().getController().removeRolesFromMember(member, removeRoles).queue();
-            DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, addRoles).queue();
+            try {
+                DiscordBot.getInstance().getGuild().getController().removeRolesFromMember(member, removeRoles).queue();
+                DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, addRoles).queue();
+            } catch (PermissionException ex) {
+                if (ex.getPermission() == Permission.UNKNOWN) {
+                    DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because " + ex.getMessage());
+                } else {
+                    DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because the bot does not have the required permission " + ex.getPermission().getName());
+                }
+            }
         }
     }
 
