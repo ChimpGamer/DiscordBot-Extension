@@ -1,7 +1,6 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot;
 
 import lombok.Getter;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import nl.chimpgamer.networkmanager.api.NMListener;
 import nl.chimpgamer.networkmanager.api.extensions.NMExtension;
@@ -34,7 +33,6 @@ public final class DiscordBot extends NMExtension {
     private MySQL mySQL;
     private DiscordUserManager discordUserManager;
     private DiscordManager discordManager;
-    private JDA jda;
 
     public static DiscordBot getInstance() {
         return instance;
@@ -84,6 +82,7 @@ public final class DiscordBot extends NMExtension {
     @Override
     public void onDisable() {
         // Extension shutdown logic
+        this.expireTokens();
         this.unregisterListeners();
         this.getNetworkManager().getCommandManager().unregisterAllBySource(this.getInfo().getName());
         this.getDiscordManager().shutdownJDA();
@@ -142,11 +141,7 @@ public final class DiscordBot extends NMExtension {
     }
 
     public @NonNull Guild getGuild() {
-        return this.getJDA().getGuildById(this.getConfigManager().getGuildID());
-    }
-
-    private JDA getJDA() {
-        return jda;
+        return this.getDiscordManager().getGuild();
     }
 
     @Override

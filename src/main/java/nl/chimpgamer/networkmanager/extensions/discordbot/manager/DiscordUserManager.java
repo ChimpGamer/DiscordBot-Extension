@@ -5,8 +5,8 @@ import net.dv8tion.jda.core.entities.Message;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.modals.DiscordUser;
 import nl.chimpgamer.networkmanager.extensions.discordbot.modals.NMToken;
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.tasks.TokenExpiryTask;
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.tasks.VerifyUserTask;
+import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.TokenExpiryTask;
+import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.VerifyUserTask;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 

@@ -33,7 +33,7 @@ public class DiscordManager {
         try {
             this.initCommandBuilder();
             this.initJDA();
-        } catch (LoginException ex) {
+        } catch (LoginException | InterruptedException ex) {
             ex.printStackTrace();
             success = false;
         }
@@ -55,7 +55,7 @@ public class DiscordManager {
         return success;
     }
 
-    private void initJDA() throws LoginException {
+    private void initJDA() throws LoginException, InterruptedException {
         this.JDA = new JDABuilder(AccountType.BOT)
                 .setToken(this.getDiscordBot().getConfigManager().getDiscordToken())
                 .addEventListener(new DiscordListener(this.getDiscordBot()))
@@ -63,7 +63,8 @@ public class DiscordManager {
                 .addEventListener(this.getCommandClientBuilder().build())
                 .setAutoReconnect(true)
                 .setMaxReconnectDelay(180)
-                .build();
+                .build()
+                .awaitReady();
     }
 
     private void initCommandBuilder() {
@@ -107,7 +108,7 @@ public class DiscordManager {
         try {
             this.initJDA();
             return true;
-        } catch (LoginException e) {
+        } catch (LoginException | InterruptedException e) {
             e.printStackTrace();
         }
         return false;

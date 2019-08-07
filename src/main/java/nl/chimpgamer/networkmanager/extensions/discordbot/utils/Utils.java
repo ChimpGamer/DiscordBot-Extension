@@ -51,7 +51,20 @@ public class Utils {
         return null;
     }
 
+    public static Message sendMessageComplete(MessageChannel channel, MessageEmbed message) {
+        try {
+            return channel.sendMessage(message).complete();
+        } catch (PermissionException ex) {
+            DiscordBot.getInstance().getLogger().warning("Could not send message to the " + channel.getName() + " because " + ex.getMessage());
+        }
+        return null;
+    }
+
     public static void editMessage(Message currentMessage, String newMessage) {
+        currentMessage.editMessage(newMessage).queue();
+    }
+
+    public static void editMessage(Message currentMessage, MessageEmbed newMessage) {
         currentMessage.editMessage(newMessage).queue();
     }
 

@@ -1,4 +1,4 @@
-package nl.chimpgamer.networkmanager.extensions.discordbot.utils.tasks;
+package nl.chimpgamer.networkmanager.extensions.discordbot.tasks;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

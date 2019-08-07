@@ -1,4 +1,4 @@
-package nl.chimpgamer.networkmanager.extensions.discordbot.utils.tasks;
+package nl.chimpgamer.networkmanager.extensions.discordbot.tasks;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
+import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerVerifyEvent;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.MCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 
@@ -54,7 +56,15 @@ public class VerifyUserTask implements Runnable {
                     // User is not registered yet...
                     discordUserManager.getTokens().remove(this.getToken()); // Remove token
                     discordUserManager.insertUser(this.getPlayer().getUuid(), this.getToken().getDiscordID());
-                    Utils.editMessage(this.getToken().getMessage(), DCMessage.REGISTRATION_COMPLETED.getMessage());
+
+                    String registrationCompleted = DCMessage.REGISTRATION_COMPLETED.getMessage();
+                    if (Methods.isJsonValid(registrationCompleted)) {
+                        JsonEmbedBuilder jsonEmbedBuilder = JsonEmbedBuilder.fromJson(registrationCompleted);
+                        Utils.editMessage(this.getToken().getMessage(), jsonEmbedBuilder.build());
+                    } else {
+                        Utils.editMessage(this.getToken().getMessage(), registrationCompleted);
+                    }
+
                     this.getPlayer().sendMessage(MCMessage.VERIFY_COMPLETED.getMessage()
                             .replace("%playername%", this.getPlayer().getName()));
                     this.getDiscordBot().getNetworkManager().getEventHandler().callEvent(new PlayerVerifyEvent(this.getPlayer(), member));

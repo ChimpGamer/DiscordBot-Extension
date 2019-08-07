@@ -7,7 +7,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager;
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.tasks.GuildJoinCheckTask;
+import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.GuildJoinCheckTask;
 import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers;
 import nl.chimpgamer.networkmanager.api.cache.modules.CachedValues;
 import nl.chimpgamer.networkmanager.api.communication.PubSubMessage;

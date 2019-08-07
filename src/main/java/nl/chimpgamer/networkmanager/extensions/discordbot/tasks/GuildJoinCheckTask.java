@@ -1,4 +1,4 @@
-package nl.chimpgamer.networkmanager.extensions.discordbot.utils.tasks;
+package nl.chimpgamer.networkmanager.extensions.discordbot.tasks;
 
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.core.entities.Member;
