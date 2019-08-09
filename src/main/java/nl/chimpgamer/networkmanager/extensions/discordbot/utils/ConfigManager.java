@@ -167,6 +167,12 @@ public class ConfigManager extends Config {
         return this.getBoolean("networkmanagerbot.discord.commands." + command.toLowerCase() + ".enabled");
     }
 
+    @Override
+    public void reload() {
+        super.reload();
+        this.getDiscordBot().getDiscordManager().setVerifiedRole(Utils.getRoleByName(this.getDiscordBot().getConfigManager().getVerifyRole()));
+    }
+
     private DiscordBot getDiscordBot() {
         return discordBot;
     }

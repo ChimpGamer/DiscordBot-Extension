@@ -155,7 +155,7 @@ public class Utils {
             return null;
         }
         for (Role role : roles) {
-            if (role.getName().equals(roleName)) {
+            if (role.getName().equalsIgnoreCase(roleName)) {
                 return role;
             }
         }

@@ -30,13 +30,13 @@ discord:
   registration-token: |-
     {
       "title": "Thanks for registering!",
-      "description": "\nJoin our Server and type in **/verify %token%** \n \n",
+      "description": "\nJoin our Server and type in **/verify %token%**",
       "color": 15860242
     }
   registration-token-expired: |-
     {
       "title": "TOKEN HAS BEEN EXPIRED.",
-      "description": "You can now request a new one with **!register**",
+      "description": "You can request a new one with **!register**",
       "color": 14684176
     }
   registration-completed: |-
@@ -48,7 +48,7 @@ discord:
   unregister-completed: |-
     {
       "title": "Successfully unregistered your discord account!",
-      "description": "You can now register your Account again with !register",
+      "description": "You can register your Account again with !register",
       "color": 3535678
     }
   ticket-create-alert: |-

@@ -73,12 +73,9 @@ public class VerifyUserTask implements Runnable {
                     }
 
                     if (this.getDiscordBot().getConfigManager().isVerifyAddRole()) {
-                        String verifyRoleName = this.getDiscordBot().getConfigManager().getVerifyRole();
-                        if (!verifyRoleName.isEmpty()) {
-                            Role verifiedRole = Utils.getRoleByName(verifyRoleName);
-                            if (verifiedRole != null) {
-                                this.getDiscordBot().getGuild().getController().addSingleRoleToMember(member, verifiedRole).queue();
-                            }
+                        Role verifiedRole = this.getDiscordBot().getDiscordManager().getVerifiedRole();
+                        if (verifiedRole != null) {
+                            this.getDiscordBot().getGuild().getController().addSingleRoleToMember(member, verifiedRole).queue();
                         }
                     }
 

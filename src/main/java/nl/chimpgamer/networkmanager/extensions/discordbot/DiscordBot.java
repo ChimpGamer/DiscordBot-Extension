@@ -15,6 +15,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.JoinL
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.RedisBungeeListener;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager;
+import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.TokenExpiryTask;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -135,7 +136,8 @@ public final class DiscordBot extends NMExtension {
     private void expireTokens() {
         if (this.getDiscordUserManager() != null) {
             for (Token token : this.getDiscordUserManager().getTokens()) {
-                Utils.editMessage(token.getMessage(), ":x: Token has been expired. Ask me for a new one :D :x:");
+                this.getScheduler().runSync(new TokenExpiryTask(this, token));
+                //Utils.editMessage(token.getMessage(), ":x: Token has been expired. Ask me for a new one :D :x:");
             }
         }
     }

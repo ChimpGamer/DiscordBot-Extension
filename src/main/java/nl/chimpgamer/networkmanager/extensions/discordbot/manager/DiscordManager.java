@@ -7,9 +7,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Role;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.*;
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordListener;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 
 import javax.security.auth.login.LoginException;
 import java.util.List;
@@ -21,6 +23,8 @@ public class DiscordManager {
 
     private JDA JDA;
     private Guild guild;
+
+    private Role verifiedRole;
 
     public DiscordManager(DiscordBot discordBot) {
         this.discordBot = discordBot;
@@ -51,6 +55,15 @@ public class DiscordManager {
             this.getDiscordBot().getLogger().warning("The Bot is a member of too many guilds.");
             success = false;
         }
+
+        String roleName = this.getDiscordBot().getConfigManager().getVerifyRole();
+        Role role = Utils.getRoleByName(roleName);
+        if (role != null) {
+            this.getDiscordBot().getLogger().info("Verified Role is: " + role.getName() + "(" + role.getId() + ")");
+        } else {
+            this.getDiscordBot().getLogger().info("No Verified Role found by the name: " + roleName);
+        }
+        this.setVerifiedRole(role);
 
         return success;
     }
@@ -112,6 +125,14 @@ public class DiscordManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void setVerifiedRole(Role verifiedRole) {
+        this.verifiedRole = verifiedRole;
+    }
+
+    public Role getVerifiedRole() {
+        return verifiedRole;
     }
 
     private CommandClientBuilder getCommandClientBuilder() {
