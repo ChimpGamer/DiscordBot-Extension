@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Role;
 import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
@@ -40,6 +41,16 @@ public class UnregisterCommand extends Command {
                 Utils.sendChannelMessage(event.getChannel(), jsonEmbedBuilder.build());
             } else {
                 Utils.sendChannelMessage(event.getChannel(), message);
+            }
+
+            if (this.getDiscordBot().getConfigManager().isVerifyAddRole()) {
+                String verifyRoleName = this.getDiscordBot().getConfigManager().getVerifyRole();
+                if (!verifyRoleName.isEmpty()) {
+                    Role verifiedRole = Utils.getRoleByName(verifyRoleName);
+                    if (verifiedRole != null) {
+                        this.getDiscordBot().getGuild().getController().removeRolesFromMember(event.getMember(), verifiedRole).queue();
+                    }
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
