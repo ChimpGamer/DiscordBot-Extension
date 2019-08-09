@@ -40,7 +40,7 @@ public class RegisterCommand extends Command {
                 return;
             }
             if (!discordUserManager.containsDiscordID(event.getAuthor().getId()) && !this.getDiscordBot().getDiscordUserManager().checkUserByDiscordId(event.getAuthor().getId())) {
-                CreateTokenTask createTokenTask = new CreateTokenTask(this.getDiscordBot(), event.getTextChannel(), event.getAuthor().getId());
+                CreateTokenTask createTokenTask = new CreateTokenTask(this.getDiscordBot(), event.getChannel(), event.getAuthor().getId());
                 this.getDiscordBot().getScheduler().runAsync(createTokenTask, false);
             }
         } catch (SQLException ex) {
