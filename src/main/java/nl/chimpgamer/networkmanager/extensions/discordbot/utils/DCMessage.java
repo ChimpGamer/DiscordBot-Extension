@@ -7,6 +7,7 @@ public enum DCMessage {
     STAFFCHAT_RECEIVE("discord.staffchat-receive"),
     ADMINCHAT_RECEIVE("discord.adminchat-receive"),
     REGISTRATION_TOKEN("discord.registration-token"),
+    REGISTRATION_TOKEN_EXPIRED("discord.registration-token-expired"),
     REGISTRATION_NOT_IN_SERVER("registration-not-in-server"),
     REGISTRATION_COMPLETED("discord.registration-completed"),
     UNREGISTER_COMPLETED("discord.unregister-completed"),

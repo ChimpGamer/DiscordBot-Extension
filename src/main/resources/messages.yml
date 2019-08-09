@@ -33,6 +33,12 @@ discord:
       "description": "\nJoin our Server and type in **/verify %token%** \n \n",
       "color": 15860242
     }
+  registration-token-expired: |-
+    {
+      "title": "TOKEN HAS BEEN EXPIRED.",
+      "description": "You can now request a new one with **!register**",
+      "color": 14684176
+    }
   registration-completed: |-
     {
       "title": "Registration completed!",

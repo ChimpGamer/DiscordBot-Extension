@@ -2,7 +2,10 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.tasks;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token;
 
@@ -17,7 +20,16 @@ public class TokenExpiryTask implements Runnable {
         if (!this.getDiscordBot().getDiscordUserManager().getTokens().contains(this.getToken())) {
             return;
         }
-        Utils.editMessage(getToken().getMessage(), ":x: Token has been expired. Ask me for a new one :D :x:");
+
+        String msgStr = DCMessage.REGISTRATION_TOKEN_EXPIRED.getMessage();
+        if (Methods.isJsonValid(msgStr)) {
+            JsonEmbedBuilder jsonEmbedBuilder = JsonEmbedBuilder.fromJson(msgStr);
+            Utils.editMessage(getToken().getMessage(), jsonEmbedBuilder.build());
+        } else {
+            Utils.editMessage(getToken().getMessage(), msgStr);
+        }
+
+        //Utils.editMessage(getToken().getMessage(), ":x: Token has been expired. Ask me for a new one :D :x:");
         this.getDiscordBot().getDiscordUserManager().getTokens().remove(getToken());
         this.getDiscordBot().getNetworkManager().debug("Token: " + getToken().getToken() + " has been removed!");
     }
