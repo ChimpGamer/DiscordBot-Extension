@@ -150,12 +150,12 @@ public class Utils {
     }
 
     public static Role getRoleByName(String roleName) {
-        List<Role> roles = DiscordBot.getInstance().getGuild().getRolesByName(roleName, false);
+        List<Role> roles = DiscordBot.getInstance().getGuild().getRolesByName(roleName, true);
         if (roles == null || roles.isEmpty()) {
             return null;
         }
         for (Role role : roles) {
-            if (role.getName().equalsIgnoreCase(roleName)) {
+            if (role.getName().equals(roleName)) {
                 return role;
             }
         }
