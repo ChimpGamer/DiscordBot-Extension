@@ -2,6 +2,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.configurations;
 
 import nl.chimpgamer.networkmanager.api.utils.FileUtils;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 
 import java.io.IOException;
 
@@ -35,6 +36,12 @@ public class Settings extends FileUtils {
                 }
             }
         }
+    }
+
+    @Override
+    public void reload() {
+        super.reload();
+        this.getDiscordBot().getDiscordManager().setVerifiedRole(Utils.getRoleByName(Setting.DISCORD_VERIFY_ADD_ROLE_ROLE_NAME.getAsString()));
     }
 
     private DiscordBot getDiscordBot() {

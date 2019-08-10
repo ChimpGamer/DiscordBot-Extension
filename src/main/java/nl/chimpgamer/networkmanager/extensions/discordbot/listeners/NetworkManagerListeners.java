@@ -7,6 +7,7 @@ import nl.chimpgamer.networkmanager.api.event.events.*;
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils;
 import nl.chimpgamer.networkmanager.bungeecord.models.servers.NMServer;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
@@ -25,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class NetworkManagerListeners implements NMListener {
         if (event.isCancelled()) {
             return;
         }
-        TextChannel staffChatChannel = this.getDiscordBot().getGuild().getTextChannelById(this.getDiscordBot().getConfigManager().getStaffChatChannelID());
+        TextChannel staffChatChannel = this.getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL.getAsString());
         if (staffChatChannel == null) {
             return;
         }
@@ -52,7 +54,7 @@ public class NetworkManagerListeners implements NMListener {
         if (event.isCancelled()) {
             return;
         }
-        TextChannel adminChatChannel = this.getDiscordBot().getGuild().getTextChannelById(this.getDiscordBot().getConfigManager().getAdminChatChannelID());
+        TextChannel adminChatChannel = this.getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL.getAsString());
         if (adminChatChannel == null) {
             return;
         }
@@ -66,37 +68,77 @@ public class NetworkManagerListeners implements NMListener {
     @NMEvent
     public void onServerStatusChange(ServerStatusChangeEvent event) {
         final Server server = event.getServer();
-        TextChannel serverStatusChannel = this.getDiscordBot().getGuild().getTextChannelById(this.getDiscordBot().getConfigManager().getServerStatusEventChannelId());
-        if (serverStatusChannel == null) {
-            return;
+        Map<String, String> serverChannels = Setting.DISCORD_EVENTS_SERVERSTATUS_CHANNELS.getAsMap();
+        String globalId = "000000000000000000";
+        if (serverChannels.containsKey("all")) {
+            globalId = serverChannels.get("all");
         }
-        JsonEmbedBuilder jsonEmbedBuilder;
-        if (event.isOnline()) {
-            // Server went on
-            jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_ONLINE.getMessage());
-            final List<MessageEmbed.Field> fields = new LinkedList<>();
-            for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
-                String name = insertServerPlaceholders(field.getName(), server);
-                String value = insertServerPlaceholders(field.getValue(), server);
-                MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
-                fields.add(field1);
+        TextChannel globalServerTextChannel = this.getDiscordBot().getGuild().getTextChannelById(globalId);
+        if (globalId != null && globalServerTextChannel != null) {
+            JsonEmbedBuilder jsonEmbedBuilder;
+            if (event.isOnline()) {
+                // Server went on
+                jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_ONLINE.getMessage());
+                final List<MessageEmbed.Field> fields = new LinkedList<>();
+                for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
+                    String name = insertServerPlaceholders(field.getName(), server);
+                    String value = insertServerPlaceholders(field.getValue(), server);
+                    MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
+                    fields.add(field1);
+                }
+                jsonEmbedBuilder.setFields(fields);
+                Utils.sendChannelMessage(globalServerTextChannel,
+                        jsonEmbedBuilder.build());
+            } else {
+                // Server went off
+                jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_OFFLINE.getMessage());
+                final List<MessageEmbed.Field> fields = new LinkedList<>();
+                for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
+                    String name = insertServerPlaceholders(field.getName(), server);
+                    String value = insertServerPlaceholders(field.getValue(), server);
+                    MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
+                    fields.add(field1);
+                }
+                jsonEmbedBuilder.setFields(fields);
+                Utils.sendChannelMessage(globalServerTextChannel,
+                        jsonEmbedBuilder.build());
             }
-            jsonEmbedBuilder.setFields(fields);
-            Utils.sendChannelMessage(serverStatusChannel,
-                    jsonEmbedBuilder.build());
-        } else {
-            // Server went off
-            jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_OFFLINE.getMessage());
-            final List<MessageEmbed.Field> fields = new LinkedList<>();
-            for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
-                String name = insertServerPlaceholders(field.getName(), server);
-                String value = insertServerPlaceholders(field.getValue(), server);
-                MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
-                fields.add(field1);
+        }
+
+        String channelId = "000000000000000000";
+        if (serverChannels.containsKey(server.getServerName())) {
+            channelId = serverChannels.get(server.getServerName());
+        }
+        TextChannel serverStatusChannel = this.getDiscordBot().getGuild().getTextChannelById(channelId);
+        if (channelId != null && serverStatusChannel != null) {
+            JsonEmbedBuilder jsonEmbedBuilder;
+            if (event.isOnline()) {
+                // Server went on
+                jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_ONLINE.getMessage());
+                final List<MessageEmbed.Field> fields = new LinkedList<>();
+                for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
+                    String name = insertServerPlaceholders(field.getName(), server);
+                    String value = insertServerPlaceholders(field.getValue(), server);
+                    MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
+                    fields.add(field1);
+                }
+                jsonEmbedBuilder.setFields(fields);
+                Utils.sendChannelMessage(serverStatusChannel,
+                        jsonEmbedBuilder.build());
+            } else {
+                // Server went off
+                jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_OFFLINE.getMessage());
+                final List<MessageEmbed.Field> fields = new LinkedList<>();
+                for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
+                    String name = insertServerPlaceholders(field.getName(), server);
+                    String value = insertServerPlaceholders(field.getValue(), server);
+                    MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
+                    fields.add(field1);
+                }
+                jsonEmbedBuilder.setFields(fields);
+                Utils.sendChannelMessage(serverStatusChannel,
+                        jsonEmbedBuilder.build());
             }
-            jsonEmbedBuilder.setFields(fields);
-            Utils.sendChannelMessage(serverStatusChannel,
-                    jsonEmbedBuilder.build());
         }
     }
 
@@ -106,7 +148,7 @@ public class NetworkManagerListeners implements NMListener {
             return;
         }
         if (event.getPunishment().getType() == Punishment.Type.REPORT) {
-            TextChannel reportChannel = this.getDiscordBot().getGuild().getTextChannelById(this.getDiscordBot().getConfigManager().getReportAlertsEventChannelId());
+            TextChannel reportChannel = this.getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_REPORT_CHANNEL.getAsString());
             if (reportChannel == null) {
                 return;
             }
@@ -125,7 +167,7 @@ public class NetworkManagerListeners implements NMListener {
                         jsonEmbedBuilder.build());
             }
         } else {
-            TextChannel punishmentsChannel = this.getDiscordBot().getGuild().getTextChannelById(this.getDiscordBot().getConfigManager().getPunishmentAlertsEventChannelId());
+            TextChannel punishmentsChannel = this.getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_PUNISHMENT_CHANNEL.getAsString());
             if (punishmentsChannel == null) {
                 return;
             }
@@ -152,7 +194,7 @@ public class NetworkManagerListeners implements NMListener {
                     fields.add(field1);
                 }
                 jsonEmbedBuilder.setFields(fields);
-                Utils.sendChannelMessage(this.getDiscordBot().getGuild().getTextChannelById(this.getDiscordBot().getConfigManager().getPunishmentAlertsEventChannelId()),
+                Utils.sendChannelMessage(this.getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_PUNISHMENT_CHANNEL.getAsString()),
                         jsonEmbedBuilder.build());
             }
         }
@@ -163,7 +205,7 @@ public class NetworkManagerListeners implements NMListener {
         if (event.isCancelled()) {
             return;
         }
-        TextChannel helpOPChannel = this.getDiscordBot().getGuild().getTextChannelById(this.getDiscordBot().getConfigManager().getHelpOPAlertsEventChannelId());
+        TextChannel helpOPChannel = this.getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_HELPOP_CHANNEL.getAsString());
         if (helpOPChannel == null) {
             return;
         }
@@ -185,7 +227,7 @@ public class NetworkManagerListeners implements NMListener {
         if (event.isCancelled()) {
             return;
         }
-        TextChannel ticketChannel = this.getDiscordBot().getGuild().getTextChannelById(this.getDiscordBot().getConfigManager().getTicketsChannelId());
+        TextChannel ticketChannel = this.getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_TICKETS_CHANNEL.getAsString());
         if (ticketChannel == null) {
             return;
         }
@@ -204,7 +246,7 @@ public class NetworkManagerListeners implements NMListener {
 
     @NMEvent
     public void onChatLogCreated(ChatLogCreatedEvent event) {
-        TextChannel chatLogChannel = this.getDiscordBot().getGuild().getTextChannelById(this.getDiscordBot().getConfigManager().getChatLogEventChannelId());
+        TextChannel chatLogChannel = this.getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_CHATLOG_CHANNEL.getAsString());
         if (chatLogChannel == null) {
             return;
         }

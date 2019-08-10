@@ -10,6 +10,7 @@ import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerVerifyEvent;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
@@ -72,7 +73,7 @@ public class VerifyUserTask implements Runnable {
                         this.getDiscordBot().sendRedisBungee("load " + this.getPlayer().getUuid());
                     }
 
-                    if (this.getDiscordBot().getConfigManager().isVerifyAddRole()) {
+                    if (Setting.DISCORD_VERIFY_ADD_ROLE_ENABLED.getAsBoolean()) {
                         Role verifiedRole = this.getDiscordBot().getDiscordManager().getVerifiedRole();
                         if (verifiedRole != null) {
                             this.getDiscordBot().getLogger().info("Assigning the " + verifiedRole.getName() + " role to " + member.getEffectiveName());
@@ -80,11 +81,11 @@ public class VerifyUserTask implements Runnable {
                         }
                     }
 
-                    if (this.getDiscordBot().getConfigManager().isSyncUserName()) {
+                    if (Setting.DISCORD_SYNC_USERNAME.getAsBoolean()) {
                         Utils.setNickName(member, this.getPlayer().getName());
                     }
 
-                    if (this.getDiscordBot().getConfigManager().isSyncRanks()) {
+                    if (Setting.DISCORD_SYNC_RANKS_ENABLED.getAsBoolean()) {
                         Utils.syncRanks(this.getPlayer());
                     }
                 }

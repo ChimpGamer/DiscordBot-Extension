@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 
@@ -35,27 +36,20 @@ public class GuildJoinCheckTask implements Runnable {
                         return;
                     }
                     Player player = opPlayer.get();
-
-                    if (this.getDiscordBot().getConfigManager().isVerifyAddRole()) {
-                        String verifyRoleName = this.getDiscordBot().getConfigManager().getVerifyRole();
-                        if (!verifyRoleName.isEmpty()) {
-                            Role verifiedRole = Utils.getRoleByName(verifyRoleName);
-                            if (verifiedRole != null) {
-                                this.getDiscordBot().getGuild().getController().addSingleRoleToMember(member, verifiedRole).queue();
-                            } else {
-                                this.getDiscordBot().warn("The verified role '" + verifyRoleName + "' does not seem to exist!");
-                            }
-                        } else {
-                            this.getDiscordBot().warn("The verified role '" + verifyRoleName + "' does not seem to exist!");
+                    if (Setting.DISCORD_VERIFY_ADD_ROLE_ENABLED.getAsBoolean()) {
+                        Role verifiedRole = this.getDiscordBot().getDiscordManager().getVerifiedRole();
+                        if (verifiedRole != null) {
+                            this.getDiscordBot().getLogger().info("Assigning the " + verifiedRole.getName() + " role to " + member.getEffectiveName());
+                            Utils.addRoleToMember(member, verifiedRole);
                         }
                     }
 
 
-                    if (this.getDiscordBot().getConfigManager().isSyncUserName()) {
+                    if (Setting.DISCORD_SYNC_USERNAME.getAsBoolean()) {
                         Utils.setNickName(this.getMember(), player.getName());
                     }
 
-                    if (this.getDiscordBot().getConfigManager().isSyncRanks()) {
+                    if (Setting.DISCORD_SYNC_RANKS_ENABLED.getAsBoolean()) {
                         Utils.syncRanks(player);
                     }
                 }

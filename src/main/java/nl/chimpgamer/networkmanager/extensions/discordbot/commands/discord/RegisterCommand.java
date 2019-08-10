@@ -7,6 +7,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.entities.ChannelType;
 
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
@@ -19,7 +20,7 @@ public class RegisterCommand extends Command {
 
     public RegisterCommand(DiscordBot discordBot) {
         this.discordBot = discordBot;
-        this.name = "register";
+        this.name = CommandSetting.DISCORD_REGISTER_COMMAND.getAsString();
         this.guildOnly = false;
     }
 

@@ -5,6 +5,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 
@@ -13,7 +14,7 @@ public class PlayersCommand extends Command {
 
     public PlayersCommand(DiscordBot discordBot) {
         this.discordBot = discordBot;
-        this.name = "players";
+        this.name = CommandSetting.DISCORD_PLAYERS_COMMAND.getAsString();
         this.aliases = new String[]{"onlineplayers", "online"};
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.guildOnly = true;
@@ -24,7 +25,7 @@ public class PlayersCommand extends Command {
         if (!event.isFromType(ChannelType.TEXT)) {
             return;
         }
-        if (!this.getDiscordBot().getConfigManager().isDiscordCommandEnabled(this.getName())) {
+        if (!CommandSetting.DISCORD_PLAYERS_ENABLED.getAsBoolean()) {
             return;
         }
         Utils.sendChannelMessage(event.getTextChannel(),

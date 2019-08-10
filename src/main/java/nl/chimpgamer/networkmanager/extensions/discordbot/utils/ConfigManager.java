@@ -170,7 +170,7 @@ public class ConfigManager extends Config {
     @Override
     public void reload() {
         super.reload();
-        this.getDiscordBot().getDiscordManager().setVerifiedRole(Utils.getRoleByName(this.getDiscordBot().getConfigManager().getVerifyRole()));
+        this.getDiscordBot().getDiscordManager().setVerifiedRole(Utils.getRoleByName(this.getVerifyRole()));
     }
 
     private DiscordBot getDiscordBot() {

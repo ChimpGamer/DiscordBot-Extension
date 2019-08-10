@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import nl.chimpgamer.networkmanager.api.utils.Cooldown;
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.MCMessage;
@@ -42,7 +43,7 @@ public class SuggestionCommand extends NMBungeeCommand {
                 sb.append(arg).append(" ");
             }
             String bug = sb.toString().trim();
-            TextChannel bugReportChannel = getDiscordBot().getGuild().getTextChannelById(getDiscordBot().getConfigManager().getSuggestionAlertsEventChannelId());
+            TextChannel bugReportChannel = getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_SUGGESTION_CHANNEL.getAsString());
             if (bugReportChannel == null) {
                 return;
             }

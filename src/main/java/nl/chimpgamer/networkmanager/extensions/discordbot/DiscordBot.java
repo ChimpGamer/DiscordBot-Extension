@@ -9,6 +9,10 @@ import nl.chimpgamer.networkmanager.api.utils.PlatformType;
 import nl.chimpgamer.networkmanager.bungeecord.NetworkManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token;
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.mc.*;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSettings;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Messages;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Settings;
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.NetworkManagerListeners;
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.ChatListener;
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.JoinLeaveListener;
@@ -16,7 +20,9 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.Redis
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.TokenExpiryTask;
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.*;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DependencyDownloader;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DiscordPlaceholders;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.MySQL;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
@@ -29,8 +35,13 @@ public final class DiscordBot extends NMExtension {
     private List<Integer> tasks;
     private List<NMListener> listeners;
 
-    private ConfigManager configManager;
-    private MessagesConfigManager messagesConfigManager;
+    // Configuration files
+    private Settings settings;
+    private CommandSettings commandSettings;
+    private Messages messages;
+
+    /*private ConfigManager configManager;
+    private MessagesConfigManager messagesConfigManager;*/
     private MySQL mySQL;
     private DiscordUserManager discordUserManager;
     private DiscordManager discordManager;
@@ -57,8 +68,13 @@ public final class DiscordBot extends NMExtension {
         this.tasks = new ArrayList<>();
         this.listeners = new ArrayList<>();
 
-        this.configManager = new ConfigManager(this);
-        this.messagesConfigManager = new MessagesConfigManager(this);
+        // Initialize configuration files
+        this.initSettings();
+        this.initCommands();
+        this.initMessages();
+
+        /*this.configManager = new ConfigManager(this);
+        this.messagesConfigManager = new MessagesConfigManager(this);*/
         this.mySQL = new MySQL(this);
         this.discordUserManager = new DiscordUserManager(this);
         this.discordUserManager.load();
@@ -91,8 +107,26 @@ public final class DiscordBot extends NMExtension {
 
     @Override
     protected void onConfigsReload() {
-        this.getConfigManager().reload();
-        this.getMessagesConfigManager().reload();
+        /*this.getConfigManager().reload();
+        this.getMessagesConfigManager().reload();*/
+        this.getSettings().reload();
+        this.getCommandSettings().reload();
+        this.getMessages().reload();
+    }
+
+    private void initSettings() {
+        this.settings = new Settings(this);
+        this.settings.init();
+    }
+
+    private void initCommands() {
+        this.commandSettings = new CommandSettings(this);
+        this.commandSettings.init();
+    }
+
+    private void initMessages() {
+        this.messages = new Messages(this);
+        this.messages.init();
     }
 
     private void registerListeners() {
@@ -108,17 +142,17 @@ public final class DiscordBot extends NMExtension {
 
     private void registerCommands() {
         CommandManager commandManager = this.getNetworkManager().getCommandManager();
-        if (this.getConfigManager().isMinecraftCommandEnabled("bug")) {
-            commandManager.registerCommand(this.getInfo().getName(), new BugCommand(this, "bug"));
+        if (CommandSetting.MINECRAFT_BUG_ENABLED.getAsBoolean()) {
+            commandManager.registerCommand(this.getInfo().getName(), new BugCommand(this, CommandSetting.MINECRAFT_BUG_COMMAND.getAsString()));
         }
-        if (this.getConfigManager().isMinecraftCommandEnabled("suggestion")) {
-            commandManager.registerCommand(this.getInfo().getName(), new SuggestionCommand(this, "suggestion"));
+        if (CommandSetting.MINECRAFT_SUGGESTION_ENABLED.getAsBoolean()) {
+            commandManager.registerCommand(this.getInfo().getName(), new SuggestionCommand(this, CommandSetting.MINECRAFT_SUGGESTION_COMMAND.getAsString()));
         }
-        if (this.getConfigManager().isMinecraftCommandEnabled("discord")) {
+        if (CommandSetting.MINECRAFT_DISCORD_ENABLED.getAsBoolean()) {
             commandManager.registerCommand(this.getInfo().getName(), new DiscordCommand(this, "discord"));
         }
         commandManager.registerCommands(this.getInfo().getName(),
-                new VerifyCommand(this, "verify"),
+                new VerifyCommand(this, CommandSetting.MINECRAFT_VERIFY_COMMAND.getAsString()),
                 new NetworkManagerBotCommand(this, "networkmanagerbot")
         );
     }

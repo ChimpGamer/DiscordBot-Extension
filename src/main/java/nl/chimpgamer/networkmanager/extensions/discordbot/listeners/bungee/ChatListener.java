@@ -8,6 +8,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 
 import java.util.Map;
@@ -25,7 +26,7 @@ public class ChatListener implements Listener {
 
         String currentServer = proxiedPlayer.getServer().getInfo().getName();
 
-        Map<String, String> chatEventChannels = this.getDiscordBot().getConfigManager().getChatEventChannelIds();
+        Map<String, String> chatEventChannels = Setting.DISCORD_EVENTS_CHAT_CHANNELS.getAsMap();
         String globalId = "000000000000000000";
         if (chatEventChannels.containsKey("all")) {
             globalId = chatEventChannels.get("all");

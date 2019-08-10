@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.*;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordListener;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 
@@ -56,7 +57,7 @@ public class DiscordManager {
             success = false;
         }
 
-        String roleName = this.getDiscordBot().getConfigManager().getVerifyRole();
+        String roleName = Setting.DISCORD_VERIFY_ADD_ROLE_ROLE_NAME.getAsString();
         Role role = Utils.getRoleByName(roleName);
         if (role != null) {
             this.getDiscordBot().getLogger().info("Verified Role is: '" + role.getName() + "' (" + role.getId() + ")");
@@ -70,7 +71,7 @@ public class DiscordManager {
 
     private void initJDA() throws LoginException, InterruptedException {
         this.JDA = new JDABuilder(AccountType.BOT)
-                .setToken(this.getDiscordBot().getConfigManager().getDiscordToken())
+                .setToken(Setting.DISCORD_TOKEN.getAsString())
                 .addEventListener(new DiscordListener(this.getDiscordBot()))
                 .addEventListener(this.getEventWaiter())
                 .addEventListener(this.getCommandClientBuilder().build())
@@ -82,8 +83,8 @@ public class DiscordManager {
 
     private void initCommandBuilder() {
         this.getCommandClientBuilder()
-                .setPrefix(this.getDiscordBot().getConfigManager().getCommandPrefix())
-                .setOwnerId(this.getDiscordBot().getConfigManager().getOwnerId())
+                .setPrefix(Setting.DISCORD_COMMAND_PREFIX.getAsString())
+                .setOwnerId(Setting.DISCORD_OWNER_ID.getAsString())
 
                 .addCommands(
                         new PlayerListCommand(this.getDiscordBot()),
@@ -91,18 +92,18 @@ public class DiscordManager {
                         new RegisterCommand(this.getDiscordBot()),
                         new UnregisterCommand(this.getDiscordBot()),
                         new PlaytimeCommand(this.getDiscordBot()),
-                        new UptimeCommand(this.getDiscordBot())
+                        new UptimeCommand()
                 );
-        if (this.getDiscordBot().getConfigManager().isStatusEnabled()) {
+        if (Setting.DISCORD_STATUS_ENABLED.getAsBoolean()) {
             Game.GameType gameType;
             try {
-                gameType = Game.GameType.valueOf(this.getDiscordBot().getConfigManager().getStatusType().toUpperCase());
+                gameType = Game.GameType.valueOf(Setting.DISCORD_STATUS_TYPE.getAsString().toUpperCase());
             } catch (IllegalArgumentException ex) {
-                this.getDiscordBot().getLogger().warning("StatusType '" + this.getDiscordBot().getConfigManager().getStatusType() + "' is invalid. Using DEFAULT.");
+                this.getDiscordBot().getLogger().warning("StatusType '" + Setting.DISCORD_STATUS_TYPE.getAsString() + "' is invalid. Using DEFAULT.");
                 gameType = Game.GameType.DEFAULT;
             }
             this.getCommandClientBuilder()
-                    .setGame(Game.of(gameType, this.getDiscordBot().getConfigManager().getStatusMessage()
+                    .setGame(Game.of(gameType, Setting.DISCORD_STATUS_MESSAGE.getAsString()
                             .replace("%player%", String.valueOf(this.getDiscordBot().getNetworkManager().getProxy().getPlayers().size()))));
         } else {
             this.getCommandClientBuilder().setGame(null);

@@ -5,10 +5,10 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 
 import java.io.IOException;
 
-public class Commands extends FileUtils {
+public class CommandSettings extends FileUtils {
     private final DiscordBot discordBot;
 
-    public Commands(DiscordBot discordBot) {
+    public CommandSettings(DiscordBot discordBot) {
         super(discordBot.getDataFolder().getAbsolutePath(), "commands.yml");
         this.discordBot = discordBot;
     }
@@ -16,8 +16,8 @@ public class Commands extends FileUtils {
     public void init() {
         this.setupFile();
 
-        for (Command command : Command.values()) {
-            this.addDefault(command.getPath(), command.getDefaultValue());
+        for (CommandSetting commandSetting : CommandSetting.values()) {
+            this.addDefault(commandSetting.getPath(), commandSetting.getDefaultValue());
         }
         this.copyDefaults(true);
         this.save();

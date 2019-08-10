@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -126,7 +127,7 @@ public class Utils {
 
         Set<Role> addRoles = new HashSet<>();
         Set<Role> removeRoles = new HashSet<>();
-        for (String roleName : DiscordBot.getInstance().getConfigManager().getSyncRanks()) {
+        for (String roleName : Setting.DISCORD_SYNC_RANKS_LIST.getAsList()) {
             Role role = getRoleByName(roleName);
 
             if (role == null) {

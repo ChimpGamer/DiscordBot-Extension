@@ -28,6 +28,6 @@ public enum MCMessage {
     }
 
     public String getMessage() {
-        return DiscordBot.getInstance().getMessagesConfigManager().getString(this.path).replace("%newline%", "\n");
+        return DiscordBot.getInstance().getMessages().getString(this.path).replace("%newline%", "\n");
     }
 }

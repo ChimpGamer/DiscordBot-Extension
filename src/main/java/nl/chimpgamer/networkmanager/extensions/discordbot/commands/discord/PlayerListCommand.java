@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 
@@ -17,7 +18,7 @@ public class PlayerListCommand extends Command {
 
     public PlayerListCommand(DiscordBot discordBot) {
         this.discordBot = discordBot;
-        this.name = "playerlist";
+        this.name = CommandSetting.DISCORD_PLAYERLIST_COMMAND.getAsString();
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.guildOnly = true;
     }
@@ -27,7 +28,7 @@ public class PlayerListCommand extends Command {
         if (!event.isFromType(ChannelType.TEXT)) {
             return;
         }
-        if (!this.getDiscordBot().getConfigManager().isDiscordCommandEnabled(this.getName())) {
+        if (!CommandSetting.DISCORD_PLAYERLIST_ENABLED.getAsBoolean()) {
             return;
         }
 

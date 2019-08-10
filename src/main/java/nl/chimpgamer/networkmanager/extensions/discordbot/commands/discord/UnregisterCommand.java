@@ -7,6 +7,8 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Role;
 import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
@@ -18,7 +20,7 @@ public class UnregisterCommand extends Command {
 
     public UnregisterCommand(DiscordBot discordBot) {
         this.discordBot = discordBot;
-        this.name = "unregister";
+        this.name = CommandSetting.DISCORD_UNREGISTER_COMMAND.getAsString();
         this.guildOnly = false;
     }
 
@@ -43,7 +45,7 @@ public class UnregisterCommand extends Command {
                 Utils.sendChannelMessage(event.getChannel(), message);
             }
 
-            if (this.getDiscordBot().getConfigManager().isVerifyAddRole()) {
+            if (Setting.DISCORD_VERIFY_ADD_ROLE_ENABLED.getAsBoolean()) {
                 Role verifiedRole = this.getDiscordBot().getDiscordManager().getVerifiedRole();
                 if (verifiedRole != null) {
                     this.getDiscordBot().getGuild().getController().removeRolesFromMember(this.getDiscordBot().getGuild().getMemberById(event.getAuthor().getId()), verifiedRole).queue();

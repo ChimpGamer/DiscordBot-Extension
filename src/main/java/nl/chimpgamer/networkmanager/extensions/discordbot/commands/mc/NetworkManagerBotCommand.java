@@ -23,11 +23,12 @@ public class NetworkManagerBotCommand extends NMBungeeCommand {
             if (args[0].equalsIgnoreCase("reload")) {
                 switch (args[1].toLowerCase()) {
                     case "config":
-                        getDiscordBot().getConfigManager().reload();
+                    case "settings":
+                        getDiscordBot().getSettings().reload();
                         sender.sendMessage(MCMessage.RELOAD_CONFIG.getMessage());
                         break;
                     case "messages":
-                        getDiscordBot().getMessagesConfigManager().reload();
+                        getDiscordBot().getMessages().reload();
                         sender.sendMessage(MCMessage.RELOAD_MESSAGES.getMessage());
                         break;
                     case "jda":
@@ -49,7 +50,7 @@ public class NetworkManagerBotCommand extends NMBungeeCommand {
             return Collections.singletonList("reload");
         }
         if (args.length == 2) {
-            return Arrays.asList("config", "messages", "jda");
+            return Arrays.asList("config", "settings", "messages", "jda");
         }
         return Collections.emptyList();
     }

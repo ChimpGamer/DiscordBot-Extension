@@ -10,6 +10,7 @@ import net.md_5.bungee.event.EventHandler;
 
 import net.md_5.bungee.event.EventPriority;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 
@@ -44,11 +45,11 @@ public class JoinLeaveListener implements Listener {
             return;
         }
 
-        if (this.getDiscordBot().getConfigManager().isSyncUserName()) {
+        if (Setting.DISCORD_SYNC_USERNAME.getAsBoolean()) {
             Utils.setNickName(member, player.getName());
         }
 
-        if (this.getDiscordBot().getConfigManager().isSyncRanks()) {
+        if (Setting.DISCORD_SYNC_RANKS_ENABLED.getAsBoolean()) {
             Utils.syncRanks(player);
         }
     }

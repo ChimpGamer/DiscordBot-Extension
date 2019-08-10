@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.GuildJoinCheckTask;
 import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers;
@@ -42,7 +43,7 @@ public class DiscordListener extends ListenerAdapter {
         }
 
         if (event.isFromType(ChannelType.TEXT) && channel.getGuild().equals(this.getDiscordBot().getGuild())) {
-            if (channel.getId().equals(this.getDiscordBot().getConfigManager().getAdminChatChannelID())) {
+            if (channel.getId().equals(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL.getAsString())) {
                 UUID uuid = discordUserManager.getUuidByDiscordId(user.getId());
                 if (uuid == null) {
                     return;
@@ -66,7 +67,7 @@ public class DiscordListener extends ListenerAdapter {
                         this.getDiscordBot().getNetworkManager().sendMessageToStaff(alert, "all", perm1, perm2);
                     }
                 }
-            } else if (channel.getId().equals(this.getDiscordBot().getConfigManager().getStaffChatChannelID())) {
+            } else if (channel.getId().equals(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL.getAsString())) {
                 UUID uuid = discordUserManager.getUuidByDiscordId(user.getId());
                 if (uuid == null) {
                     return;

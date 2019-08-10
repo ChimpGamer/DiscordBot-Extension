@@ -8,6 +8,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
@@ -25,7 +26,7 @@ public class PlaytimeCommand extends Command {
 
     public PlaytimeCommand(DiscordBot discordBot) {
         this.discordBot = discordBot;
-        this.name = "playtime";
+        this.name = CommandSetting.DISCORD_PLAYTIME_COMMAND.getAsString();
         this.cooldown = 3;
         this.botPermissions = new Permission[]{Permission.MESSAGE_WRITE};
         this.guildOnly = true;
@@ -36,7 +37,7 @@ public class PlaytimeCommand extends Command {
         if (!event.isFromType(ChannelType.TEXT)) {
             return;
         }
-        if (!this.getDiscordBot().getConfigManager().isDiscordCommandEnabled(this.getName())) {
+        if (!CommandSetting.DISCORD_PLAYTIME_ENABLED.getAsBoolean()) {
             return;
         }
 
@@ -54,11 +55,11 @@ public class PlaytimeCommand extends Command {
                 for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
                     String name = field.getName()
                             .replace("%playername%", player.getName())
-                            .replace("%playtime%", TimeUtils.getTimeString(player.getLanguage(), player.getPlaytime() / 1000))
+                            .replace("%playtime%", TimeUtils.getTimeString(1, player.getPlaytime() / 1000))
                             .replace("%liveplaytime%", TimeUtils.getTimeString(player.getLanguage(), player.getPlaytime() / 1000));
                     String value = field.getValue()
                             .replace("%playername%", player.getName())
-                            .replace("%playtime%", TimeUtils.getTimeString(player.getLanguage(), player.getPlaytime() / 1000))
+                            .replace("%playtime%", TimeUtils.getTimeString(1, player.getPlaytime() / 1000))
                             .replace("%liveplaytime%", TimeUtils.getTimeString(player.getLanguage(), player.getPlaytime() / 1000));
                     MessageEmbed.Field field1 = new MessageEmbed.Field(name, value, field.isInline());
                     fields.add(field1);
