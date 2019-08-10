@@ -59,9 +59,9 @@ public class DiscordManager {
         String roleName = this.getDiscordBot().getConfigManager().getVerifyRole();
         Role role = Utils.getRoleByName(roleName);
         if (role != null) {
-            this.getDiscordBot().getLogger().info("Verified Role is: " + role.getName() + "(" + role.getId() + ")");
+            this.getDiscordBot().getLogger().info("Verified Role is: '" + role.getName() + "' (" + role.getId() + ")");
         } else {
-            this.getDiscordBot().getLogger().info("No Verified Role found by the name: " + roleName);
+            this.getDiscordBot().getLogger().info("No Verified Role found by the name: '" + roleName + "'");
         }
         this.setVerifiedRole(role);
 

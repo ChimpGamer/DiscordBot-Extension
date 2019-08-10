@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,6 +95,18 @@ public class Utils {
         }
     }
 
+    public static void addRoleToMember(@NotNull Member member, @NotNull Role role) {
+        try {
+            DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, role).queue();
+        } catch (PermissionException ex) {
+            if (ex.getPermission() == Permission.UNKNOWN) {
+                DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because " + ex.getMessage());
+            } else {
+                DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because the bot does not have the required permission " + ex.getPermission().getName());
+            }
+        }
+    }
+
     public static void syncRanks(Player player) {
         if (player == null) {
             return;
@@ -137,8 +150,9 @@ public class Utils {
             removeRoles.removeIf(role1 -> !member.getRoles().contains(role));
 
             try {
-                DiscordBot.getInstance().getGuild().getController().removeRolesFromMember(member, removeRoles).queue();
-                DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, addRoles).queue();
+                DiscordBot.getInstance().getGuild().getController().modifyMemberRoles(member, addRoles, removeRoles).queue();
+                //DiscordBot.getInstance().getGuild().getController().removeRolesFromMember(member, removeRoles).queue();
+                //DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, addRoles).queue();
             } catch (PermissionException ex) {
                 if (ex.getPermission() == Permission.UNKNOWN) {
                     DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because " + ex.getMessage());
