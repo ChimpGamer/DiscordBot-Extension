@@ -149,17 +149,20 @@ public class Utils {
             addRoles.removeAll(member.getRoles());
             // remove roles that the user doesn't already have from roles to remove
             removeRoles.removeIf(role1 -> !member.getRoles().contains(role));
+        }
 
-            try {
-                DiscordBot.getInstance().getGuild().getController().modifyMemberRoles(member, addRoles, removeRoles).queue();
-                //DiscordBot.getInstance().getGuild().getController().removeRolesFromMember(member, removeRoles).queue();
-                //DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, addRoles).queue();
-            } catch (PermissionException ex) {
-                if (ex.getPermission() == Permission.UNKNOWN) {
-                    DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because " + ex.getMessage());
-                } else {
-                    DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because the bot does not have the required permission " + ex.getPermission().getName());
-                }
+        System.out.println("AddRoles: " + addRoles);
+        System.out.println("RemoveRoles: " + removeRoles);
+
+        try {
+            DiscordBot.getInstance().getGuild().getController().modifyMemberRoles(member, addRoles, removeRoles).queue();
+            //DiscordBot.getInstance().getGuild().getController().removeRolesFromMember(member, removeRoles).queue();
+            //DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, addRoles).queue();
+        } catch (PermissionException ex) {
+            if (ex.getPermission() == Permission.UNKNOWN) {
+                DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because " + ex.getMessage());
+            } else {
+                DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because the bot does not have the required permission " + ex.getPermission().getName());
             }
         }
     }
