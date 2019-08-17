@@ -29,7 +29,6 @@ public class TokenExpiryTask implements Runnable {
             Utils.editMessage(getToken().getMessage(), msgStr);
         }
 
-        //Utils.editMessage(getToken().getMessage(), ":x: Token has been expired. Ask me for a new one :D :x:");
         this.getDiscordBot().getDiscordUserManager().getTokens().remove(getToken());
         this.getDiscordBot().getNetworkManager().debug("Token: " + getToken().getToken() + " has been removed!");
     }

@@ -2,13 +2,13 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.tasks;
 
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.Member;
-
 import net.dv8tion.jda.api.entities.Role;
 import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers;
+import nl.chimpgamer.networkmanager.api.models.player.Player;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
-import nl.chimpgamer.networkmanager.api.models.player.Player;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -52,6 +52,12 @@ public class GuildJoinCheckTask implements Runnable {
                     if (Setting.DISCORD_SYNC_RANKS_ENABLED.getAsBoolean()) {
                         Utils.syncRanks(player);
                     }
+                } else {
+                    String welcomeMessage = DCMessage.WELCOME_NEW_MEMBER.getMessage();
+                    if (welcomeMessage.isEmpty()) {
+                        return;
+                    }
+                    this.getMember().getUser().openPrivateChannel().queue(channel -> channel.sendMessage(welcomeMessage.replace("%mention%", this.getMember().getUser().getAsTag())).queue());
                 }
             }
         } catch (SQLException ex) {

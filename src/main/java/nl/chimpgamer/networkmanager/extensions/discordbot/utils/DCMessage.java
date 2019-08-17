@@ -24,7 +24,8 @@ public enum DCMessage {
     PLAYERS_COMMAND_RESPONSE("discord.player-command-response"),
     PLAYERLIST_COMMAND_INVALID_SERVER("discord.playerlist-command-invalid-server"),
     CHAT_EVENT_FORMAT("discord.chat-event-format"),
-    PLAYTIME_RESPONSE("discord.playtime-response")
+    PLAYTIME_RESPONSE("discord.playtime-response"),
+    WELCOME_NEW_MEMBER("discord.welcome-new-member")
     ;
 
     private final String path;

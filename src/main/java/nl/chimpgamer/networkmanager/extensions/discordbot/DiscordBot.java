@@ -73,8 +73,6 @@ public final class DiscordBot extends NMExtension {
         this.initCommands();
         this.initMessages();
 
-        /*this.configManager = new ConfigManager(this);
-        this.messagesConfigManager = new MessagesConfigManager(this);*/
         this.mySQL = new MySQL(this);
         this.discordUserManager = new DiscordUserManager(this);
         this.discordUserManager.load();
@@ -107,8 +105,6 @@ public final class DiscordBot extends NMExtension {
 
     @Override
     protected void onConfigsReload() {
-        /*this.getConfigManager().reload();
-        this.getMessagesConfigManager().reload();*/
         this.getSettings().reload();
         this.getCommandSettings().reload();
         this.getMessages().reload();
@@ -171,7 +167,6 @@ public final class DiscordBot extends NMExtension {
         if (this.getDiscordUserManager() != null) {
             for (Token token : this.getDiscordUserManager().getTokens()) {
                 this.getScheduler().runSync(new TokenExpiryTask(this, token));
-                //Utils.editMessage(token.getMessage(), ":x: Token has been expired. Ask me for a new one :D :x:");
             }
         }
     }

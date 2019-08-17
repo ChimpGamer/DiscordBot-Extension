@@ -27,6 +27,8 @@ discord:
   player-command-response: '%mention% There are %players% players online!'
   playerlist-command-invalid-server: '%mention% The server %server% does not exist!'
   chat-event-format: '%playername% said on %server%: %message%'
+  welcome-new-member: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the !register command when you want to register! Good luck!'
+
   registration-token: |-
     {
       "title": "Thanks for registering!",

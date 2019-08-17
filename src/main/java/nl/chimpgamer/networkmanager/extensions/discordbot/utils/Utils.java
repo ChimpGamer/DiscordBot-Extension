@@ -151,13 +151,11 @@ public class Utils {
             removeRoles.removeIf(role1 -> !member.getRoles().contains(role));
         }
 
-        System.out.println("AddRoles: " + addRoles);
-        System.out.println("RemoveRoles: " + removeRoles);
+        /*System.out.println("AddRoles: " + addRoles);
+        System.out.println("RemoveRoles: " + removeRoles);*/
 
         try {
             DiscordBot.getInstance().getGuild().modifyMemberRoles(member, addRoles.isEmpty() ? null : addRoles, removeRoles.isEmpty() ? null : removeRoles).queue();
-            //DiscordBot.getInstance().getGuild().getController().removeRolesFromMember(member, removeRoles).queue();
-            //DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, addRoles).queue();
         } catch (PermissionException ex) {
             if (ex.getPermission() == Permission.UNKNOWN) {
                 DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because " + ex.getMessage());
