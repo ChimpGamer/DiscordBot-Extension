@@ -2,12 +2,12 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.manager;
 
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.*;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
@@ -72,9 +72,9 @@ public class DiscordManager {
     private void initJDA() throws LoginException, InterruptedException {
         this.JDA = new JDABuilder(AccountType.BOT)
                 .setToken(Setting.DISCORD_TOKEN.getAsString())
-                .addEventListener(new DiscordListener(this.getDiscordBot()))
-                .addEventListener(this.getEventWaiter())
-                .addEventListener(this.getCommandClientBuilder().build())
+                .addEventListeners(new DiscordListener(this.getDiscordBot()))
+                .addEventListeners(this.getEventWaiter())
+                .addEventListeners(this.getCommandClientBuilder().build())
                 .setAutoReconnect(true)
                 .setMaxReconnectDelay(180)
                 .build()
@@ -95,18 +95,18 @@ public class DiscordManager {
                         new UptimeCommand()
                 );
         if (Setting.DISCORD_STATUS_ENABLED.getAsBoolean()) {
-            Game.GameType gameType;
+            Activity.ActivityType activityType;
             try {
-                gameType = Game.GameType.valueOf(Setting.DISCORD_STATUS_TYPE.getAsString().toUpperCase());
+                activityType = Activity.ActivityType.valueOf(Setting.DISCORD_STATUS_TYPE.getAsString().toUpperCase());
             } catch (IllegalArgumentException ex) {
                 this.getDiscordBot().getLogger().warning("StatusType '" + Setting.DISCORD_STATUS_TYPE.getAsString() + "' is invalid. Using DEFAULT.");
-                gameType = Game.GameType.DEFAULT;
+                activityType = Activity.ActivityType.DEFAULT;
             }
             this.getCommandClientBuilder()
-                    .setGame(Game.of(gameType, Setting.DISCORD_STATUS_MESSAGE.getAsString()
+                    .setActivity(Activity.of(activityType, Setting.DISCORD_STATUS_MESSAGE.getAsString()
                             .replace("%player%", String.valueOf(this.getDiscordBot().getNetworkManager().getProxy().getPlayers().size()))));
         } else {
-            this.getCommandClientBuilder().setGame(null);
+            this.getCommandClientBuilder().setActivity(null);
         }
     }
 

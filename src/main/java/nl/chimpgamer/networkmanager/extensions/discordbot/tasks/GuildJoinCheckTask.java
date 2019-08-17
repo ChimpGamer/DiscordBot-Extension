@@ -1,9 +1,9 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.tasks;
 
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.entities.Role;
 import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;

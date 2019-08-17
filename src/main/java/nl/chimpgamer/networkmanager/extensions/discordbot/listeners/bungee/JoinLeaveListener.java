@@ -2,7 +2,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;

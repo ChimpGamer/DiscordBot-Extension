@@ -2,8 +2,8 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.tasks;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;

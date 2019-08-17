@@ -1,7 +1,7 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot;
 
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.entities.Guild;
 import nl.chimpgamer.networkmanager.api.NMListener;
 import nl.chimpgamer.networkmanager.api.extensions.NMExtension;
 import nl.chimpgamer.networkmanager.api.manager.CommandManager;
@@ -61,9 +61,9 @@ public final class DiscordBot extends NMExtension {
         }
         DependencyDownloader dd = new DependencyDownloader(this);
         dd.downloadDependency(
-                "https://github.com/DV8FromTheWorld/JDA/releases/download/v3.8.3/JDA-3.8.3_464-withDependencies-no-opus.jar",
+                "https://github.com/DV8FromTheWorld/JDA/releases/download/v4.0.0/JDA-4.0.0_39-withDependencies-no-opus.jar",
                 "JDA",
-                "JDA-3.8.3_464-withDependencies-no-opus");
+                "JDA-4.0.0_39-withDependencies-no-opus");
 
         this.tasks = new ArrayList<>();
         this.listeners = new ArrayList<>();

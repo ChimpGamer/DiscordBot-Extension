@@ -1,8 +1,8 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners;
 
 import lombok.RequiredArgsConstructor;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import nl.chimpgamer.networkmanager.api.event.events.*;
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils;
 import nl.chimpgamer.networkmanager.bungeecord.models.servers.NMServer;

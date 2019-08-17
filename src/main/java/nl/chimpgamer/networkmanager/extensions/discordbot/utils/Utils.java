@@ -1,8 +1,8 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.utils;
 
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.exceptions.PermissionException;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
@@ -86,7 +86,7 @@ public class Utils {
         DiscordBot.getInstance().getLogger().info("Setting nickname for " + member.getEffectiveName());
 
         try {
-            member.getGuild().getController().setNickname(member, nickName).queue();
+            member.getGuild().modifyNickname(member, nickName).queue();
         } catch (PermissionException ex) {
             if (ex.getPermission() == Permission.UNKNOWN) {
                 DiscordBot.getInstance().getLogger().warning("Could not set the nickname for " + member.getEffectiveName() + " because " + ex.getMessage());
@@ -98,7 +98,7 @@ public class Utils {
 
     public static void addRoleToMember(@NotNull Member member, @NotNull Role role) {
         try {
-            DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, role).queue();
+            member.getGuild().addRoleToMember(member, role).queue();
         } catch (PermissionException ex) {
             if (ex.getPermission() == Permission.UNKNOWN) {
                 DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because " + ex.getMessage());
@@ -155,7 +155,7 @@ public class Utils {
         System.out.println("RemoveRoles: " + removeRoles);
 
         try {
-            DiscordBot.getInstance().getGuild().getController().modifyMemberRoles(member, addRoles, removeRoles).queue();
+            DiscordBot.getInstance().getGuild().modifyMemberRoles(member, addRoles.isEmpty() ? null : addRoles, removeRoles.isEmpty() ? null : removeRoles).queue();
             //DiscordBot.getInstance().getGuild().getController().removeRolesFromMember(member, removeRoles).queue();
             //DiscordBot.getInstance().getGuild().getController().addRolesToMember(member, addRoles).queue();
         } catch (PermissionException ex) {
@@ -169,7 +169,7 @@ public class Utils {
 
     public static Role getRoleByName(String roleName) {
         List<Role> roles = DiscordBot.getInstance().getGuild().getRolesByName(roleName, true);
-        if (roles == null || roles.isEmpty()) {
+        if (roles.isEmpty()) {
             return null;
         }
         for (Role role : roles) {

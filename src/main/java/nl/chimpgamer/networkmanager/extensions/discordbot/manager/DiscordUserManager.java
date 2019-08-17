@@ -1,7 +1,7 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.manager;
 
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.entities.Message;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.modals.DiscordUser;
 import nl.chimpgamer.networkmanager.extensions.discordbot.modals.NMToken;

@@ -1,16 +1,14 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import com.google.gson.Gson;
-
 import com.google.gson.GsonBuilder;
-import net.dv8tion.jda.core.entities.EmbedType;
-import net.dv8tion.jda.core.entities.EntityBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.utils.Checks;
-import net.dv8tion.jda.core.utils.Helpers;
+import net.dv8tion.jda.api.entities.EmbedType;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.awt.*;
 import java.time.*;
@@ -24,9 +22,8 @@ public class JsonEmbedBuilder {
 
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE);
-
-    private List<MessageEmbed.Field> fields = new LinkedList<>();
     private final StringBuilder description = new StringBuilder();
+    private List<MessageEmbed.Field> fields = new LinkedList<>();
     private int color = Role.DEFAULT_COLOR_RAW;
     private String url, title;
     private OffsetDateTime timestamp;
@@ -54,11 +51,6 @@ public class JsonEmbedBuilder {
                 && footer == null
                 && image == null
                 && fields.isEmpty();
-    }
-
-    public JsonEmbedBuilder setTitle(String title) {
-        setTitle(title, null);
-        return this;
     }
 
     public JsonEmbedBuilder setTitle(String title, String url) {
@@ -129,6 +121,11 @@ public class JsonEmbedBuilder {
 
     public String getTitle() {
         return title;
+    }
+
+    public JsonEmbedBuilder setTitle(String title) {
+        setTitle(title, null);
+        return this;
     }
 
     public JsonEmbedBuilder setColor(Color color) {

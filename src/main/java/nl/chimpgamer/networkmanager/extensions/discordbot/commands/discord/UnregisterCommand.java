@@ -3,8 +3,9 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting;
@@ -36,6 +37,8 @@ public class UnregisterCommand extends Command {
             if (!this.getDiscordBot().getDiscordUserManager().checkUserByDiscordId(event.getAuthor().getId())) {
                 return;
             }
+            Member member = this.getDiscordBot().getGuild().getMemberById(event.getAuthor().getId());
+
             this.getDiscordBot().getScheduler().runAsync(() -> this.getDiscordBot().getDiscordUserManager().deleteUser(event.getAuthor().getId()), false);
             String message = DCMessage.UNREGISTER_COMPLETED.getMessage();
             if (Methods.isJsonValid(message)) {
@@ -47,8 +50,8 @@ public class UnregisterCommand extends Command {
 
             if (Setting.DISCORD_VERIFY_ADD_ROLE_ENABLED.getAsBoolean()) {
                 Role verifiedRole = this.getDiscordBot().getDiscordManager().getVerifiedRole();
-                if (verifiedRole != null) {
-                    this.getDiscordBot().getGuild().getController().removeRolesFromMember(this.getDiscordBot().getGuild().getMemberById(event.getAuthor().getId()), verifiedRole).queue();
+                if (verifiedRole != null && member != null) {
+                    this.getDiscordBot().getGuild().removeRoleFromMember(member, verifiedRole).queue();
                 }
             }
         } catch (SQLException ex) {

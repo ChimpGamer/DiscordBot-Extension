@@ -1,9 +1,9 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners;
 
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
@@ -32,17 +32,17 @@ public class DiscordListener extends ListenerAdapter {
         final CachedPlayers cachedPlayers = this.getDiscordBot().getNetworkManager().getCacheManager().getCachedPlayers();
         final CachedValues cachedValues = this.getDiscordBot().getNetworkManager().getCacheManager().getCachedValues();
 
+        if (!event.isFromType(ChannelType.TEXT) || event.getAuthor().isBot()) {
+            return;
+        }
+
         User user = event.getAuthor();
         TextChannel channel = event.getTextChannel();
         Message message = event.getMessage();
 
         String msg = message.getContentStripped();
 
-        if (event.getAuthor().isBot()) {
-            return;
-        }
-
-        if (event.isFromType(ChannelType.TEXT) && channel.getGuild().equals(this.getDiscordBot().getGuild())) {
+        if (channel.getGuild().equals(this.getDiscordBot().getGuild())) {
             if (channel.getId().equals(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL.getAsString())) {
                 UUID uuid = discordUserManager.getUuidByDiscordId(user.getId());
                 if (uuid == null) {

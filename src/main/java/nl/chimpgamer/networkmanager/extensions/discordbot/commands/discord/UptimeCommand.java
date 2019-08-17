@@ -2,8 +2,8 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
