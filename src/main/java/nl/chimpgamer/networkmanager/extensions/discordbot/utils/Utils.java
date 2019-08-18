@@ -2,6 +2,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.utils;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
@@ -17,6 +18,7 @@ import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -68,6 +70,28 @@ public class Utils {
 
     public static void editMessage(Message currentMessage, MessageEmbed newMessage) {
         currentMessage.editMessage(newMessage).queue();
+    }
+
+    public static void modifyRolesOfMember(Member member, Set<Role> rolesToAdd, Set<Role> rolesToRemove) throws InsufficientPermissionException {
+        rolesToAdd = rolesToAdd.stream()
+                .filter(role -> !role.isManaged())
+                .filter(role -> !role.getGuild().getPublicRole().getId().equals(role.getId()))
+                .filter(role -> !member.getRoles().contains(role))
+                .collect(Collectors.toSet());
+        Set<Role> nonInteractableRolesToAdd = rolesToAdd.stream().filter(role -> !member.getGuild().getSelfMember().canInteract(role)).collect(Collectors.toSet());
+        rolesToAdd.removeAll(nonInteractableRolesToAdd);
+        nonInteractableRolesToAdd.forEach(role -> DiscordBot.getInstance().getLogger().warning("Failed to add role " + role.getName() + " to " + member.getEffectiveName() + " because the bot's highest role is lower than the target role and thus can't interact with it"));
+
+        rolesToRemove = rolesToRemove.stream()
+                .filter(role -> !role.isManaged())
+                .filter(role -> !role.getGuild().getPublicRole().getId().equals(role.getId()))
+                .filter(role -> member.getRoles().contains(role))
+                .collect(Collectors.toSet());
+        Set<Role> nonInteractableRolesToRemove = rolesToRemove.stream().filter(role -> !member.getGuild().getSelfMember().canInteract(role)).collect(Collectors.toSet());
+        rolesToRemove.removeAll(nonInteractableRolesToRemove);
+        nonInteractableRolesToRemove.forEach(role -> DiscordBot.getInstance().getLogger().warning("Failed to remove role " + role.getName() + " from " + member.getEffectiveName() + " because the bot's highest role is lower than the target role and thus can't interact with it"));
+
+        member.getGuild().modifyMemberRoles(member, rolesToAdd, rolesToRemove).queue();
     }
 
     public static String firstUpperCase(String var0) {
@@ -139,23 +163,31 @@ public class Utils {
                 if (group.equalsIgnoreCase(role.getName())) {
                     addRoles.add(role);
                 } else {
-                    if (member.getRoles().contains(role) && groups.stream().noneMatch(groupName -> groupName.equalsIgnoreCase(role.getName()))) {
+                    if (groups.stream().noneMatch(groupName -> groupName.equalsIgnoreCase(role.getName()))) {
                         removeRoles.add(role);
                     }
+                    /*if (member.getRoles().contains(role) && groups.stream().noneMatch(groupName -> groupName.equalsIgnoreCase(role.getName()))) {
+                        removeRoles.add(role);
+                    }*/
                 }
             }
-
-            // remove roles that the user already has from roles to add
-            addRoles.removeAll(member.getRoles());
-            // remove roles that the user doesn't already have from roles to remove
-            removeRoles.removeIf(role1 -> !member.getRoles().contains(role));
         }
 
-        /*System.out.println("AddRoles: " + addRoles);
-        System.out.println("RemoveRoles: " + removeRoles);*/
+        // remove roles that the user already has from roles to add
+        addRoles.removeAll(member.getRoles());
+        // remove roles that the user doesn't already have from roles to remove
+        removeRoles.removeIf(role -> !member.getRoles().contains(role));
+
+        System.out.println("AddRoles: " + addRoles);
+        System.out.println("RemoveRoles: " + removeRoles);
+
+        if (addRoles.isEmpty() && removeRoles.isEmpty()) {
+            return;
+        }
 
         try {
-            DiscordBot.getInstance().getGuild().modifyMemberRoles(member, addRoles.isEmpty() ? null : addRoles, removeRoles.isEmpty() ? null : removeRoles).queue();
+            modifyRolesOfMember(member, addRoles, removeRoles);
+            //DiscordBot.getInstance().getGuild().modifyMemberRoles(member, addRoles.isEmpty() ? null : addRoles, removeRoles.isEmpty() ? null : removeRoles).queue();
         } catch (PermissionException ex) {
             if (ex.getPermission() == Permission.UNKNOWN) {
                 DiscordBot.getInstance().getLogger().warning("Could not set the role for " + member.getEffectiveName() + " because " + ex.getMessage());

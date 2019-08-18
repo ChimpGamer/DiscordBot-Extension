@@ -86,7 +86,9 @@ public class VerifyUserTask implements Runnable {
                     }
 
                     if (Setting.DISCORD_SYNC_RANKS_ENABLED.getAsBoolean()) {
-                        Utils.syncRanks(this.getPlayer());
+                        this.getDiscordBot().getScheduler().runDelayed(() -> {
+                            Utils.syncRanks(this.getPlayer());
+                        }, 1);
                     }
                 }
             } catch (SQLException ex) {
