@@ -38,7 +38,7 @@ discord:
   registration-token-expired: |-
     {
       "title": "TOKEN HAS BEEN EXPIRED.",
-      "description": "You can request a new one with **!register**",
+      "description": "You can request a new one with **%command_prefix%register**",
       "color": 14684176
     }
   registration-completed: |-
@@ -50,7 +50,7 @@ discord:
   unregister-completed: |-
     {
       "title": "Successfully unregistered your discord account!",
-      "description": "You can register your Account again with !register",
+      "description": "You can register your Account again with %command_prefix%register",
       "color": 3535678
     }
   ticket-create-alert: |-

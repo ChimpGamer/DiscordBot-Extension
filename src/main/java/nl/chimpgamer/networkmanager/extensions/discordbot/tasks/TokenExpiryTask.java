@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
@@ -21,7 +22,8 @@ public class TokenExpiryTask implements Runnable {
             return;
         }
 
-        String msgStr = DCMessage.REGISTRATION_TOKEN_EXPIRED.getMessage();
+        String msgStr = DCMessage.REGISTRATION_TOKEN_EXPIRED.getMessage()
+                .replace("%command_prefix%", Setting.DISCORD_COMMAND_PREFIX.getAsString());
         if (Methods.isJsonValid(msgStr)) {
             JsonEmbedBuilder jsonEmbedBuilder = JsonEmbedBuilder.fromJson(msgStr);
             Utils.editMessage(getToken().getMessage(), jsonEmbedBuilder.build());
