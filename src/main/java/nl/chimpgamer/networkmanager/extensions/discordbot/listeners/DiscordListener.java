@@ -5,18 +5,20 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import nl.chimpgamer.networkmanager.common.messaging.MessagingHandler;
+import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData;
+import nl.chimpgamer.networkmanager.common.messaging.handlers.AdminChatMessageHandler;
+import nl.chimpgamer.networkmanager.common.messaging.handlers.StaffChatMessageHandler;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.GuildJoinCheckTask;
 import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers;
 import nl.chimpgamer.networkmanager.api.cache.modules.CachedValues;
-import nl.chimpgamer.networkmanager.api.communication.PubSubMessage;
-import nl.chimpgamer.networkmanager.api.communication.PubSubMessageType;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
-import nl.chimpgamer.networkmanager.api.utils.GsonUtils;
 import nl.chimpgamer.networkmanager.api.values.Command;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class DiscordListener extends ListenerAdapter {
@@ -60,9 +62,10 @@ public class DiscordListener extends ListenerAdapter {
                     String perm1 = "networkmanager.adminchat";
                     String perm2 = "networkmanager.admin";
                     if (this.getDiscordBot().getNetworkManager().isRedisBungee()) {
-                        PubSubMessage pubSubMessage = new PubSubMessage(PubSubMessageType.ADMINCHAT,
-                                this.getDiscordBot().getNetworkManager().getRedisBungee().getServerId(), perm1 + " " + perm2 + " " + alert);
-                        this.getDiscordBot().getNetworkManager().sendRedisBungee(GsonUtils.getGson().toJson(pubSubMessage));
+                        PlayerMessageData data = new PlayerMessageData(player.getUuid(), msg);
+                        data.setPermissions(Arrays.asList(perm1, perm2));
+                        MessagingHandler handler = this.getDiscordBot().getNetworkManager().getMessagingServiceManager().getHandler(AdminChatMessageHandler.class);
+                        handler.send(data);
                     } else {
                         this.getDiscordBot().getNetworkManager().sendMessageToStaff(alert, "all", perm1, perm2);
                     }
@@ -84,9 +87,10 @@ public class DiscordListener extends ListenerAdapter {
                     String perm1 = "networkmanager.staffchat";
                     String perm2 = "networkmanager.admin";
                     if (this.getDiscordBot().getNetworkManager().isRedisBungee()) {
-                        PubSubMessage pubSubMessage = new PubSubMessage(PubSubMessageType.STAFFCHAT,
-                                this.getDiscordBot().getNetworkManager().getRedisBungee().getServerId(), perm1 + " " + perm2 + " " + alert);
-                        this.getDiscordBot().getNetworkManager().sendRedisBungee(GsonUtils.getGson().toJson(pubSubMessage));
+                        PlayerMessageData data = new PlayerMessageData(player.getUuid(), msg);
+                        data.setPermissions(Arrays.asList(perm1, perm2));
+                        MessagingHandler handler = this.getDiscordBot().getNetworkManager().getMessagingServiceManager().getHandler(StaffChatMessageHandler.class);
+                        handler.send(data);
                     } else {
                         this.getDiscordBot().getNetworkManager().sendMessageToStaff(alert, "all", perm1, perm2);
                     }

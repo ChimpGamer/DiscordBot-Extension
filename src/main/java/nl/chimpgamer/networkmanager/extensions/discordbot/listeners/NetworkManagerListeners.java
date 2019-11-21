@@ -3,9 +3,10 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.listeners;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import nl.chimpgamer.networkmanager.api.event.events.*;
-import nl.chimpgamer.networkmanager.api.utils.TimeUtils;
 import nl.chimpgamer.networkmanager.bungeecord.models.servers.NMServer;
+import nl.chimpgamer.networkmanager.common.utils.Methods;
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
@@ -20,10 +21,7 @@ import nl.chimpgamer.networkmanager.api.models.punishments.Punishment;
 import nl.chimpgamer.networkmanager.api.models.servers.Server;
 import nl.chimpgamer.networkmanager.api.models.servers.ServerGroup;
 import nl.chimpgamer.networkmanager.api.models.tickets.Ticket;
-import nl.chimpgamer.networkmanager.api.values.Message;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -74,11 +72,14 @@ public class NetworkManagerListeners implements NMListener {
             globalId = serverChannels.get("all");
         }
         TextChannel globalServerTextChannel = this.getDiscordBot().getGuild().getTextChannelById(globalId);
-        if (globalId != null && globalServerTextChannel != null) {
+        if (globalServerTextChannel != null) {
             JsonEmbedBuilder jsonEmbedBuilder;
             if (event.isOnline()) {
                 // Server went on
                 jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_ONLINE.getMessage());
+                jsonEmbedBuilder
+                        .setTitle(insertServerPlaceholders(jsonEmbedBuilder.getTitle(), server))
+                        .setDescription(insertServerPlaceholders(jsonEmbedBuilder.getDescription().toString(), server));
                 final List<MessageEmbed.Field> fields = new LinkedList<>();
                 for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
                     String name = insertServerPlaceholders(field.getName(), server);
@@ -92,6 +93,9 @@ public class NetworkManagerListeners implements NMListener {
             } else {
                 // Server went off
                 jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_OFFLINE.getMessage());
+                jsonEmbedBuilder
+                        .setTitle(insertServerPlaceholders(jsonEmbedBuilder.getTitle(), server))
+                        .setDescription(insertServerPlaceholders(jsonEmbedBuilder.getDescription().toString(), server));
                 final List<MessageEmbed.Field> fields = new LinkedList<>();
                 for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
                     String name = insertServerPlaceholders(field.getName(), server);
@@ -110,11 +114,14 @@ public class NetworkManagerListeners implements NMListener {
             channelId = serverChannels.get(server.getServerName());
         }
         TextChannel serverStatusChannel = this.getDiscordBot().getGuild().getTextChannelById(channelId);
-        if (channelId != null && serverStatusChannel != null) {
+        if (serverStatusChannel != null) {
             JsonEmbedBuilder jsonEmbedBuilder;
             if (event.isOnline()) {
                 // Server went on
                 jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_ONLINE.getMessage());
+                jsonEmbedBuilder
+                        .setTitle(insertServerPlaceholders(jsonEmbedBuilder.getTitle(), server))
+                        .setDescription(insertServerPlaceholders(jsonEmbedBuilder.getDescription().toString(), server));
                 final List<MessageEmbed.Field> fields = new LinkedList<>();
                 for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
                     String name = insertServerPlaceholders(field.getName(), server);
@@ -128,6 +135,9 @@ public class NetworkManagerListeners implements NMListener {
             } else {
                 // Server went off
                 jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SERVER_STATUS_OFFLINE.getMessage());
+                jsonEmbedBuilder
+                        .setTitle(insertServerPlaceholders(jsonEmbedBuilder.getTitle(), server))
+                        .setDescription(insertServerPlaceholders(jsonEmbedBuilder.getDescription().toString(), server));
                 final List<MessageEmbed.Field> fields = new LinkedList<>();
                 for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
                     String name = insertServerPlaceholders(field.getName(), server);
@@ -155,6 +165,9 @@ public class NetworkManagerListeners implements NMListener {
             JsonEmbedBuilder jsonEmbedBuilder;
             if (event.getPunishment().isActive()) {
                 jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.REPORT_ALERT.getMessage());
+                jsonEmbedBuilder
+                        .setTitle(insertPunishmentPlaceholders(jsonEmbedBuilder.getTitle(), event))
+                        .setDescription(insertPunishmentPlaceholders(jsonEmbedBuilder.getDescription().toString(), event));
                 final List<MessageEmbed.Field> fields = new LinkedList<>();
                 for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
                     String name = insertPunishmentPlaceholders(field.getName(), event);
@@ -174,6 +187,9 @@ public class NetworkManagerListeners implements NMListener {
             JsonEmbedBuilder jsonEmbedBuilder;
             if (event.getPunishment().isActive()) {
                 jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.PUNISHMENT_ALERT.getMessage());
+                jsonEmbedBuilder
+                        .setTitle(insertPunishmentPlaceholders(jsonEmbedBuilder.getTitle(), event))
+                        .setDescription(insertPunishmentPlaceholders(jsonEmbedBuilder.getDescription().toString(), event));
                 final List<MessageEmbed.Field> fields = new LinkedList<>();
                 for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
                     String name = insertPunishmentPlaceholders(field.getName(), event);
@@ -186,6 +202,9 @@ public class NetworkManagerListeners implements NMListener {
                         jsonEmbedBuilder.build());
             } else {
                 jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.UNPUNISHMENT_ALERT.getMessage());
+                jsonEmbedBuilder
+                        .setTitle(insertPunishmentPlaceholders(jsonEmbedBuilder.getTitle(), event))
+                        .setDescription(insertPunishmentPlaceholders(jsonEmbedBuilder.getDescription().toString(), event));
                 final List<MessageEmbed.Field> fields = new LinkedList<>();
                 for (MessageEmbed.Field field : jsonEmbedBuilder.getFields()) {
                     String name = insertPunishmentPlaceholders(field.getName(), event);
@@ -194,7 +213,7 @@ public class NetworkManagerListeners implements NMListener {
                     fields.add(field1);
                 }
                 jsonEmbedBuilder.setFields(fields);
-                Utils.sendChannelMessage(this.getDiscordBot().getGuild().getTextChannelById(Setting.DISCORD_EVENTS_PUNISHMENT_CHANNEL.getAsString()),
+                Utils.sendChannelMessage(punishmentsChannel,
                         jsonEmbedBuilder.build());
             }
         }
@@ -263,7 +282,7 @@ public class NetworkManagerListeners implements NMListener {
                 jsonEmbedBuilder.build());
     }
 
-    private String insertServerPlaceholders(String s, Server<NMServer> server) {
+    private String insertServerPlaceholders(String s, Server<NMServer, ProxiedPlayer> server) {
         return s.replace("%id%", String.valueOf(server.getId()))
                 .replace("%name%", server.getServerName())
                 .replace("%motd%", server.getMotd())
@@ -281,20 +300,7 @@ public class NetworkManagerListeners implements NMListener {
     }
 
     private String insertPunishmentPlaceholders(String s, PunishmentEvent event) {
-        final CachedPlayers cachedPlayers = getDiscordBot().getNetworkManager().getCacheManager().getCachedPlayers();
-        final Punishment punishment = event.getPunishment();
-        return s.replace("%id%", String.valueOf(punishment.getId()))
-                .replace("%type%", Utils.firstUpperCase(punishment.getType().name().toLowerCase()))
-                .replace("%playername%", cachedPlayers.getName(punishment.getUuid()))
-                .replace("%punisher%", cachedPlayers.getName(punishment.getPunisher()))
-                .replace("%time%", new SimpleDateFormat(getDiscordBot().getNetworkManager().getMessage(Message.PUNISHMENT_DATETIME_FORMAT)).format(new Date(punishment.getTime())))
-                .replace("%ends%", punishment.getEnd() == -1 ? "Permanent" : new SimpleDateFormat(getDiscordBot().getNetworkManager().getMessage(1, "lang_punishment_datetime_format")).format(new Date(punishment.getEnd())))
-                .replace("%expires%", TimeUtils.getTimeString(1, (punishment.getEnd() - punishment.getTime()) / 1000))
-                .replace("%server%", punishment.getServer() == null ? "Global" : punishment.getServer())
-                .replace("%ip%", punishment.getIp())
-                .replace("%reason%", punishment.getReason())
-                .replace("%unpunisher%", punishment.getUnbanner() == null ? "NULL" : cachedPlayers.getName(punishment.getUnbanner()))
-                .replace("%active%", String.valueOf(punishment.isActive()));
+        return Methods.parsePunishmentPlaceholders(event.getPunishment(), 1, s);
     }
 
     private String insertTicketPlaceholders(String s, TicketCreateEvent event) {

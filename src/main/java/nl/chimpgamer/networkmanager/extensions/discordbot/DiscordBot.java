@@ -4,9 +4,9 @@ import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
 import nl.chimpgamer.networkmanager.api.NMListener;
 import nl.chimpgamer.networkmanager.api.extensions.NMExtension;
-import nl.chimpgamer.networkmanager.api.manager.CommandManager;
 import nl.chimpgamer.networkmanager.api.utils.PlatformType;
 import nl.chimpgamer.networkmanager.bungeecord.NetworkManager;
+import nl.chimpgamer.networkmanager.bungeecord.commands.NMCommandManager;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token;
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.mc.*;
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting;
@@ -137,7 +137,7 @@ public final class DiscordBot extends NMExtension {
     }
 
     private void registerCommands() {
-        CommandManager commandManager = this.getNetworkManager().getCommandManager();
+        NMCommandManager commandManager = this.getNetworkManager().getCommandManager();
         if (CommandSetting.MINECRAFT_BUG_ENABLED.getAsBoolean()) {
             commandManager.registerCommand(this.getInfo().getName(), new BugCommand(this, CommandSetting.MINECRAFT_BUG_COMMAND.getAsString()));
         }

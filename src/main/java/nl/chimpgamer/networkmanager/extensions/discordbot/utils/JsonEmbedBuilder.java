@@ -75,6 +75,10 @@ public class JsonEmbedBuilder {
         return this;
     }
 
+    public StringBuilder getDescription() {
+        return description;
+    }
+
     public final JsonEmbedBuilder setDescription(CharSequence description) {
         this.description.setLength(0);
         if (description != null && description.length() >= 1) {
