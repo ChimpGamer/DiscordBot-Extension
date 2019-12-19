@@ -261,7 +261,7 @@ discord:
         },
         {
           "name": "Unpunished by",
-          "value": "%unpunisher%",
+          "value": "%unbanner%",
           "inline": true
         },
         {

@@ -32,7 +32,7 @@ public class ChatListener implements Listener {
             globalId = chatEventChannels.get("all");
         }
         TextChannel globalChatTextChannel = this.getDiscordBot().getGuild().getTextChannelById(globalId);
-        if (globalId != null && globalChatTextChannel != null) {
+        if (globalChatTextChannel != null) {
             globalChatTextChannel.sendMessage(DCMessage.CHAT_EVENT_FORMAT.getMessage()
                     .replace("%playername%", proxiedPlayer.getName())
                     .replace("%server%", currentServer)
@@ -44,7 +44,7 @@ public class ChatListener implements Listener {
             serverId = chatEventChannels.get(currentServer);
         }
         TextChannel serverChatTextChannel = this.getDiscordBot().getGuild().getTextChannelById(serverId);
-        if (serverId != null && serverChatTextChannel != null) {
+        if (serverChatTextChannel != null) {
             serverChatTextChannel.sendMessage(DCMessage.CHAT_EVENT_FORMAT.getMessage()
                     .replace("%playername%", proxiedPlayer.getName())
                     .replace("%server%", currentServer)

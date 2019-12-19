@@ -282,7 +282,7 @@ public class NetworkManagerListeners implements NMListener {
                 jsonEmbedBuilder.build());
     }
 
-    private String insertServerPlaceholders(String s, Server<NMServer, ProxiedPlayer> server) {
+    private String insertServerPlaceholders(String s, Server<ProxiedPlayer> server) {
         return s.replace("%id%", String.valueOf(server.getId()))
                 .replace("%name%", server.getServerName())
                 .replace("%motd%", server.getMotd())

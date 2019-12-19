@@ -41,7 +41,7 @@ public class UnregisterCommand extends Command {
 
             this.getDiscordBot().getScheduler().runAsync(() -> this.getDiscordBot().getDiscordUserManager().deleteUser(event.getAuthor().getId()), false);
             String message = DCMessage.UNREGISTER_COMPLETED.getMessage()
-                    .replace("%command_prefix%", Setting.DISCORD_COMMAND_PREFIX.getAsString());;
+                    .replace("%command_prefix%", Setting.DISCORD_COMMAND_PREFIX.getAsString());
             if (Methods.isJsonValid(message)) {
                 JsonEmbedBuilder jsonEmbedBuilder = JsonEmbedBuilder.fromJson(message);
                 Utils.sendChannelMessage(event.getChannel(), jsonEmbedBuilder.build());
