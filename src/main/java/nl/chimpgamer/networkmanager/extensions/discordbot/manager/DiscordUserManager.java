@@ -35,13 +35,13 @@ public class DiscordUserManager {
     public void load() {
         this.getDiscordBot().getScheduler().runAsync(() -> {
             try (Connection connection = this.getDiscordBot().getMySQL().getConnection();
-                 PreparedStatement ps = connection.prepareStatement("SELECT UUID, DiscordID, registered FROM nm_discordusers");
+                 PreparedStatement ps = connection.prepareStatement("SELECT UUID, DiscordID, registered FROM nm_discordusers;");
                  ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     UUID uuid = UUID.fromString(rs.getString("UUID"));
                     String discordId = rs.getString("DiscordID");
                     long registered = rs.getLong("registered");
-                    this.discordUsers.put(uuid, new DiscordUser(uuid, discordId, registered));
+                    this.getDiscordUsers().put(uuid, new DiscordUser(uuid, discordId, registered));
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -58,7 +58,7 @@ public class DiscordUserManager {
                     while (rs.next()) {
                         String discordId = rs.getString("DiscordID");
                         long registered = rs.getLong("registered");
-                        this.discordUsers.put(uuid, new DiscordUser(uuid, discordId, registered));
+                        this.getDiscordUsers().put(uuid, new DiscordUser(uuid, discordId, registered));
                     }
                 }
             } catch (SQLException ex) {
@@ -96,7 +96,7 @@ public class DiscordUserManager {
     public boolean checkUserByDiscordId(String discordId) throws SQLException {
         if (this.getUuidByDiscordId(discordId) == null) {
             try (Connection connection = this.getDiscordBot().getMySQL().getConnection();
-                 PreparedStatement ps = connection.prepareStatement("SELECT 1 FROM nm_discordusers WHERE DiscordID=?")) {
+                 PreparedStatement ps = connection.prepareStatement("SELECT 1 FROM nm_discordusers WHERE DiscordID=?;")) {
                 ps.setString(1, discordId);
                 try (ResultSet rs = ps.executeQuery()) {
                     return rs.next();
@@ -110,7 +110,7 @@ public class DiscordUserManager {
     public boolean checkUser(String uuid) throws SQLException {
         if (this.getDiscordIdByUuid(UUID.fromString(uuid)) == null) {
             try (Connection connection = this.getDiscordBot().getMySQL().getConnection();
-                 PreparedStatement ps = connection.prepareStatement("SELECT 1 FROM nm_discordusers WHERE UUID=?")) {
+                 PreparedStatement ps = connection.prepareStatement("SELECT 1 FROM nm_discordusers WHERE UUID=?;")) {
                 ps.setString(1, uuid);
                 try (ResultSet rs = ps.executeQuery()) {
                     return rs.next();

@@ -3,24 +3,22 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.listeners;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import nl.chimpgamer.networkmanager.api.event.events.*;
-import nl.chimpgamer.networkmanager.bungeecord.models.servers.NMServer;
-import nl.chimpgamer.networkmanager.common.utils.Methods;
-import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
-import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 import nl.chimpgamer.networkmanager.api.NMListener;
 import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers;
 import nl.chimpgamer.networkmanager.api.event.NMEvent;
+import nl.chimpgamer.networkmanager.api.event.events.*;
 import nl.chimpgamer.networkmanager.api.event.events.ticket.TicketCreateEvent;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 import nl.chimpgamer.networkmanager.api.models.punishments.Punishment;
 import nl.chimpgamer.networkmanager.api.models.servers.Server;
 import nl.chimpgamer.networkmanager.api.models.servers.ServerGroup;
 import nl.chimpgamer.networkmanager.api.models.tickets.Ticket;
+import nl.chimpgamer.networkmanager.common.utils.Methods;
+import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot;
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DCMessage;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder;
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -282,7 +280,7 @@ public class NetworkManagerListeners implements NMListener {
                 jsonEmbedBuilder.build());
     }
 
-    private String insertServerPlaceholders(String s, Server<ProxiedPlayer> server) {
+    private String insertServerPlaceholders(String s, Server server) {
         return s.replace("%id%", String.valueOf(server.getId()))
                 .replace("%name%", server.getServerName())
                 .replace("%motd%", server.getMotd())

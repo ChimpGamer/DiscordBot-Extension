@@ -166,9 +166,6 @@ public class Utils {
                     if (groups.stream().noneMatch(groupName -> groupName.equalsIgnoreCase(role.getName()))) {
                         removeRoles.add(role);
                     }
-                    /*if (member.getRoles().contains(role) && groups.stream().noneMatch(groupName -> groupName.equalsIgnoreCase(role.getName()))) {
-                        removeRoles.add(role);
-                    }*/
                 }
             }
         }
