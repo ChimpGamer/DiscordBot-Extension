@@ -1,0 +1,426 @@
+minecraft:
+  verify-help: '&4» &c/verify [token]'
+  verify-invalid-token: 'Invalid token, try again. Does it keep happening? Please contact a server Administrator!'
+  verify-token-expired: 'Sorry but this token is already expired. Please ask the Discord bot for a new one!'
+  verify-account-already-linked: 'This Minecraft account is already paired with a Discord account.'
+  verify-completed: 'Thanks for registering. You can talk in the discord server now!'
+  verify-not-in-server: 'You cannot verify yourself if you haven''t joined our discord server!'
+  verify-error: 'Something went wrong, try again. Does it keep happening? Please contact a server Administrator!'
+  bug-help: '&4» &c/bug [bug]'
+  bug-success: '&aSuccessfully notified the staff about the bug you encountered!'
+  suggestion-help: '&4» &c/suggestion [suggestion]'
+  suggestion-success: '&aSuccessfully notified the staff about your suggestion!'
+  discord-response: '&7Join us on Discord at &6http://yourdiscordinvitelink.gg'
+  reload:
+    config: '&4» &7Reloaded &cConfig'
+    messages: '&4» &7Reloaded &cMessagesConfig'
+    jda-success: '&4» &7Successfully reloaded &cJDA'
+    jda-failed: '&4» &7Failed to reload &cJDA! &7See console for more information.'
+
+discord:
+  staffchat-receive: '%playername% said on %server%: %message%'
+  adminchat-receive: '%playername% said on %server%: %message%'
+  #registration-token: ':white_check_mark: Thanks for registering!%newline%Your token is: `%token%`.'
+  registration-not-in-server: 'You cannot register yourself if you haven''t joined our discord server!'
+  #registration-completed: ':white_check_mark: Registration completed! :white_check_mark:'
+  #unregister-completed: ':white_check_mark: Successfully unregistered your discord account! :white_check_mark:'
+  player-command-response: '%mention% There are %players% players online!'
+  playerlist-command-invalid-server: '%mention% The server %server% does not exist!'
+  chat-event-format: '%playername% said on %server%: %message%'
+  welcome-new-member: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the !register command when you want to register! Good luck!'
+
+  registration-token: |-
+    {
+      "title": "Thanks for registering!",
+      "description": "\nJoin our Server and type in **/verify %token%**",
+      "color": 15860242
+    }
+  registration-token-expired: |-
+    {
+      "title": "TOKEN HAS BEEN EXPIRED.",
+      "description": "You can request a new one with **%command_prefix%register**",
+      "color": 14684176
+    }
+  registration-completed: |-
+    {
+      "title": "Registration completed!",
+      "description": "You can chat now and have your ingame rank.",
+      "color": 3535678
+    }
+  unregister-completed: |-
+    {
+      "title": "Successfully unregistered your discord account!",
+      "description": "You can register your Account again with %command_prefix%register",
+      "color": 3535678
+    }
+  ticket-create-alert: |-
+    {
+      "fields": [
+        {
+          "name": "ID",
+          "value": "%id%",
+          "inline": true
+        },
+        {
+          "name": "Creator",
+          "value": "%creator%",
+          "inline": true
+        },
+        {
+          "name": "Title",
+          "value": "%title%",
+          "inline": true
+        }
+      ],
+      "description": "\n**TICKET DETAILS**",
+      "color": -20561,
+      "title": "__Server Moderation__",
+      "showTimestamp": true,
+      "thumbnail": {
+        "url": "https://i.imgur.com/sa9nsno.png"
+      }
+    }
+  helpop-alert: |-
+    {
+      "fields": [
+        {
+          "name": "Requester",
+          "value": "%requester%",
+          "inline": true
+        },
+        {
+          "name": "Server",
+          "value": "%server%",
+          "inline": true
+        },
+        {
+          "name": "Message",
+          "value": "%message%",
+          "inline": true
+        }
+      ],
+      "description": "\n**HELPOP DETAILS**",
+      "color": -20561,
+      "title": "__Server Moderation__",
+      "showTimestamp": true,
+      "thumbnail": {
+        "url": "https://i.imgur.com/sa9nsno.png"
+      }
+    }
+  server-status-offline: |-
+    {
+      "fields": [
+        {
+          "name": "Server ID",
+          "value": "%id%",
+          "inline": true
+        },
+        {
+          "name": "Server Name",
+          "value": "%name%",
+          "inline": true
+        },
+        {
+          "name": "Server IP",
+          "value": "%ip%",
+          "inline": true
+        },
+        {
+          "name": "Server Port",
+          "value": "%port%",
+          "inline": true
+        }
+      ],
+      "description": "\n**SERVER DETAILS**",
+      "color": -65536,
+      "title": "__Server Administration__",
+      "showTimestamp": true,
+      "thumbnail": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Button_Icon_Red.svg/2000px-Button_Icon_Red.svg.png"
+      },
+      "footer": {
+        "text": "Status: Offline"
+      }
+    }
+  server-status-online: |-
+    {
+      "fields": [
+        {
+          "name": "Server ID",
+          "value": "%id%",
+          "inline": true
+        },
+        {
+          "name": "Server Name",
+          "value": "%name%",
+          "inline": true
+        },
+        {
+          "name": "Server IP",
+          "value": "%ip%",
+          "inline": true
+        },
+        {
+          "name": "Server Port",
+          "value": "%port%",
+          "inline": true
+        }
+      ],
+      "description": "\n**SERVER DETAILS**",
+      "color": -16711936,
+      "title": "__Server Administration__",
+      "showTimestamp": true,
+      "thumbnail": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Button_Icon_Green.svg/2000px-Button_Icon_Green.svg.png"
+      },
+      "footer": {
+        "text": "Status: Online"
+      }
+    }
+  punishment-alert: |-
+    {
+      "fields": [
+        {
+          "name": "ID",
+          "value": "%id%",
+          "inline": true
+        },
+        {
+          "name": "Type",
+          "value": "%type%",
+          "inline": true
+        },
+        {
+          "name": "Player",
+          "value": "%playername%",
+          "inline": true
+        },
+        {
+          "name": "Punisher",
+          "value": "%punisher%",
+          "inline": true
+        },
+        {
+          "name": "Time",
+          "value": "%time%",
+          "inline": true
+        },
+        {
+          "name": "Ends",
+          "value": "%ends%",
+          "inline": true
+        },
+        {
+          "name": "Expires",
+          "value": "%expires%",
+          "inline": true
+        },
+        {
+          "name": "Server",
+          "value": "%server%",
+          "inline": true
+        },
+        {
+          "name": "IP",
+          "value": "%ip%",
+          "inline": true
+        },
+        {
+          "name": "Reason",
+          "value": "%reason%",
+          "inline": true
+        }
+      ],
+      "description": "\n**PUNISHMENT DETAILS**",
+      "color": -2551040,
+      "title": "__Server Moderation__",
+      "showTimestamp": true
+    }
+  unpunishment-alert: |-
+    {
+      "fields": [
+        {
+          "name": "ID",
+          "value": "%id%",
+          "inline": true
+        },
+        {
+          "name": "Type",
+          "value": "%type%",
+          "inline": true
+        },
+        {
+          "name": "Player",
+          "value": "%playername%",
+          "inline": true
+        },
+        {
+          "name": "Punisher",
+          "value": "%punisher%",
+          "inline": true
+        },
+        {
+          "name": "Unpunished by",
+          "value": "%unbanner%",
+          "inline": true
+        },
+        {
+          "name": "Server",
+          "value": "%server%",
+          "inline": true
+        },
+        {
+          "name": "IP",
+          "value": "%ip%",
+          "inline": true
+        },
+        {
+          "name": "Reason",
+          "value": "%reason%",
+          "inline": true
+        }
+      ],
+      "description": "\n**UNPUNISHMENT DETAILS**",
+      "color": -842110,
+      "title": "__Server Moderation__",
+      "showTimestamp": true
+    }
+  report-alert: |-
+    {
+      "fields": [
+        {
+          "name": "ID",
+          "value": "%id%",
+          "inline": true
+        },
+        {
+          "name": "Type",
+          "value": "%type%",
+          "inline": true
+        },
+        {
+          "name": "Player",
+          "value": "%playername%",
+          "inline": true
+        },
+        {
+          "name": "Reporter",
+          "value": "%punisher%",
+          "inline": true
+        },
+        {
+          "name": "Time",
+          "value": "%time%",
+          "inline": true
+        },
+        {
+          "name": "Server",
+          "value": "%server%",
+          "inline": true
+        },
+        {
+          "name": "IP",
+          "value": "%ip%",
+          "inline": true
+        },
+        {
+          "name": "Reason",
+          "value": "%reason%",
+          "inline": true
+        }
+      ],
+      "description": "\n**REPORT DETAILS**",
+      "color": -2551040,
+      "title": "__Server Moderation__",
+      "showTimestamp": true
+    }
+  bugreport-alert: |-
+    {
+      "fields": [
+        {
+          "name": "Player",
+          "value": "%playername%",
+          "inline": true
+        },
+        {
+          "name": "Server",
+          "value": "%server%",
+          "inline": true
+        },
+        {
+          "name": "Bug",
+          "value": "%bug%",
+          "inline": true
+        }
+      ],
+      "description": "\n**BUG REPORT DETAILS**",
+      "color": -2551040,
+      "title": "__Server Moderation__",
+      "showTimestamp": true
+    }
+  suggestion-alert: |-
+    {
+      "fields": [
+        {
+          "name": "Player",
+          "value": "%playername%",
+          "inline": true
+        },
+        {
+          "name": "Server",
+          "value": "%server%",
+          "inline": true
+        },
+        {
+          "name": "Suggestion",
+          "value": "%suggestion%",
+          "inline": true
+        }
+      ],
+      "description": "\n**SUGGESTION DETAILS**",
+      "color": -2551040,
+      "title": "__Server Moderation__",
+      "showTimestamp": true
+    }
+  chatlog-alert: |-
+    {
+      "fields": [
+        {
+          "name": "Creator",
+          "value": "%creator%",
+          "inline": true
+        },
+        {
+          "name": "Tracked",
+          "value": "%tracked%",
+          "inline": true
+        },
+        {
+          "name": "Server",
+          "value": "%server%",
+          "inline": true
+        },
+        {
+          "name": "Url",
+          "value": "%url%",
+          "inline": true
+         }
+      ],
+      "description": "\n**CHATLOG DETAILS**",
+      "color": -2551040,
+      "title": "__Server Moderation__",
+      "showTimestamp": true
+    }
+  playtime-response: |-
+    {
+      "fields": [
+        {
+          "name": "%playername%,",
+          "value": "You've played %playtime% on the server",
+          "inline": true
+        }
+      ],
+      "color": -2551040,
+      "title": "Playtime of %playername%",
+      "showTimestamp": true
+    }

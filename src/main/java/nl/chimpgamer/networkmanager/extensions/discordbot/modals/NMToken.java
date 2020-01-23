@@ -1,10 +1,8 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.modals;
 
-import lombok.Getter;
 import net.dv8tion.jda.api.entities.Message;
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token;
 
-@Getter
 public class NMToken implements Token {
     private final String token;
     private final String discordID;
@@ -16,5 +14,25 @@ public class NMToken implements Token {
         this.discordID = discordID;
         this.created = System.currentTimeMillis();
         this.message = message;
+    }
+
+    @Override
+    public String getToken() {
+        return token;
+    }
+
+    @Override
+    public String getDiscordID() {
+        return discordID;
+    }
+
+    @Override
+    public long getCreated() {
+        return created;
+    }
+
+    @Override
+    public Message getMessage() {
+        return message;
     }
 }
