@@ -4,11 +4,11 @@ import net.dv8tion.jda.api.entities.Member;
 import nl.chimpgamer.networkmanager.api.event.Event;
 import nl.chimpgamer.networkmanager.api.models.player.Player;
 
-public class PlayerVerifyEvent extends Event {
+public class PlayerRegisteredEvent extends Event {
     private final Player player;
     private final Member member;
 
-    public PlayerVerifyEvent(Player player, Member member) {
+    public PlayerRegisteredEvent(Player player, Member member) {
         this.player = player;
         this.member = member;
     }

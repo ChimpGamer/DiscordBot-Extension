@@ -16,7 +16,7 @@ import javax.security.auth.login.LoginException
 
 class DiscordManager(private val discordBot: DiscordBot) {
     private val commandClientBuilder: CommandClientBuilder = CommandClientBuilder()
-    private lateinit var jDA: JDA
+    private lateinit var jda: JDA
     lateinit var guild: Guild
     var verifiedRole: Role? = null
 
@@ -32,7 +32,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
             ex.printStackTrace()
             success = false
         }
-        val guilds = jDA.guilds
+        val guilds = jda.guilds
 
         when {
             guilds.isNullOrEmpty() -> {
@@ -60,7 +60,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     @Throws(LoginException::class, InterruptedException::class)
     private fun initJDA() {
-        jDA = JDABuilder(AccountType.BOT)
+        jda = JDABuilder(AccountType.BOT)
                 .setToken(Setting.DISCORD_TOKEN.asString)
                 .addEventListeners(DiscordListener(discordBot))
                 .addEventListeners(commandClientBuilder.build())
@@ -98,7 +98,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     fun shutdownJDA() {
         discordBot.logger.info("Shutting down JDA...")
-        jDA.shutdown()
+        jda.shutdown()
     }
 
     fun restartJDA(): Boolean {

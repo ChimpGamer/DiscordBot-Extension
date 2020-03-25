@@ -99,7 +99,6 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
                 return ps.executeQuery().next()
             }
         }
-        return false
     }
 
     @Throws(SQLException::class)
@@ -108,7 +107,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
             discordBot.mySQL.connection.use { connection ->
                 connection.prepareStatement("SELECT 1 FROM nm_discordusers WHERE DiscordID=?;").use { ps ->
                     ps.setString(1, discordId)
-                    ps.executeQuery().use { rs -> return rs.next() }
+                    return ps.executeQuery().next()
                 }
             }
         } else {
@@ -121,11 +120,11 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     }
 
     fun getUuidByDiscordId(id: String): UUID? {
-        return discordUsers.entries.stream().filter { entry: Map.Entry<UUID, DiscordUser> -> entry.value.discordId == id }.map<UUID> { entry -> entry.key }.findAny().orElse(null)
+        return discordUsers.entries.stream().filter { it.value.discordId == id }.map { it.key }.findFirst().orElse(null)
     }
 
     private fun getToken(token: String): Token? {
-        return tokens.stream().filter { token1: Token -> token1.token.equals(token, ignoreCase = true) }.findAny().orElse(null)
+        return tokens.stream().filter { it.token.equals(token, ignoreCase = true) }.findFirst().orElse(null)
     }
 
     fun verifyUser(player: Player, inputToken: String) {
@@ -134,7 +133,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         discordBot.scheduler.runAsync(vut, false)
     }
 
-    fun insertToken(inputToken: String, uuid: String?, message: Message?) {
+    fun insertToken(inputToken: String, uuid: String, message: Message?) {
         val token: Token = NMToken(inputToken, uuid, message)
         tokens.add(token)
         discordBot.scheduler.runDelayed(TokenExpiryTask(discordBot, token), 60L)

@@ -2,6 +2,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.tasks
 
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
+import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerUnregisteredEvent
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import java.sql.SQLException
 
@@ -17,7 +18,7 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 discordUserManager.discordUsers.remove(player.uuid);
 
                 val member = discordBot.guild.getMemberById(discordId)
-                val player = discordBot.networkManager.getPlayer(player.uuid)
+                this.discordBot.eventHandler.callEvent(PlayerUnregisteredEvent(player, member))
 
                 if (Setting.DISCORD_REGISTER_ADD_ROLE_ROLE_NAME.asBoolean) {
                     val verifiedRole = discordBot.discordManager.verifiedRole

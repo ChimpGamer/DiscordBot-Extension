@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.Role
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.common.utils.Methods
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerVerifyEvent
+import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerRegisteredEvent
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
@@ -22,7 +22,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
 
     override fun run() {
         if (this.token.created + 300000 < System.currentTimeMillis()) { // Token Expired
-            this.player.sendMessage(MCMessage.VERIFY_TOKEN_EXPIRED.message
+            this.player.sendMessage(MCMessage.REGISTER_TOKEN_EXPIRED.message
                     .replace("%playername%", this.player.name))
         } else {
             try {
@@ -30,11 +30,11 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                 val discordUserManager: DiscordUserManager = this.discordBot.discordUserManager
                 val member: Member? = this.discordBot.guild.getMemberById(this.token.discordID)
                 if (member == null) {
-                    this.player.sendMessage(MCMessage.VERIFY_HELP.message)
+                    this.player.sendMessage(MCMessage.REGISTER_NOT_IN_SERVER.message)
                     return
                 }
                 if (discordUserManager.existsInDatabase(this.player.uuid.toString())) { // User is already registered...
-                    this.player.sendMessage(MCMessage.VERIFY_ACCOUNT_ALREADY_LINKED.message
+                    this.player.sendMessage(MCMessage.REGISTER_ACCOUNT_ALREADY_LINKED.message
                             .replace("%playername%", this.player.name))
                 } else { // User is not registered yet...
                     discordUserManager.tokens.remove(this.token) // Remove token
@@ -46,9 +46,9 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     } else {
                         Utils.editMessage(this.token.message, registrationCompleted)
                     }
-                    this.player.sendMessage(MCMessage.VERIFY_COMPLETED.message
+                    this.player.sendMessage(MCMessage.REGISTER_COMPLETED.message
                             .replace("%playername%", this.player.name))
-                    this.discordBot.networkManager.eventHandler.callEvent(PlayerVerifyEvent(this.player, member))
+                    this.discordBot.networkManager.eventHandler.callEvent(PlayerRegisteredEvent(this.player, member))
                     if (this.discordBot.networkManager.isRedisBungee) {
                         this.discordBot.sendRedisBungee("load " + this.player.uuid)
                     }
@@ -67,7 +67,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     }
                 }
             } catch (ex: SQLException) {
-                this.player.sendMessage(MCMessage.VERIFY_ERROR.message
+                this.player.sendMessage(MCMessage.REGISTER_ERROR.message
                         .replace("%playername%", this.player.name))
                 ex.printStackTrace()
             }

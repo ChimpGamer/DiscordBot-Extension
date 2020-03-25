@@ -1,15 +1,20 @@
 minecraft:
-  verify-help: '&4» &c/verify [token]'
-  verify-invalid-token: 'Invalid token, try again. Does it keep happening? Please contact a server Administrator!'
-  verify-token-expired: 'Sorry but this token is already expired. Please ask the Discord bot for a new one!'
-  verify-account-already-linked: 'This Minecraft account is already paired with a Discord account.'
-  verify-completed: 'Thanks for registering. You can talk in the discord server now!'
-  verify-not-in-server: 'You cannot verify yourself if you haven''t joined our discord server!'
-  verify-error: 'Something went wrong, try again. Does it keep happening? Please contact a server Administrator!'
-  bug-help: '&4» &c/bug [bug]'
-  bug-success: '&aSuccessfully notified the staff about the bug you encountered!'
-  suggestion-help: '&4» &c/suggestion [suggestion]'
-  suggestion-success: '&aSuccessfully notified the staff about your suggestion!'
+  register:
+    help: '&4» &c/register [token]'
+    token:
+      invalid: 'Invalid token, try again. Does it keep happening? Please contact a server Administrator!'
+      expired: 'Sorry but this token is already expired. Please ask the Discord bot for a new one!'
+    verify:
+      account-already-linked: 'This Minecraft account is already paired with a Discord account.'
+      completed: 'Thanks for registering. You can talk in the discord server now!'
+      not-in-server: 'You cannot verify yourself if you haven''t joined our discord server!'
+      error: 'Something went wrong, try again. Does it keep happening? Please contact a server Administrator!'
+  bug:
+    help: '&4» &c/bug [bug]'
+    success: '&aSuccessfully notified the staff about the bug you encountered!'
+  suggestion:
+    help: '&4» &c/suggestion [suggestion]'
+    success: '&aSuccessfully notified the staff about your suggestion!'
   discord-response: '&7Join us on Discord at &6http://yourdiscordinvitelink.gg'
   reload:
     config: '&4» &7Reloaded &cConfig'
@@ -32,7 +37,7 @@ discord:
   registration-token: |-
     {
       "title": "Thanks for registering!",
-      "description": "\nJoin our Server and type in **/verify %token%**",
+      "description": "\nJoin our Server and type in **/register %token%**",
       "color": 15860242
     }
   registration-token-expired: |-

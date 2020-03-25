@@ -1,0 +1,5 @@
+name: DiscordBot
+authors: [ChimpGamer]
+version: 1.2.2
+description: Discord bot for NetworkManager
+main: nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot

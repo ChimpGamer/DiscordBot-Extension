@@ -10,12 +10,12 @@ class RegisterCommand(private val discordBot: DiscordBot, cmd: String, args: Arr
     override fun onExecute(sender: Sender, args: Array<String>) {
         val player = sender as Player
         if (args.isEmpty()) {
-            player.sendMessage(MCMessage.VERIFY_HELP.message
+            player.sendMessage(MCMessage.REGISTER_HELP.message
                     .replace("%playername%", player.name))
         } else {
             val token = args[0]
             if (token.length != 13) { // Invalid token
-                player.sendMessage(MCMessage.VERIFY_INVALID_TOKEN.message
+                player.sendMessage(MCMessage.REGISTER_INVALID_TOKEN.message
                         .replace("%playername%", player.name))
             } else { // Verify user with token
                 discordBot.discordUserManager.verifyUser(player, token)
