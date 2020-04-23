@@ -23,28 +23,24 @@ class SuggestionCommand(private val discordBot: DiscordBot, cmd: String?) : NMBu
                         .replace("%cooldown%", TimeUtils.getTimeString(player.language, Cooldown.getTimeLeft(player.uuid, name).toLong())))
                 return
             }
-            val sb = StringBuilder()
-            for (arg in args) {
-                sb.append(arg).append(" ")
-            }
-            val bug = sb.toString().trim { it <= ' ' }
-            val bugReportChannel = discordBot.guild.getTextChannelById(Setting.DISCORD_EVENTS_SUGGESTION_CHANNEL.asString)
+            val suggestion = args.joinToString { " " }.trim { it <= ' ' }
+            val suggestionsChannel = discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_SUGGESTION_CHANNEL))
                     ?: return
-            val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.SUGGESTION_ALERT.message)
+            val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.SUGGESTION_ALERT))
             val fields: MutableList<MessageEmbed.Field> = LinkedList()
             for (field in jsonEmbedBuilder.fields) {
-                val name = insertSuggestionPlaceholders(field.name, player, player.server, bug)
-                val value = insertSuggestionPlaceholders(field.value, player, player.server, bug)
+                val name = insertSuggestionPlaceholders(field.name, player, player.server, suggestion)
+                val value = insertSuggestionPlaceholders(field.value, player, player.server, suggestion)
                 val field1 = MessageEmbed.Field(name, value, field.isInline)
                 fields.add(field1)
             }
             jsonEmbedBuilder.fields = fields
-            sendChannelMessage(bugReportChannel,
+            sendChannelMessage(suggestionsChannel,
                     jsonEmbedBuilder.build())
-            player.sendMessage(MCMessage.SUGGESTION_SUCCESS.message)
+            player.sendMessage(discordBot.messages.getString(MCMessage.SUGGESTION_SUCCESS))
             Cooldown(player.uuid, "SuggestionCMD", 60).start()
         } else {
-            player.sendMessage(MCMessage.SUGGESTION_HELP.message)
+            player.sendMessage(discordBot.messages.getString(MCMessage.SUGGESTION_HELP))
         }
     }
 
@@ -59,6 +55,6 @@ class SuggestionCommand(private val discordBot: DiscordBot, cmd: String?) : NMBu
     }
 
     init {
-        this.isPlayerOnly = true
+        this.playerOnly = true
     }
 }

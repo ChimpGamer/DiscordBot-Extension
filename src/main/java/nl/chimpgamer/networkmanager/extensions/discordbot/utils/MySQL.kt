@@ -10,8 +10,8 @@ class MySQL(discordBot: DiscordBot) {
 
     @Throws(SQLException::class)
     private fun create() {
-        val nm_discordusers = "CREATE TABLE IF NOT EXISTS nm_discordusers(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID VARCHAR(36), DiscordID VARCHAR(64), registered LONG) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;"
-        createTable(nm_discordusers)
+        val nmDiscordUsers = "CREATE TABLE IF NOT EXISTS nm_discordusers(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID VARCHAR(36), DiscordID VARCHAR(64), registered LONG) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;"
+        createTable(nmDiscordUsers)
     }
 
     @Throws(SQLException::class)

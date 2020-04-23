@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     base
-    kotlin("jvm") version "1.3.70"
+    kotlin("jvm") version "1.3.72"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "5.2.0"
 }
@@ -23,18 +23,18 @@ repositories {
 
 dependencies {
     compileOnly("net.kyori:text-api:3.0.2")
-    implementation("com.jagrosh:jda-utilities-command:3.0.2")
-    compileOnly("nl.chimpgamer.networkmanager:api:2.8.6")
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.8.6")
+    implementation("com.jagrosh:jda-utilities-command:3.0.3")
+    compileOnly("nl.chimpgamer.networkmanager:api:2.8.7")
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.8.7")
     compileOnly("net.md-5:bungeecord-api:1.15-SNAPSHOT")
-    compileOnly("net.dv8tion:JDA:4.0.0_42")
+    compileOnly("net.dv8tion:JDA:4.1.1_101")
     compileOnly("com.github.Carleslc:Simple-YAML:1.4.1")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
     compileOnly(kotlin("stdlib-jdk8"))
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.2.3"
+version = "1.3.0"
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
@@ -56,6 +56,7 @@ tasks.shadowJar {
     }
 
     relocate("kotlin", "nl.chimpgamer.networkmanager.lib.kotlin")
+    relocate("org.simpleyaml", "nl.chimpgamer.networkmanager.lib.simpleyaml")
     relocate("org.eclipse.jetty", "nl.chimpgamer.networkmanager.lib.jetty")
     relocate("javax.servlet", "nl.chimpgamer.networkmanager.lib.javax.servlet")
     relocate("com.google.gson", "nl.chimpgamer.networkmanager.lib.gson")

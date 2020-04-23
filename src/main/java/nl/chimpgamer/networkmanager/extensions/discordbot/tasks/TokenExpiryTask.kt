@@ -3,10 +3,9 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.tasks
 import nl.chimpgamer.networkmanager.common.utils.Methods
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token
-import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 
 class TokenExpiryTask(private val discordBot: DiscordBot, private val token: Token) : Runnable {
 
@@ -14,15 +13,15 @@ class TokenExpiryTask(private val discordBot: DiscordBot, private val token: Tok
         if (!this.discordBot.discordUserManager.tokens.contains(this.token)) {
             return
         }
-        val msgStr = DCMessage.REGISTRATION_TOKEN_EXPIRED.message
-                .replace("%command_prefix%", Setting.DISCORD_COMMAND_PREFIX.asString)
+        val msgStr = discordBot.messages.getString(DCMessage.REGISTRATION_TOKEN_EXPIRED)
+                .replace("%command_prefix%", discordBot.settings.getString(Setting.DISCORD_COMMAND_PREFIX))
         if (Methods.isJsonValid(msgStr)) {
             val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(msgStr)
-            Utils.editMessage(this.token.getMessage(), jsonEmbedBuilder.build())
+            this.token.message.editMessage(jsonEmbedBuilder.build()).complete()
         } else {
-            Utils.editMessage(this.token.getMessage(), msgStr)
+            this.token.message.editMessage(msgStr).complete()
         }
         this.discordBot.discordUserManager.tokens.remove(this.token)
-        this.discordBot.networkManager.debug("Token: " + this.token.token.toString() + " has been removed!")
+        this.discordBot.networkManager.debug("Token: ${this.token.token} has been removed!")
     }
 }

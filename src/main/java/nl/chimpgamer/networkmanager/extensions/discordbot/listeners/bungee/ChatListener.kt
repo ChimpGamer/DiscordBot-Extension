@@ -18,13 +18,13 @@ class ChatListener(private val discordBot: DiscordBot) : Listener {
         }
         val proxiedPlayer = event.sender as ProxiedPlayer
         val currentServer = proxiedPlayer.server.info.name
-        val chatEventChannels = Setting.DISCORD_EVENTS_CHAT_CHANNELS.asMap
+        val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
         var globalId: String? = "000000000000000000"
         if (chatEventChannels.containsKey("all")) {
             globalId = chatEventChannels["all"]
         }
         val globalChatTextChannel = discordBot.guild.getTextChannelById(globalId!!)
-        globalChatTextChannel?.sendMessage(DCMessage.CHAT_EVENT_FORMAT.message
+        globalChatTextChannel?.sendMessage(discordBot.messages.getString(DCMessage.EVENT_CHAT)
                 .replace("%playername%", proxiedPlayer.name)
                 .replace("%server%", currentServer)
                 .replace("%message%", event.message))?.queue()
@@ -33,7 +33,7 @@ class ChatListener(private val discordBot: DiscordBot) : Listener {
             serverId = chatEventChannels[currentServer]
         }
         val serverChatTextChannel = discordBot.guild.getTextChannelById(serverId!!)
-        serverChatTextChannel?.sendMessage(DCMessage.CHAT_EVENT_FORMAT.message
+        serverChatTextChannel?.sendMessage(discordBot.messages.getString(DCMessage.EVENT_CHAT)
                 .replace("%playername%", proxiedPlayer.name)
                 .replace("%server%", currentServer)
                 .replace("%message%", event.message

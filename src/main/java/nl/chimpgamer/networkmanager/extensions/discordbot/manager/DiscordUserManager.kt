@@ -19,7 +19,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     val tokens: MutableList<Token> = ArrayList()
 
     fun load() {
-        discordBot.scheduler.runAsync({
+        discordBot.scheduler.runAsync(Runnable {
             try {
                 discordBot.mySQL.connection.use { connection ->
                     connection.prepareStatement("SELECT UUID, DiscordID, registered FROM nm_discordusers;").use { ps ->
@@ -40,7 +40,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     }
 
     fun load(uuid: UUID) {
-        discordBot.scheduler.runAsync({
+        discordBot.scheduler.runAsync(Runnable {
             try {
                 discordBot.mySQL.connection.use { connection ->
                     connection.prepareStatement("SELECT UUID, DiscordID, registered FROM nm_discordusers WHERE UUID=?;").use { ps ->
@@ -64,7 +64,6 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         val dut = DeleteUserTask(discordBot, player)
         discordBot.scheduler.runAsync(dut, false)
     }
-
 
     @Throws(SQLException::class)
     fun insertUser(uuid: UUID, discordID: String) {
@@ -92,7 +91,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
 
     @Throws(SQLException::class)
     fun existsInDatabase(id: String): Boolean {
-        val isUUID = Utils.UUID_REGEX.containsMatchIn(id);
+        val isUUID = Utils.UUID_REGEX.containsMatchIn(id)
         discordBot.mySQL.connection.use { connection ->
             connection.prepareStatement("SELECT 1 FROM nm_discordusers WHERE " + if (isUUID) "UUID=?" else "DiscordID=?" + ";").use { ps ->
                 ps.setString(1, id)
@@ -115,8 +114,9 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         }
     }
 
-    fun getDiscordIdByUuid(uuid: UUID?): String? {
-        return discordUsers[uuid]!!.discordId
+    fun getDiscordIdByUuid(uuid: UUID): String? {
+        val discordUser = discordUsers[uuid]
+        return discordUser?.discordId
     }
 
     fun getUuidByDiscordId(id: String): UUID? {
@@ -130,10 +130,10 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     fun verifyUser(player: Player, inputToken: String) {
         val token = getToken(inputToken)
         val vut = token?.let { VerifyUserTask(discordBot, player, it) }
-        discordBot.scheduler.runAsync(vut, false)
+        discordBot.scheduler.runAsync(vut!!, false)
     }
 
-    fun insertToken(inputToken: String, uuid: String, message: Message?) {
+    fun insertToken(inputToken: String, uuid: String, message: Message) {
         val token: Token = NMToken(inputToken, uuid, message)
         tokens.add(token)
         discordBot.scheduler.runDelayed(TokenExpiryTask(discordBot, token), 60L)

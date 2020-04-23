@@ -19,28 +19,28 @@ class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
         if (!event.isFromType(ChannelType.TEXT)) {
             return
         }
-        if (!CommandSetting.DISCORD_PLAYTIME_ENABLED.asBoolean) {
+        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYTIME_ENABLED)) {
             return
         }
         if (event.args.isEmpty()) {
             val uuid = discordBot.discordUserManager.getUuidByDiscordId(event.author.id)
             if (uuid == null) {
-                discordBot.logger.warning(event.author.name + " tried to use the playtime command but is not registed!")
+                discordBot.logger.warning("${event.author.name} tried to use the playtime command but is not registed!")
                 return
             }
             if (discordBot.networkManager.isPlayerOnline(uuid, true)) {
                 val player = discordBot.networkManager.getPlayer(uuid)
-                val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.PLAYTIME_RESPONSE.message)
+                val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
                 jsonEmbedBuilder.title = jsonEmbedBuilder.title?.replace("%playername%", player.name)
                 val fields: MutableList<MessageEmbed.Field> = LinkedList()
                 for (field in jsonEmbedBuilder.fields) {
                     val name = field.name
                             ?.replace("%playername%", player.name)
-                            ?.replace("%playtime%", TimeUtils.getTimeString(1, player.playtime / 1000))
+                            ?.replace("%playtime%", TimeUtils.getTimeString(player.language, player.playtime / 1000))
                             ?.replace("%liveplaytime%", TimeUtils.getTimeString(player.language, player.playtime / 1000))
                     val value = field.value
                             ?.replace("%playername%", player.name)
-                            ?.replace("%playtime%", TimeUtils.getTimeString(1, player.playtime / 1000))
+                            ?.replace("%playtime%", TimeUtils.getTimeString(player.language, player.playtime / 1000))
                             ?.replace("%liveplaytime%", TimeUtils.getTimeString(player.language, player.playtime / 1000))
                     val field1 = MessageEmbed.Field(name, value, field.isInline)
                     fields.add(field1)
@@ -49,9 +49,9 @@ class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
                 sendChannelMessage(event.textChannel,
                         jsonEmbedBuilder.build())
             } else {
-                discordBot.scheduler.runAsync({
+                discordBot.scheduler.runAsync(Runnable {
                     val result = getOfflinePlayerPlaytime(uuid)
-                    val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.PLAYTIME_RESPONSE.message)
+                    val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
                     jsonEmbedBuilder.title = jsonEmbedBuilder.title?.replace("%playername%", result[0])
                     val fields: MutableList<MessageEmbed.Field> = LinkedList()
                     for (field in jsonEmbedBuilder.fields) {
@@ -96,7 +96,7 @@ class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
     }
 
     init {
-        name = CommandSetting.DISCORD_PLAYTIME_COMMAND.asString
+        name = discordBot.commandSettings.getString(CommandSetting.DISCORD_PLAYTIME_COMMAND)
         cooldown = 3
         botPermissions = arrayOf(Permission.MESSAGE_WRITE)
         guildOnly = true

@@ -12,18 +12,18 @@ class NetworkManagerBotCommand(private val discordBot: DiscordBot, cmd: String?)
                 when (args[1].toLowerCase()) {
                     "config", "settings" -> {
                         discordBot.settings.reload()
-                        sender.sendMessage(MCMessage.RELOAD_CONFIG.message)
+                        sender.sendMessage(discordBot.messages.getString(MCMessage.RELOAD_CONFIG))
                     }
                     "messages" -> {
                         discordBot.messages.reload()
-                        sender.sendMessage(MCMessage.RELOAD_MESSAGES.message)
+                        sender.sendMessage(discordBot.messages.getString(MCMessage.RELOAD_MESSAGES))
                     }
                     "jda" -> {
                         val success = discordBot.discordManager.restartJDA()
                         if (success) {
-                            sender.sendMessage(MCMessage.RELOAD_JDA_SUCCESS.message)
+                            sender.sendMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_SUCCESS))
                         } else {
-                            sender.sendMessage(MCMessage.RELOAD_JDA_FAILED.message)
+                            sender.sendMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_FAILED))
                         }
                     }
                 }

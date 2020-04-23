@@ -9,10 +9,19 @@ class Messages(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
         setupFile()
     }
 
+    fun getString(dcMessage: DCMessage): String {
+        return getString(dcMessage.path)
+    }
+
+    fun getString(mcMessage: MCMessage): String {
+        return getString(mcMessage.path)
+    }
+
     private fun setupFile() {
         if (!file.exists()) {
             try {
                 saveToFile(discordBot.getResource("messages.yml"))
+                reload()
             } catch (ex: NullPointerException) {
                 try {
                     file.createNewFile()
@@ -24,16 +33,24 @@ class Messages(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
     }
 }
 
-enum class DCMessage(private val path: String) {
-    STAFFCHAT_RECEIVE("discord.staffchat-receive"),
-    ADMINCHAT_RECEIVE("discord.adminchat-receive"),
-    REGISTRATION_TOKEN("discord.registration-token"),
-    REGISTRATION_TOKEN_EXPIRED("discord.registration-token-expired"),
-    REGISTRATION_NOT_IN_SERVER("registration-not-in-server"),
-    REGISTRATION_COMPLETED("discord.registration-completed"),
-    UNREGISTER_COMPLETED("discord.unregister-completed"),
-    SERVER_STATUS_ONLINE("discord.server-status-online"),
-    SERVER_STATUS_OFFLINE("discord.server-status-offline"),
+enum class DCMessage(val path: String) {
+    EVENT_STAFFCHAT("discord.event.staffchat"),
+    EVENT_ADMINCHAT("discord.event.adminchat"),
+    EVENT_CHAT("discord.event.chat"),
+    EVENT_WELCOME("discord.event.join"),
+
+    COMMAND_ONLINEPLAYERS_RESPONSE("discord.command.onlineplayers.response"),
+    COMMAND_PLAYERLIST_INVALID_SERVER("discord.command.playerlist.invalid-server"),
+    COMMAND_PLAYTIME_RESPONSE("discord.command.playtime.response"),
+
+    REGISTRATION_NOT_IN_SERVER("discord.registration.not-in-server"),
+    REGISTRATION_TOKEN_RESPONSE("discord.registration.token.response"),
+    REGISTRATION_TOKEN_EXPIRED("discord.registration.token.expired"),
+    REGISTRATION_COMPLETED("discord.registration.completed"),
+    REGISTRATION_UNREGISTER_NOTIFICATION("discord.registration.unregistered.notification"),
+
+    SERVER_STATUS_ONLINE("discord.server-status.online"),
+    SERVER_STATUS_OFFLINE("discord.server-status.offline"),
     HELPOP_ALERT("discord.helpop-alert"),
     TICKET_CREATE_ALERT("discord.ticket-create-alert"),
     PUNISHMENT_ALERT("discord.punishment-alert"),
@@ -42,25 +59,18 @@ enum class DCMessage(private val path: String) {
     BUGREPORT_ALERT("discord.bugreport-alert"),
     SUGGESTION_ALERT("discord.suggestion-alert"),
     CHATLOG_ALERT("discord.chatlog-alert"),
-    PLAYERS_COMMAND_RESPONSE("discord.player-command-response"),
-    PLAYERLIST_COMMAND_INVALID_SERVER("discord.playerlist-command-invalid-server"),
-    CHAT_EVENT_FORMAT("discord.chat-event-format"),
-    PLAYTIME_RESPONSE("discord.playtime-response"),
-    WELCOME_NEW_MEMBER("discord.welcome-new-member");
 
-    val message: String
-        get() = DiscordBot.instance!!.messages.getString(path).replace("%newline%", "\n")
-
+    ;
 }
 
-enum class MCMessage(private val path: String) {
+enum class MCMessage(val path: String) {
     REGISTER_HELP("minecraft.register.help"),
-    REGISTER_INVALID_TOKEN("minecraft.verify.token.invalid"),
-    REGISTER_TOKEN_EXPIRED("minecraft.verify.token.expired"),
-    REGISTER_ACCOUNT_ALREADY_LINKED("minecraft.verify.account-already-linked"),
-    REGISTER_COMPLETED("minecraft.verify.completed"),
-    REGISTER_NOT_IN_SERVER("minecraft.verify.not-in-server"),
-    REGISTER_ERROR("minecraft.verify.error"),
+    REGISTER_INVALID_TOKEN("minecraft.register.token.invalid"),
+    REGISTER_TOKEN_EXPIRED("minecraft.register.token.expired"),
+    REGISTER_ACCOUNT_ALREADY_LINKED("minecraft.register.verify.account-already-linked"),
+    REGISTER_COMPLETED("minecraft.register.verify.completed"),
+    REGISTER_NOT_IN_SERVER("minecraft.register.verify.not-in-server"),
+    REGISTER_ERROR("minecraft.register.verify.error"),
     BUG_HELP("minecraft.bug.help"),
     BUG_SUCCESS("minecraft.bug.success"),
     SUGGESTION_HELP("minecraft.suggestion.help"),
@@ -68,10 +78,7 @@ enum class MCMessage(private val path: String) {
     DISCORD_RESPONSE("minecraft.discord-response"),
     RELOAD_CONFIG("minecraft.reload.config"),
     RELOAD_MESSAGES("minecraft.reload.messages"),
-    RELOAD_JDA_SUCCESS("minecraft.reload.jda-success"),
-    RELOAD_JDA_FAILED("minecraft.reload.jda-success");
-
-    val message: String
-        get() = DiscordBot.instance!!.messages.getString(path).replace("%newline%", "\n")
-
+    RELOAD_JDA_SUCCESS("minecraft.reload.jda.success"),
+    RELOAD_JDA_FAILED("minecraft.reload.jda.success")
+    ;
 }

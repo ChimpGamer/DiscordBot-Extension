@@ -14,17 +14,17 @@ class PlayersCommand(private val discordBot: DiscordBot) : Command() {
         if (!event.isFromType(ChannelType.TEXT)) {
             return
         }
-        if (!CommandSetting.DISCORD_PLAYERS_ENABLED.asBoolean) {
+        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYERS_ENABLED)) {
             return
         }
         sendChannelMessage(event.textChannel,
-                DCMessage.PLAYERS_COMMAND_RESPONSE.message
+                discordBot.messages.getString(DCMessage.COMMAND_ONLINEPLAYERS_RESPONSE)
                         .replace("%mention%", event.author.asMention)
                         .replace("%players%", discordBot.networkManager.onlinePlayersCount.toString()))
     }
 
     init {
-        name = CommandSetting.DISCORD_PLAYERS_COMMAND.asString
+        name = discordBot.commandSettings.getString(CommandSetting.DISCORD_PLAYERS_COMMAND)
         aliases = arrayOf("onlineplayers", "online")
         botPermissions = arrayOf(Permission.MESSAGE_WRITE)
         guildOnly = true

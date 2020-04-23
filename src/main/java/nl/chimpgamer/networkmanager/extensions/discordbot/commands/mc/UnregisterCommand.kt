@@ -16,6 +16,6 @@ class UnregisterCommand(private val discordBot: DiscordBot, cmd: String, args: A
     }
 
     init {
-        this.isPlayerOnly = true
+        this.playerOnly = true
     }
 }

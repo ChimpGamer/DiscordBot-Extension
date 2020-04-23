@@ -27,7 +27,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         val message = event.message
         val msg = message.contentStripped
         if (channel.guild == discordBot.guild) {
-            if (channel.id == Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL.asString) {
+            if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL)) {
                 val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
                 val player = cachedPlayers.getPlayer(uuid)
                 if (cachedValues.getBoolean(Command.ADMINCHAT_ENABLED)) {
@@ -41,14 +41,14 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
                         val data = PlayerMessageData(player.uuid, msg)
-                        data.permissions = listOf(perm1, perm2)
+                        data.permissions.addAll(listOf(perm1, perm2))
                         val handler = discordBot.networkManager.messagingServiceManager.getHandler(AdminChatMessageHandler::class.java)
                         handler.send(data)
                     } else {
                         discordBot.networkManager.sendMessageToStaff(alert, "all", perm1, perm2)
                     }
                 }
-            } else if (channel.id == Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL.asString) {
+            } else if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL)) {
                 val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
                 val player = cachedPlayers.getPlayer(uuid)
                 if (cachedValues.getBoolean(Command.STAFFCHAT_ENABLED)) {
@@ -62,7 +62,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
                         val data = PlayerMessageData(player.uuid, msg)
-                        data.permissions = listOf(perm1, perm2)
+                        data.permissions.addAll(listOf(perm1, perm2))
                         val handler = discordBot.networkManager.messagingServiceManager.getHandler(StaffChatMessageHandler::class.java)
                         handler.send(data)
                     } else {
@@ -79,5 +79,4 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
             discordBot.scheduler.runAsync(GuildJoinCheckTask(discordBot, member), false)
         }
     }
-
 }

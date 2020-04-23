@@ -17,14 +17,14 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         discordBot.logger.info("Syncing roles for " + member.effectiveName)
         val addRoles: MutableSet<Role> = HashSet()
         val removeRoles: MutableSet<Role> = HashSet()
-        for (roleName in Setting.DISCORD_SYNC_RANKS_LIST.asList) {
-            val role = Utils.getRoleByName(roleName) ?: continue
+        for (roleName in discordBot.settings.getStringList(Setting.DISCORD_SYNC_RANKS_LIST)) {
+            val role = discordBot.discordManager.getRoleByName(roleName) ?: continue
             val groups = nl.chimpgamer.networkmanager.bungeecord.utils.Utils.getGroupsName(player)
             for (group in groups) {
                 if (group.equals(role.name, ignoreCase = true)) {
                     addRoles.add(role)
                 } else {
-                    if (groups.stream().noneMatch { groupName: String -> groupName.equals(role.name, ignoreCase = true) }) {
+                    if (groups.stream().noneMatch { it.equals(role.name, ignoreCase = true) }) {
                         removeRoles.add(role)
                     }
                     /*if (member.getRoles().contains(role) && groups.stream().noneMatch(groupName -> groupName.equalsIgnoreCase(role.getName()))) {

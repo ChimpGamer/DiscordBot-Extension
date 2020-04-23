@@ -23,14 +23,10 @@ class BugCommand(private val discordBot: DiscordBot, cmd: String?) : NMBungeeCom
                         .replace("%cooldown%", TimeUtils.getTimeString(player.language, Cooldown.getTimeLeft(player.uuid, name).toLong())))
                 return
             }
-            val sb = StringBuilder()
-            for (arg in args) {
-                sb.append(arg).append(" ")
-            }
-            val bug = sb.toString().trim { it <= ' ' }
-            val bugReportChannel = discordBot.guild.getTextChannelById(Setting.DISCORD_EVENTS_BUGREPORT_CHANNEL.asString)
+            val bug = args.joinToString { " " }.trim { it <= ' ' }
+            val bugReportChannel = discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_BUGREPORT_CHANNEL))
                     ?: return
-            val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(DCMessage.BUGREPORT_ALERT.message)
+            val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.BUGREPORT_ALERT))
             val fields: MutableList<MessageEmbed.Field> = LinkedList()
             for (field in jsonEmbedBuilder.fields) {
                 val name = insertBugReportPlaceholders(field.name, player, player.server, bug)
@@ -41,10 +37,10 @@ class BugCommand(private val discordBot: DiscordBot, cmd: String?) : NMBungeeCom
             jsonEmbedBuilder.fields = fields
             sendChannelMessage(bugReportChannel,
                     jsonEmbedBuilder.build())
-            player.sendMessage(MCMessage.BUG_SUCCESS.message)
+            player.sendMessage(discordBot.messages.getString(MCMessage.BUG_SUCCESS))
             Cooldown(player.uuid, "BugCMD", 60).start()
         } else {
-            player.sendMessage(MCMessage.BUG_HELP.message)
+            player.sendMessage(discordBot.messages.getString(MCMessage.BUG_HELP))
         }
     }
 
@@ -59,6 +55,6 @@ class BugCommand(private val discordBot: DiscordBot, cmd: String?) : NMBungeeCom
     }
 
     init {
-        this.isPlayerOnly = true
+        this.playerOnly = true
     }
 }

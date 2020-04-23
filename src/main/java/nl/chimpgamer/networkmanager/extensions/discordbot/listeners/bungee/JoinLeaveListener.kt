@@ -8,7 +8,6 @@ import net.md_5.bungee.event.EventPriority
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.SyncRanksTask
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.setNickName
 
 class JoinLeaveListener(private val discordBot: DiscordBot) : Listener {
 
@@ -20,13 +19,13 @@ class JoinLeaveListener(private val discordBot: DiscordBot) : Listener {
             discordBot.logger.info("Could not load player...")
             return
         }
-        val discordId = discordBot.discordUserManager.getDiscordIdByUuid(player.uuid) ?: return
+        val discordId = discordBot.discordUserManager.getDiscordIdByUuid(proxiedPlayer.uniqueId) ?: return
         Preconditions.checkNotNull(discordBot.guild, "The discord bot has not been connected to a discord server. Connect it to a discord server.")
         val member = discordBot.guild.getMemberById(discordId) ?: return
-        if (Setting.DISCORD_SYNC_USERNAME.asBoolean) {
-            setNickName(member, player.name)
+        if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME)) {
+            discordBot.discordManager.setNickName(member, proxiedPlayer.name)
         }
-        if (Setting.DISCORD_SYNC_RANKS_ENABLED.asBoolean) {
+        if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
             discordBot.scheduler.runSync(SyncRanksTask(discordBot, player))
         }
     }

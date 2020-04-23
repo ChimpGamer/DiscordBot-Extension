@@ -14,10 +14,19 @@ class CommandSettings(private val discordBot: DiscordBot) : FileUtils(discordBot
         save()
     }
 
+    fun getBoolean(commandSetting: CommandSetting): Boolean {
+        return getBoolean(commandSetting.path, commandSetting.defaultValue as Boolean)
+    }
+
+    fun getString(commandSetting: CommandSetting): String {
+        return getString(commandSetting.path, commandSetting.defaultValue as String)
+    }
+
     private fun setupFile() {
         if (!file.exists()) {
             try {
                 saveToFile(discordBot.getResource("commands.yml"))
+                reload()
             } catch (ex: NullPointerException) {
                 try {
                     file.createNewFile()
@@ -50,10 +59,4 @@ enum class CommandSetting(val path: String, val defaultValue: Any) {
     MINECRAFT_UNREGISTER_COMMAND("commands.minecraft.unregister.command", "unregister"),
     MINECRAFT_UNREGISTER_ALIASES("commands.minecraft.unregister.aliases", "unlink"),
     ;
-
-    val asString: String
-        get() = DiscordBot.instance!!.commandSettings.getString(path)
-
-    val asBoolean: Boolean
-        get() = DiscordBot.instance!!.commandSettings.getBoolean(path)
 }

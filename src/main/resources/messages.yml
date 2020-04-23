@@ -2,62 +2,83 @@ minecraft:
   register:
     help: '&4» &c/register [token]'
     token:
-      invalid: 'Invalid token, try again. Does it keep happening? Please contact a server Administrator!'
-      expired: 'Sorry but this token is already expired. Please ask the Discord bot for a new one!'
+      invalid: '&c&l(!) &6Invalid token, try again. Does it keep happening? Please contact a server Administrator!'
+      expired: '&c&l(!) &6Sorry but this token is already expired. Please ask the Discord bot for a new one!'
     verify:
-      account-already-linked: 'This Minecraft account is already paired with a Discord account.'
-      completed: 'Thanks for registering. You can talk in the discord server now!'
-      not-in-server: 'You cannot verify yourself if you haven''t joined our discord server!'
-      error: 'Something went wrong, try again. Does it keep happening? Please contact a server Administrator!'
+      account-already-linked: '&c&l(!) &6This Minecraft account is already paired with a Discord account.'
+      completed: '&a&l(!) &6Thanks for registering. You can talk in the discord server now!'
+      not-in-server: '&c&l(!) &6You cannot verify yourself if you haven''t joined our discord server!'
+      error: '&c&l(!) &6Something went wrong, try again. Does it keep happening? Please contact a server Administrator!'
   bug:
     help: '&4» &c/bug [bug]'
-    success: '&aSuccessfully notified the staff about the bug you encountered!'
+    success: '&a&l(!) &6Successfully notified the staff about the bug you encountered!'
   suggestion:
     help: '&4» &c/suggestion [suggestion]'
-    success: '&aSuccessfully notified the staff about your suggestion!'
+    success: '&a&l(!) &6Successfully notified the staff about your suggestion!'
   discord-response: '&7Join us on Discord at &6http://yourdiscordinvitelink.gg'
   reload:
     config: '&4» &7Reloaded &cConfig'
     messages: '&4» &7Reloaded &cMessagesConfig'
-    jda-success: '&4» &7Successfully reloaded &cJDA'
-    jda-failed: '&4» &7Failed to reload &cJDA! &7See console for more information.'
+    jda:
+      success:  '&4» &7Successfully reloaded &cJDA'
+      failed: '&4» &7Failed to reload &cJDA! &7See console for more information.'
 
 discord:
-  staffchat-receive: '%playername% said on %server%: %message%'
-  adminchat-receive: '%playername% said on %server%: %message%'
-  #registration-token: ':white_check_mark: Thanks for registering!%newline%Your token is: `%token%`.'
-  registration-not-in-server: 'You cannot register yourself if you haven''t joined our discord server!'
-  #registration-completed: ':white_check_mark: Registration completed! :white_check_mark:'
-  #unregister-completed: ':white_check_mark: Successfully unregistered your discord account! :white_check_mark:'
-  player-command-response: '%mention% There are %players% players online!'
-  playerlist-command-invalid-server: '%mention% The server %server% does not exist!'
-  chat-event-format: '%playername% said on %server%: %message%'
-  welcome-new-member: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the !register command when you want to register! Good luck!'
+  event:
+    staffchat: '%playername% said on %server%: %message%'
+    adminchat: '%playername% said on %server%: %message%'
+    chat: '%playername% said on %server%: %message%'
+    join: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the !register command when you want to register! Good luck!'
 
-  registration-token: |-
-    {
-      "title": "Thanks for registering!",
-      "description": "\nJoin our Server and type in **/register %token%**",
-      "color": 15860242
-    }
-  registration-token-expired: |-
-    {
-      "title": "TOKEN HAS BEEN EXPIRED.",
-      "description": "You can request a new one with **%command_prefix%register**",
-      "color": 14684176
-    }
-  registration-completed: |-
-    {
-      "title": "Registration completed!",
-      "description": "You can chat now and have your ingame rank.",
-      "color": 3535678
-    }
-  unregister-completed: |-
-    {
-      "title": "Successfully unregistered your discord account!",
-      "description": "You can register your Account again with %command_prefix%register",
-      "color": 3535678
-    }
+  command:
+    onlineplayers:
+      response: '%mention% There are %players% players online!'
+    playerlist:
+      invalid-server: '%mention% The server %server% does not exist!'
+    playtime:
+      response: |-
+        {
+          "fields": [
+            {
+              "name": "%playername%,",
+              "value": "You've played %playtime% on the server",
+              "inline": true
+            }
+          ],
+          "color": -2551040,
+          "title": "Playtime of %playername%",
+          "showTimestamp": true
+        }
+
+  registration:
+    not-in-server: 'You cannot register yourself if you haven''t joined our discord server!'
+    token:
+      response: |-
+        {
+          "title": "Thanks for registering!",
+          "description": "\nJoin our Server and type in **/register %token%**",
+          "color": 15860242
+        }
+      expired: |-
+        {
+          "title": "TOKEN HAS BEEN EXPIRED.",
+          "description": "You can request a new one with **%command_prefix%register**",
+          "color": 14684176
+        }
+    completed: |-
+      {
+        "title": "Registration completed!",
+        "description": "You can chat now and have your ingame rank.",
+        "color": 3535678
+      }
+    unregistered:
+      notification: |-
+        {
+          "title": "Successfully unregistered your discord account!",
+          "description": "You can register your Account again with %command_prefix%register",
+          "color": 3535678
+        }
+
   ticket-create-alert: |-
     {
       "fields": [
@@ -112,76 +133,77 @@ discord:
         "url": "https://i.imgur.com/sa9nsno.png"
       }
     }
-  server-status-offline: |-
-    {
-      "fields": [
-        {
-          "name": "Server ID",
-          "value": "%id%",
-          "inline": true
+  server-status:
+    offline: |-
+      {
+        "fields": [
+          {
+            "name": "Server ID",
+            "value": "%id%",
+            "inline": true
+          },
+          {
+            "name": "Server Name",
+            "value": "%name%",
+            "inline": true
+          },
+          {
+            "name": "Server IP",
+            "value": "%ip%",
+            "inline": true
+          },
+          {
+            "name": "Server Port",
+            "value": "%port%",
+            "inline": true
+          }
+        ],
+        "description": "\n**SERVER DETAILS**",
+        "color": -65536,
+        "title": "__Server Administration__",
+        "showTimestamp": true,
+        "thumbnail": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Button_Icon_Red.svg/2000px-Button_Icon_Red.svg.png"
         },
-        {
-          "name": "Server Name",
-          "value": "%name%",
-          "inline": true
-        },
-        {
-          "name": "Server IP",
-          "value": "%ip%",
-          "inline": true
-        },
-        {
-          "name": "Server Port",
-          "value": "%port%",
-          "inline": true
+        "footer": {
+          "text": "Status: Offline"
         }
-      ],
-      "description": "\n**SERVER DETAILS**",
-      "color": -65536,
-      "title": "__Server Administration__",
-      "showTimestamp": true,
-      "thumbnail": {
-        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Button_Icon_Red.svg/2000px-Button_Icon_Red.svg.png"
-      },
-      "footer": {
-        "text": "Status: Offline"
       }
-    }
-  server-status-online: |-
-    {
-      "fields": [
-        {
-          "name": "Server ID",
-          "value": "%id%",
-          "inline": true
+    online: |-
+      {
+        "fields": [
+          {
+            "name": "Server ID",
+            "value": "%id%",
+            "inline": true
+          },
+          {
+            "name": "Server Name",
+            "value": "%name%",
+            "inline": true
+          },
+          {
+            "name": "Server IP",
+            "value": "%ip%",
+            "inline": true
+          },
+          {
+            "name": "Server Port",
+            "value": "%port%",
+            "inline": true
+          }
+        ],
+        "description": "\n**SERVER DETAILS**",
+        "color": -16711936,
+        "title": "__Server Administration__",
+        "showTimestamp": true,
+        "thumbnail": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Button_Icon_Green.svg/2000px-Button_Icon_Green.svg.png"
         },
-        {
-          "name": "Server Name",
-          "value": "%name%",
-          "inline": true
-        },
-        {
-          "name": "Server IP",
-          "value": "%ip%",
-          "inline": true
-        },
-        {
-          "name": "Server Port",
-          "value": "%port%",
-          "inline": true
+        "footer": {
+          "text": "Status: Online"
         }
-      ],
-      "description": "\n**SERVER DETAILS**",
-      "color": -16711936,
-      "title": "__Server Administration__",
-      "showTimestamp": true,
-      "thumbnail": {
-        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Button_Icon_Green.svg/2000px-Button_Icon_Green.svg.png"
-      },
-      "footer": {
-        "text": "Status: Online"
       }
-    }
   punishment-alert: |-
     {
       "fields": [
@@ -414,18 +436,5 @@ discord:
       "description": "\n**CHATLOG DETAILS**",
       "color": -2551040,
       "title": "__Server Moderation__",
-      "showTimestamp": true
-    }
-  playtime-response: |-
-    {
-      "fields": [
-        {
-          "name": "%playername%,",
-          "value": "You've played %playtime% on the server",
-          "inline": true
-        }
-      ],
-      "color": -2551040,
-      "title": "Playtime of %playername%",
       "showTimestamp": true
     }

@@ -13,7 +13,7 @@ class CreateTokenTask(private val discordBot: DiscordBot, private val channel: M
 
     override fun run() {
         val token = generateToken()
-        val msgStr = DCMessage.REGISTRATION_TOKEN.message
+        val msgStr = discordBot.messages.getString(DCMessage.REGISTRATION_TOKEN_RESPONSE)
                 .replace("%newline%", "\n")
                 .replace("%token%", token)
         val message: Message? = if (Methods.isJsonValid(msgStr)) {
@@ -22,6 +22,6 @@ class CreateTokenTask(private val discordBot: DiscordBot, private val channel: M
         } else {
             Utils.sendMessageComplete(this.channel, msgStr)
         }
-        this.discordBot.discordUserManager.insertToken(token, this.discordID, message)
+        this.discordBot.discordUserManager.insertToken(token, this.discordID, message!!)
     }
 }

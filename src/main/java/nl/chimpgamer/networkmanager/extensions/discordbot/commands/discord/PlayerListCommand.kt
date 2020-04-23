@@ -14,7 +14,7 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
         if (!event.isFromType(ChannelType.TEXT)) {
             return
         }
-        if (!CommandSetting.DISCORD_PLAYERLIST_ENABLED.asBoolean) {
+        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYERLIST_ENABLED)) {
             return
         }
         if (event.args.isEmpty()) {
@@ -36,7 +36,7 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
             val serverName = args[0]
             val serverInfo = discordBot.networkManager.proxy.getServerInfo(serverName)
             if (serverInfo == null) {
-                sendChannelMessage(event.textChannel, DCMessage.PLAYERLIST_COMMAND_INVALID_SERVER.message
+                sendChannelMessage(event.textChannel, discordBot.messages.getString(DCMessage.COMMAND_PLAYERLIST_INVALID_SERVER)
                         .replace("%mention%", event.author.asMention)
                         .replace("%server%", serverName))
             }
@@ -53,7 +53,7 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
     }
 
     init {
-        name = CommandSetting.DISCORD_PLAYERLIST_COMMAND.asString
+        name = discordBot.commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_COMMAND)
         botPermissions = arrayOf(Permission.MESSAGE_WRITE)
         guildOnly = true
     }

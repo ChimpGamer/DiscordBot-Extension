@@ -23,15 +23,17 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.utils.MySQL
 import kotlin.collections.ArrayList
 
 class DiscordBot : NMExtension() {
-    private var listeners: MutableList<NMListener> = ArrayList()
-    // Configuration files
-    lateinit var settings: Settings
-    lateinit var commandSettings: CommandSettings
-    lateinit var messages: Messages
+    private val listeners: MutableList<NMListener> = ArrayList()
 
-    lateinit var mySQL: MySQL
-    lateinit var discordUserManager: DiscordUserManager
+    // Configuration files
+    val settings = Settings(this)
+    val commandSettings = CommandSettings(this)
+    val messages = Messages(this)
+
+    val mySQL = MySQL(this)
+    val discordUserManager = DiscordUserManager(this)
     lateinit var discordManager: DiscordManager
+
     public override fun onEnable() { // Extension startup logic
         instance = this
         if (networkManager.platformType != PlatformType.BUNGEECORD) {
@@ -40,22 +42,22 @@ class DiscordBot : NMExtension() {
         }
         val dd = DependencyDownloader(this)
         dd.downloadDependency(
-                "https://github.com/DV8FromTheWorld/JDA/releases/download/v4.0.0/JDA-4.0.0_39-withDependencies-no-opus.jar",
+                "https://github.com/DV8FromTheWorld/JDA/releases/download/v4.1.1/JDA-4.1.1_101-withDependencies-no-opus.jar",
                 "JDA",
-                "JDA-4.0.0_39-withDependencies-no-opus")
-        listeners = ArrayList()
+                "JDA-4.1.1_101-withDependencies-no-opus")
         // Initialize configuration files
-        initSettings()
-        initCommands()
-        initMessages()
-        mySQL = MySQL(this)
-        discordUserManager = DiscordUserManager(this)
+        settings.init()
+        commandSettings.init()
+        messages.init()
+
         discordUserManager.load()
+
         discordManager = DiscordManager(this)
         if (!discordManager.init()) {
             disable()
             return
         }
+
         registerCommands()
         registerListeners()
         if (networkManager.isRedisBungee) {
@@ -78,21 +80,6 @@ class DiscordBot : NMExtension() {
         this.messages.reload()
     }
 
-    private fun initSettings() {
-        settings = Settings(this)
-        settings.init()
-    }
-
-    private fun initCommands() {
-        commandSettings = CommandSettings(this)
-        commandSettings.init()
-    }
-
-    private fun initMessages() {
-        messages = Messages(this)
-        messages.init()
-    }
-
     private fun registerListeners() {
         this.listeners.add(NetworkManagerListeners(this))
         for (listener in this.listeners) {
@@ -106,18 +93,18 @@ class DiscordBot : NMExtension() {
 
     private fun registerCommands() {
         val commandManager = networkManager.commandManager
-        if (CommandSetting.MINECRAFT_BUG_ENABLED.asBoolean) {
-            commandManager.registerCommand(info.name, BugCommand(this, CommandSetting.MINECRAFT_BUG_COMMAND.asString))
+        if (commandSettings.getBoolean(CommandSetting.MINECRAFT_BUG_ENABLED)) {
+            commandManager.registerCommand(info.name, BugCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_BUG_COMMAND)))
         }
-        if (CommandSetting.MINECRAFT_SUGGESTION_ENABLED.asBoolean) {
-            commandManager.registerCommand(info.name, SuggestionCommand(this, CommandSetting.MINECRAFT_SUGGESTION_COMMAND.asString))
+        if (commandSettings.getBoolean(CommandSetting.MINECRAFT_SUGGESTION_ENABLED)) {
+            commandManager.registerCommand(info.name, SuggestionCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_SUGGESTION_COMMAND)))
         }
-        if (CommandSetting.MINECRAFT_DISCORD_ENABLED.asBoolean) {
+        if (commandSettings.getBoolean(CommandSetting.MINECRAFT_DISCORD_ENABLED)) {
             commandManager.registerCommand(info.name, DiscordCommand(this, "discord"))
         }
         commandManager.registerCommands(info.name,
-                RegisterCommand(this, CommandSetting.MINECRAFT_REGISTER_COMMAND.asString, arrayOf(CommandSetting.MINECRAFT_REGISTER_ALIASES.asString)),
-                UnregisterCommand(this, CommandSetting.MINECRAFT_UNREGISTER_COMMAND.asString, arrayOf(CommandSetting.MINECRAFT_UNREGISTER_ALIASES.asString)),
+                RegisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_COMMAND), arrayOf(commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_ALIASES))),
+                UnregisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), arrayOf(commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES))),
                 NetworkManagerBotCommand(this, "networkmanagerbot")
         )
     }
@@ -129,12 +116,12 @@ class DiscordBot : NMExtension() {
     }
 
     fun sendRedisBungee(message: String?) {
-        this.scheduler.runAsync({ networkManager.redisBungee.sendChannelMessage("NetworkManagerDiscordBot", message!!) }, false)
+        this.scheduler.runAsync(Runnable { networkManager.redisBungee.sendChannelMessage("NetworkManagerDiscordBot", message!!) }, false)
     }
 
     private fun expireTokens() {
         for (token in this.discordUserManager.tokens) {
-            this.scheduler.runSync(token.let { TokenExpiryTask(this, it) })
+            this.scheduler.runSync(TokenExpiryTask(this, token))
         }
     }
 

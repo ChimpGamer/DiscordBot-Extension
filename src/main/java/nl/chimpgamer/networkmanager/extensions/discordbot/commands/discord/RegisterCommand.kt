@@ -23,7 +23,7 @@ class RegisterCommand(private val discordBot: DiscordBot) : Command() {
         try {
             Preconditions.checkNotNull(discordBot.guild, "The discord bot has not been connected to a discord server. Connect it to a discord server.")
             if (discordBot.guild.getMember(event.author) == null) {
-                sendChannelMessage(event.channel, DCMessage.REGISTRATION_NOT_IN_SERVER.message)
+                sendChannelMessage(event.channel, discordBot.messages.getString(DCMessage.REGISTRATION_NOT_IN_SERVER))
                 return
             }
             if (!discordUserManager.containsDiscordID(event.author.id) && !discordBot.discordUserManager.checkUserByDiscordId(event.author.id)) {
@@ -36,8 +36,8 @@ class RegisterCommand(private val discordBot: DiscordBot) : Command() {
     }
 
     init {
-        name = CommandSetting.DISCORD_REGISTER_COMMAND.asString
-        aliases = arrayOf(discordBot.commandSettings.getString(CommandSetting.DISCORD_REGISTER_ALIASES.path))
+        name = discordBot.commandSettings.getString(CommandSetting.DISCORD_REGISTER_COMMAND)
+        aliases = arrayOf(discordBot.commandSettings.getString(CommandSetting.DISCORD_REGISTER_ALIASES))
         guildOnly = false
     }
 }

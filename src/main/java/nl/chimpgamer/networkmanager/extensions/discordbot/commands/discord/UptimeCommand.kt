@@ -5,16 +5,17 @@ import com.jagrosh.jdautilities.command.CommandEvent
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
+import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.lang.management.ManagementFactory
 
-class UptimeCommand : Command() {
+class UptimeCommand(private val discordBot: DiscordBot) : Command() {
     override fun execute(event: CommandEvent) {
         if (!event.isFromType(ChannelType.TEXT)) {
             return
         }
-        if (!CommandSetting.DISCORD_UPTIME_ENABLED.asBoolean) {
+        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_UPTIME_ENABLED)) {
             return
         }
         val bungeeuptime = ManagementFactory.getRuntimeMXBean().startTime
@@ -23,7 +24,7 @@ class UptimeCommand : Command() {
     }
 
     init {
-        name = CommandSetting.DISCORD_UPTIME_COMMAND.asString
+        name = discordBot.commandSettings.getString(CommandSetting.DISCORD_UPTIME_COMMAND)
         aliases = arrayOf("onlinetime")
         botPermissions = arrayOf(Permission.MESSAGE_WRITE)
         guildOnly = true

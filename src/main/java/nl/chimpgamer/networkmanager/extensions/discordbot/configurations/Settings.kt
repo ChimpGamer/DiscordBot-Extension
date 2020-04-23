@@ -1,9 +1,7 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.configurations
 
-import com.google.common.collect.Maps
 import nl.chimpgamer.networkmanager.api.utils.FileUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.getRoleByName
 import java.io.IOException
 
 class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFolder.absolutePath, "settings.yml") {
@@ -20,6 +18,7 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
         if (!file.exists()) {
             try {
                 saveToFile(discordBot.getResource("settings.yml"))
+                reload()
             } catch (ex: NullPointerException) {
                 try {
                     file.createNewFile()
@@ -32,15 +31,27 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
 
     override fun reload() {
         super.reload()
-        discordBot.discordManager.verifiedRole = getRoleByName(Setting.DISCORD_REGISTER_ADD_ROLE_ROLE_NAME.asString)
+        discordBot.discordManager.verifiedRole = discordBot.discordManager.getRoleByName(getString(Setting.DISCORD_REGISTER_ADD_ROLE_ROLE_NAME))
     }
 
     fun getString(setting: Setting): String {
-        return getString(setting.path)
+        return getString(setting.path, setting.defaultValue as String)
     }
 
     fun getBoolean(setting: Setting): Boolean {
-        return getBoolean(setting.path)
+        return getBoolean(setting.path, setting.defaultValue as Boolean)
+    }
+
+    fun getStringList(setting: Setting): List<String> {
+        return getStringList(setting.path)
+    }
+
+    fun getMap(setting: Setting): Map<String, String> {
+        val map: MutableMap<String, String> = HashMap()
+        for (key in DiscordBot.instance!!.settings.config.getConfigurationSection(setting.path).getKeys(false)) {
+            map[key] = DiscordBot.instance!!.settings.getString("${setting.path}.$key")
+        }
+        return map
     }
 }
 
@@ -50,7 +61,7 @@ enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_COMMAND_PREFIX("bot.discord.command_prefix", "!"),
     DISCORD_STATUS_ENABLED("bot.discord.status.enabled", true),
     DISCORD_STATUS_TYPE("bot.discord.status.type", "watching"),
-    DISCORD_STATUS_MESSAGE("bot.discord.status.message", "players on Hypixel"),
+    DISCORD_STATUS_MESSAGE("bot.discord.status.message", "%players% players on your server"),
     DISCORD_REGISTER_ADD_ROLE_ENABLED("bot.discord.register.addRole.enabled", false),
     DISCORD_REGISTER_ADD_ROLE_ROLE_NAME("bot.discord.register.addRole.roleName", "YourVerifiedRoleNameHere"),
     DISCORD_UNREGISTER_KICK_ENABLED("bot.discord.unregister.kick.enabled", false),
@@ -68,23 +79,6 @@ enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_EVENTS_SUGGESTION_CHANNEL("bot.discord.events.suggestion.channel", "000000000000000000"),
     DISCORD_EVENTS_BUGREPORT_CHANNEL("bot.discord.events.bugreport.channel", "000000000000000000"),
     DISCORD_EVENTS_CHAT_CHANNELS("bot.discord.events.chat", mapOf("all" to "000000000000000000")),
-    DISCORD_EVENTS_SERVERSTATUS_CHANNELS("bot.discord.events.serverStatus", mapOf("all" to "000000000000000000"));
-
-    val asString: String
-        get() = DiscordBot.instance!!.settings.getString(path)
-
-    val asBoolean: Boolean
-        get() = DiscordBot.instance!!.settings.getBoolean(path)
-
-    val asList: List<String>
-        get() = DiscordBot.instance!!.settings.getStringList(path)
-
-    val asMap: Map<String, String>
-        get() {
-            val map: MutableMap<String, String> = Maps.newHashMap()
-            for (key in DiscordBot.instance!!.settings.config.getConfigurationSection(path).getKeys(false)) {
-                map[key] = DiscordBot.instance!!.settings.getString("$path.$key")
-            }
-            return map
-        }
+    DISCORD_EVENTS_SERVERSTATUS_CHANNELS("bot.discord.events.serverStatus", mapOf("all" to "000000000000000000"))
+    ;
 }

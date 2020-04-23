@@ -4,14 +4,16 @@ import com.jagrosh.jdautilities.command.CommandClientBuilder
 import net.dv8tion.jda.api.AccountType
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.exceptions.PermissionException
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordListener
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.getRoleByName
 import javax.security.auth.login.LoginException
 
 class DiscordManager(private val discordBot: DiscordBot) {
@@ -47,7 +49,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
                 success = true
             }
         }
-        val roleName = Setting.DISCORD_REGISTER_ADD_ROLE_ROLE_NAME.asString
+        val roleName = discordBot.settings.getString(Setting.DISCORD_REGISTER_ADD_ROLE_ROLE_NAME)
         val role = getRoleByName(roleName)
         if (role != null) {
             discordBot.logger.info("Verified Role is: '" + role.name + "' (" + role.id + ")")
@@ -61,7 +63,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
     @Throws(LoginException::class, InterruptedException::class)
     private fun initJDA() {
         jda = JDABuilder(AccountType.BOT)
-                .setToken(Setting.DISCORD_TOKEN.asString)
+                .setToken(discordBot.settings.getString(Setting.DISCORD_TOKEN))
                 .addEventListeners(DiscordListener(discordBot))
                 .addEventListeners(commandClientBuilder.build())
                 .setAutoReconnect(true)
@@ -72,25 +74,25 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     private fun initCommandBuilder() {
         commandClientBuilder
-                .setPrefix(Setting.DISCORD_COMMAND_PREFIX.asString)
-                .setOwnerId(Setting.DISCORD_OWNER_ID.asString)
+                .setPrefix(discordBot.settings.getString(Setting.DISCORD_COMMAND_PREFIX))
+                .setOwnerId(discordBot.settings.getString(Setting.DISCORD_OWNER_ID))
                 .addCommands(
                         PlayerListCommand(discordBot),
                         PlayersCommand(discordBot),
                         RegisterCommand(discordBot),
                         PlaytimeCommand(discordBot),
-                        UptimeCommand()
+                        UptimeCommand(discordBot)
                 )
-        if (Setting.DISCORD_STATUS_ENABLED.asBoolean) {
+        if (discordBot.settings.getBoolean(Setting.DISCORD_STATUS_ENABLED)) {
             val activityType = try {
-                Activity.ActivityType.valueOf(Setting.DISCORD_STATUS_TYPE.asString.toUpperCase())
+                Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).toUpperCase())
             } catch (ex: IllegalArgumentException) {
-                discordBot.logger.warning("StatusType '" + Setting.DISCORD_STATUS_TYPE.asString + "' is invalid. Using DEFAULT.")
+                discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using DEFAULT.")
                 Activity.ActivityType.DEFAULT
             }
             commandClientBuilder
-                    .setActivity(Activity.of(activityType, Setting.DISCORD_STATUS_MESSAGE.asString
-                            .replace("%player%", discordBot.networkManager.proxy.players.size.toString())))
+                    .setActivity(Activity.of(activityType, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
+                            .replace("%players%", discordBot.networkManager.proxy.players.size.toString())))
         } else {
             commandClientBuilder.setActivity(null)
         }
@@ -112,5 +114,39 @@ class DiscordManager(private val discordBot: DiscordBot) {
             e.printStackTrace()
         }
         return false
+    }
+
+    fun setNickName(member: Member?, nickName: String) {
+        if (member == null) {
+            discordBot.logger.info("Can't set the nickname of a null member")
+            return
+        }
+        discordBot.logger.info("Setting nickname for " + member.effectiveName)
+        try {
+            member.guild.modifyNickname(member, nickName).queue()
+        } catch (ex: PermissionException) {
+            if (ex.permission == Permission.UNKNOWN) {
+                discordBot.logger.warning("Could not set the nickname for " + member.effectiveName + " because " + ex.message)
+            } else {
+                discordBot.logger.warning("Could not set the nickname for " + member.effectiveName + " because the bot does not have the required permission " + ex.permission.getName())
+            }
+        }
+    }
+
+    fun addRoleToMember(member: Member, role: Role) {
+        try {
+            member.guild.addRoleToMember(member, role).queue()
+        } catch (ex: PermissionException) {
+            if (ex.permission == Permission.UNKNOWN) {
+                discordBot.logger.warning("Could not set the role for " + member.effectiveName + " because " + ex.message)
+            } else {
+                discordBot.logger.warning("Could not set the role for " + member.effectiveName + " because the bot does not have the required permission " + ex.permission.getName())
+            }
+        }
+    }
+
+    fun getRoleByName(roleName: String): Role? {
+        val roles = guild.getRolesByName(roleName, true)
+        return roles.first { it.name.equals(roleName, ignoreCase = true) }
     }
 }

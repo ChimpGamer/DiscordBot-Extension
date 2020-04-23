@@ -5,9 +5,9 @@ import nl.chimpgamer.networkmanager.api.sender.Sender
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 
-class DiscordCommand(discordBot: DiscordBot, name: String?) : NMBungeeCommand(discordBot.networkManager, name, null) {
+class DiscordCommand(private val discordBot: DiscordBot, name: String?) : NMBungeeCommand(discordBot.networkManager, name, null) {
     override fun onExecute(sender: Sender, strings: Array<String>) {
-        sender.sendMessage(MCMessage.DISCORD_RESPONSE.message)
+        sender.sendMessage(discordBot.messages.getString(MCMessage.DISCORD_RESPONSE))
     }
 
     override fun onTabComplete(sender: Sender, strings: Array<String>): List<String> {
@@ -15,6 +15,6 @@ class DiscordCommand(discordBot: DiscordBot, name: String?) : NMBungeeCommand(di
     }
 
     init {
-        this.isPlayerOnly = true
+        this.playerOnly = true
     }
 }
