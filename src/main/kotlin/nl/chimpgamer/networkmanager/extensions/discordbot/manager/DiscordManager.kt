@@ -116,6 +116,23 @@ class DiscordManager(private val discordBot: DiscordBot) {
         return false
     }
 
+    fun setActivity(activity: Activity) {
+        jda.presence.activity = activity
+    }
+
+    fun updateActivity() {
+        if (discordBot.settings.getBoolean(Setting.DISCORD_STATUS_ENABLED)) {
+            val activityType = try {
+                Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).toUpperCase())
+            } catch (ex: IllegalArgumentException) {
+                discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using DEFAULT.")
+                Activity.ActivityType.DEFAULT
+            }
+            setActivity(Activity.of(activityType, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
+                    .replace("%players%", discordBot.networkManager.proxy.players.size.toString())))
+        }
+    }
+
     fun setNickName(member: Member?, nickName: String) {
         if (member == null) {
             discordBot.logger.info("Can't set the nickname of a null member")
