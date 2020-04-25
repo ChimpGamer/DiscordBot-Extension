@@ -7,6 +7,7 @@ import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerUnregisteredEvent
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
 import java.sql.SQLException
@@ -64,12 +65,11 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                     member?.kick(discordBot.settings.getString(Setting.DISCORD_UNREGISTER_KICK_REASON))
                 }
 
-                // TODO: Make these messages configurable
                 if (player.isOnline) {
-                    player.sendMessage("Successfully unregistered your discord account!")
+                    player.sendMessage(discordBot.messages.getString(MCMessage.UNREGISTER_SUCCESS))
                 }
             } else {
-                player.sendMessage("You cannot unlink your account because aren't registered!")
+                player.sendMessage(discordBot.messages.getString(MCMessage.UNREGISTER_NOT_REGISTERED))
             }
         } catch (ex: SQLException) {
             ex.printStackTrace()

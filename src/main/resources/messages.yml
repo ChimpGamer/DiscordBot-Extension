@@ -9,6 +9,9 @@ minecraft:
       completed: '&a&l(!) &6Thanks for registering. You can talk in the discord server now!'
       not-in-server: '&c&l(!) &6You cannot verify yourself if you haven''t joined our discord server!'
       error: '&c&l(!) &6Something went wrong, try again. Does it keep happening? Please contact a server Administrator!'
+  unregister:
+    success: '&a&l(!) &6Successfully unregistered your discord account!'
+    not-registered: '&c&l(!) &6You cannot unlink your account because aren''t registered!'
   bug:
     help: '&4» &c/bug [bug]'
     success: '&a&l(!) &6Successfully notified the staff about the bug you encountered!'

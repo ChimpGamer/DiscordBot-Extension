@@ -71,6 +71,8 @@ enum class MCMessage(val path: String) {
     REGISTER_COMPLETED("minecraft.register.verify.completed"),
     REGISTER_NOT_IN_SERVER("minecraft.register.verify.not-in-server"),
     REGISTER_ERROR("minecraft.register.verify.error"),
+    UNREGISTER_SUCCESS("minecraft.unregister.success"),
+    UNREGISTER_NOT_REGISTERED("minecraft.unregister.not-registered"),
     BUG_HELP("minecraft.bug.help"),
     BUG_SUCCESS("minecraft.bug.success"),
     SUGGESTION_HELP("minecraft.suggestion.help"),
