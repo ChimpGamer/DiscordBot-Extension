@@ -58,5 +58,4 @@ enum class CommandSetting(val path: String, val defaultValue: Any) {
     MINECRAFT_REGISTER_ALIASES("commands.minecraft.register.aliases", "link"),
     MINECRAFT_UNREGISTER_COMMAND("commands.minecraft.unregister.command", "unregister"),
     MINECRAFT_UNREGISTER_ALIASES("commands.minecraft.unregister.aliases", "unlink"),
-    ;
 }

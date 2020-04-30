@@ -120,17 +120,17 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     }
 
     fun getUuidByDiscordId(id: String): UUID? {
-        return discordUsers.entries.stream().filter { it.value.discordId == id }.map { it.key }.findFirst().orElse(null)
+        return discordUsers.entries.filter { it.value.discordId == id }.map { it.key }.firstOrNull()
     }
 
     private fun getToken(token: String): Token? {
-        return tokens.stream().filter { it.token.equals(token, ignoreCase = true) }.findFirst().orElse(null)
+        return tokens.filter { it.token.equals(token, ignoreCase = true) }.firstOrNull()
     }
 
     fun verifyUser(player: Player, inputToken: String) {
-        val token = getToken(inputToken)
-        val vut = token?.let { VerifyUserTask(discordBot, player, it) }
-        discordBot.scheduler.runAsync(vut!!, false)
+        val token = getToken(inputToken) ?: return
+        val vut = VerifyUserTask(discordBot, player, token)
+        discordBot.scheduler.runAsync(vut, false)
     }
 
     fun insertToken(inputToken: String, uuid: String, message: Message) {
@@ -140,6 +140,6 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     }
 
     fun containsDiscordID(discordID: String): Boolean {
-        return tokens.stream().anyMatch { token: Token -> token.discordID == discordID }
+        return tokens.any { it.discordID == discordID }
     }
 }

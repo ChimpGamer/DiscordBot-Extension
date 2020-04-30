@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.kyori:text-api:3.0.2")
+    compileOnly("net.kyori:text-api:3.0.4")
     implementation("com.jagrosh:jda-utilities-command:3.0.3")
     compileOnly("nl.chimpgamer.networkmanager:api:2.8.7")
     compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.8.7")
@@ -34,7 +34,7 @@ dependencies {
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.3.0"
+version = "1.3.1"
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"

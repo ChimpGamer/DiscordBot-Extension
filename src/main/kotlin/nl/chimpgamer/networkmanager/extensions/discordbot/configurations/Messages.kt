@@ -59,8 +59,6 @@ enum class DCMessage(val path: String) {
     BUGREPORT_ALERT("discord.bugreport-alert"),
     SUGGESTION_ALERT("discord.suggestion-alert"),
     CHATLOG_ALERT("discord.chatlog-alert"),
-
-    ;
 }
 
 enum class MCMessage(val path: String) {
@@ -82,5 +80,4 @@ enum class MCMessage(val path: String) {
     RELOAD_MESSAGES("minecraft.reload.messages"),
     RELOAD_JDA_SUCCESS("minecraft.reload.jda.success"),
     RELOAD_JDA_FAILED("minecraft.reload.jda.success")
-    ;
 }

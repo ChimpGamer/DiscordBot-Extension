@@ -34,6 +34,6 @@ class JoinLeaveListener(private val discordBot: DiscordBot) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onLogOut(event: PlayerDisconnectEvent) {
-        discordBot.discordManager.updateActivity()
+        discordBot.scheduler.runDelayed(Runnable { discordBot.discordManager.updateActivity() }, 1)
     }
 }
