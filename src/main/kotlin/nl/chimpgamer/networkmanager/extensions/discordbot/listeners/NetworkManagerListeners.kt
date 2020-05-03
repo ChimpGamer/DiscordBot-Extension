@@ -1,24 +1,25 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.md_5.bungee.api.ChatColor
 import nl.chimpgamer.networkmanager.api.NMListener
-import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers
 import nl.chimpgamer.networkmanager.api.event.NMEvent
 import nl.chimpgamer.networkmanager.api.event.events.*
 import nl.chimpgamer.networkmanager.api.event.events.ticket.TicketCreateEvent
 import nl.chimpgamer.networkmanager.api.models.punishments.Punishment
 import nl.chimpgamer.networkmanager.api.models.servers.Server
-import nl.chimpgamer.networkmanager.api.models.servers.ServerGroup
 import nl.chimpgamer.networkmanager.common.utils.Methods
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.util.*
+import java.util.regex.Pattern
 import java.util.stream.Collectors
 
 class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
+    private val replaceColorCodes = Regex("^(&)?&([0-9a-fk-orA-FK-OR])")
 
     @NMEvent
     fun onStaffChat(event: StaffChatEvent) {
@@ -264,7 +265,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
     }
 
     private fun insertPunishmentPlaceholders(s: String?, event: PunishmentEvent): String {
-        return Methods.parsePunishmentPlaceholders(event.punishment, 1, s)
+        val parsed = Methods.parsePunishmentPlaceholders(event.punishment, 1, s)
+        return ChatColor.stripColor(parsed.replace(replaceColorCodes, ""))
     }
 
     private fun insertTicketPlaceholders(s: String?, event: TicketCreateEvent): String {
