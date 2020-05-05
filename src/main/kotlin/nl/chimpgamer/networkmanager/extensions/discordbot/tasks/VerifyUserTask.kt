@@ -52,7 +52,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     if (discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED)) {
                         val verifiedRole: Role? = this.discordBot.discordManager.verifiedRole
                         if (verifiedRole != null) {
-                            this.discordBot.logger.info("Assigning the " + verifiedRole.name + " role to " + member.effectiveName)
+                            this.discordBot.logger.info("Assigning the ${verifiedRole.name} role to ${member.effectiveName}")
                             discordBot.discordManager.addRoleToMember(member, verifiedRole)
                         }
                     }

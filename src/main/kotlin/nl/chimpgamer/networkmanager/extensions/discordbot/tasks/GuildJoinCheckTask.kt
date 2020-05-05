@@ -1,8 +1,6 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.tasks
 
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.PrivateChannel
-import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
@@ -23,7 +21,7 @@ class GuildJoinCheckTask(private val discordBot: DiscordBot, private val member:
                             if (discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED)) {
                                 val verifiedRole = discordBot.discordManager.verifiedRole
                                 if (verifiedRole != null) {
-                                    discordBot.logger.info("Assigning the " + verifiedRole.name + " role to " + member.effectiveName)
+                                    discordBot.logger.info("Assigning the ${verifiedRole.name} role to ${member.effectiveName}")
                                     discordBot.discordManager.addRoleToMember(member, verifiedRole)
                                 }
                             }

@@ -45,9 +45,9 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                         member?.let { discordBot.guild.modifyMemberRoles(it, null, removeRoles).queue() }
                     } catch (ex: PermissionException) {
                         if (ex.permission == Permission.UNKNOWN) {
-                            discordBot.logger.warning("Could not set the role for " + member?.effectiveName + " because " + ex.message)
+                            discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because ${ex.message}")
                         } else {
-                            discordBot.logger.warning("Could not set the role for " + member?.effectiveName + " because the bot does not have the required permission " + ex.permission.getName())
+                            discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because the bot does not have the required permission ${ex.permission.name}")
                         }
                     }
                 }
