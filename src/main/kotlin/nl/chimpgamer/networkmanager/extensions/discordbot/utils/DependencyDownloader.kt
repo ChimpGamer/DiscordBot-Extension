@@ -16,7 +16,7 @@ class DependencyDownloader(val discordBot: DiscordBot) {
             try {
                 downloadFile(url, localPath)
             } catch (ex: IOException) {
-                discordBot.logger.severe("An error occured while downloading a required lib.")
+                discordBot.logger.severe("An error occurred while downloading a required lib.")
                 ex.printStackTrace()
             }
         }
