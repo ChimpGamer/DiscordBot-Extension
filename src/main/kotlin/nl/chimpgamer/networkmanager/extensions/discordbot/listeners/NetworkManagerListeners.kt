@@ -15,7 +15,6 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.util.*
-import java.util.regex.Pattern
 import java.util.stream.Collectors
 
 class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
