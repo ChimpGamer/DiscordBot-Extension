@@ -34,7 +34,7 @@ dependencies {
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.3.1"
+version = "1.3.2"
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
