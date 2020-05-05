@@ -23,16 +23,14 @@ class DiscordManager(private val discordBot: DiscordBot) {
     var verifiedRole: Role? = null
 
     fun init(): Boolean {
-        var success = true
+        var success = false
         try {
             initCommandBuilder()
             initJDA()
         } catch (ex: LoginException) {
             ex.printStackTrace()
-            success = false
         } catch (ex: InterruptedException) {
             ex.printStackTrace()
-            success = false
         }
         val guilds = jda.guilds
 
@@ -42,21 +40,22 @@ class DiscordManager(private val discordBot: DiscordBot) {
             }
             guilds.size > 1 -> {
                 discordBot.logger.warning("The Bot is a member of too many guilds!")
-                success = false
             }
             else -> {
                 guild = guilds[0]
                 success = true
             }
         }
-        val roleName = discordBot.settings.getString(Setting.DISCORD_REGISTER_ADD_ROLE_ROLE_NAME)
-        val role = getRoleByName(roleName)
-        if (role != null) {
-            discordBot.logger.info("Verified Role is: '" + role.name + "' (" + role.id + ")")
-        } else {
-            discordBot.logger.info("No Verified Role found by the name: '$roleName'")
+        if (success) {
+            val roleName = discordBot.settings.getString(Setting.DISCORD_REGISTER_ADD_ROLE_ROLE_NAME)
+            val role = getRoleByName(roleName)
+            if (role != null) {
+                discordBot.logger.info("Verified Role is: '${role.name}' (${role.id})")
+            } else {
+                discordBot.logger.info("No Verified Role found by the name: '$roleName'")
+            }
+            verifiedRole = role
         }
-        verifiedRole = role
         return success
     }
 
@@ -116,7 +115,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         return false
     }
 
-    fun setActivity(activity: Activity) {
+    private fun setActivity(activity: Activity) {
         jda.presence.activity = activity
     }
 
