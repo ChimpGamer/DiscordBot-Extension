@@ -164,6 +164,6 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     fun getRoleByName(roleName: String): Role? {
         val roles = guild.getRolesByName(roleName, true)
-        return roles.first { it.name.equals(roleName, ignoreCase = true) }
+        return roles.firstOrNull { it.name.equals(roleName, ignoreCase = true) }
     }
 }
