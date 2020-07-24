@@ -15,7 +15,6 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.util.*
-import java.util.stream.Collectors
 
 class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
     private val replaceColorCodes = Regex("^(&)?&([0-9a-fk-orA-FK-OR])")
@@ -48,11 +47,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
     fun onServerStatusChange(event: ServerStatusChangeEvent) {
         val server = event.server
         val serverChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_SERVERSTATUS_CHANNELS)
-        var globalId: String? = "000000000000000000"
-        if (serverChannels.containsKey("all")) {
-            globalId = serverChannels["all"]
-        }
-        val globalServerTextChannel = discordBot.guild.getTextChannelById(globalId!!)
+        val globalId: String = serverChannels["all"] ?: "000000000000000000"
+        val globalServerTextChannel = discordBot.guild.getTextChannelById(globalId)
         if (globalServerTextChannel != null) {
             val jsonEmbedBuilder: JsonEmbedBuilder
             if (event.isOnline) { // Server went on
@@ -87,11 +83,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
                         jsonEmbedBuilder.build())
             }
         }
-        var channelId: String? = "000000000000000000"
-        if (serverChannels.containsKey(server.serverName)) {
-            channelId = serverChannels[server.serverName]
-        }
-        val serverStatusChannel = discordBot.guild.getTextChannelById(channelId!!)
+        val channelId: String = serverChannels[server.serverName] ?: "000000000000000000"
+        val serverStatusChannel = discordBot.guild.getTextChannelById(channelId)
         if (serverStatusChannel != null) {
             val jsonEmbedBuilder: JsonEmbedBuilder
             if (event.isOnline) { // Server went on
@@ -130,10 +123,10 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
 
     @NMEvent
     fun onPunishment(event: PunishmentEvent) {
-        if (event.punishment.type == Punishment.Type.NOTE) {
+        if (event.punishment.type === Punishment.Type.NOTE) {
             return
         }
-        if (event.punishment.type == Punishment.Type.REPORT) {
+        if (event.punishment.type === Punishment.Type.REPORT) {
             val reportChannel = discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_REPORT_CHANNEL))
                     ?: return
             val jsonEmbedBuilder: JsonEmbedBuilder
@@ -252,7 +245,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
                 .replace("%motd%", server.motd)
                 .replace("%ip%", server.ip)
                 .replace("%port%", server.port.toString())
-                .replace("%groups%", server.serverGroups.stream().map { it.groupName }.collect(Collectors.toList()).toString())
+                .replace("%groups%", server.serverGroups.map { it.groupName }.joinToString())
                 .replace("%isrestricted%", server.isRestricted.toString())
     }
 
