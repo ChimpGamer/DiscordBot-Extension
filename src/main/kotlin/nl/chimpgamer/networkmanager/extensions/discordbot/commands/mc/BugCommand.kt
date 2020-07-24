@@ -23,14 +23,19 @@ class BugCommand(private val discordBot: DiscordBot, cmd: String?) : NMBungeeCom
                         .replace("%cooldown%", TimeUtils.getTimeString(player.language, Cooldown.getTimeLeft(player.uuid, name).toLong())))
                 return
             }
-            val bug = args.joinToString { " " }.trim { it <= ' ' }
+            val bug = args.joinToString().trim()
             val bugReportChannel = discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_BUGREPORT_CHANNEL))
                     ?: return
             val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.BUGREPORT_ALERT))
             val fields: MutableList<MessageEmbed.Field> = LinkedList()
             for (field in jsonEmbedBuilder.fields) {
-                val name = insertBugReportPlaceholders(field.name, player, player.server, bug)
-                val value = insertBugReportPlaceholders(field.value, player, player.server, bug)
+                val fieldName = field.name
+                val fieldValue = field.value
+                if (fieldName == null || fieldValue == null) {
+                    continue
+                }
+                val name = insertBugReportPlaceholders(fieldName, player, player.server, bug)
+                val value = insertBugReportPlaceholders(fieldValue, player, player.server, bug)
                 val field1 = MessageEmbed.Field(name, value, field.isInline)
                 fields.add(field1)
             }
@@ -48,8 +53,8 @@ class BugCommand(private val discordBot: DiscordBot, cmd: String?) : NMBungeeCom
         return emptyList()
     }
 
-    private fun insertBugReportPlaceholders(s: String?, player: Player, serverName: String, bug: String): String {
-        return s!!.replace("%playername%", player.name)
+    private fun insertBugReportPlaceholders(s: String, player: Player, serverName: String, bug: String): String {
+        return s.replace("%playername%", player.name)
                 .replace("%server%", serverName)
                 .replace("%bug%", bug)
     }
