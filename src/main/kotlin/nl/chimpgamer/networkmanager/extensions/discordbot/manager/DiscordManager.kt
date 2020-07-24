@@ -1,7 +1,6 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.manager
 
 import com.jagrosh.jdautilities.command.CommandClientBuilder
-import net.dv8tion.jda.api.AccountType
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.Permission
@@ -61,8 +60,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     @Throws(LoginException::class, InterruptedException::class)
     private fun initJDA() {
-        jda = JDABuilder(AccountType.BOT)
-                .setToken(discordBot.settings.getString(Setting.DISCORD_TOKEN))
+        jda = JDABuilder.createDefault(discordBot.settings.getString(Setting.DISCORD_TOKEN))
                 .addEventListeners(DiscordListener(discordBot))
                 .addEventListeners(commandClientBuilder.build())
                 .setAutoReconnect(true)

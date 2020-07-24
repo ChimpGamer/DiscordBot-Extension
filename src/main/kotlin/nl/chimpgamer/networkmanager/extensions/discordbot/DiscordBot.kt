@@ -42,9 +42,9 @@ class DiscordBot : NMExtension() {
         }
         val dd = DependencyDownloader(this)
         dd.downloadDependency(
-                "https://github.com/DV8FromTheWorld/JDA/releases/download/v4.1.1/JDA-4.1.1_101-withDependencies-no-opus.jar",
+                "https://github.com/DV8FromTheWorld/JDA/releases/download/v4.2.0/JDA-4.2.0_168-withDependencies-no-opus.jar",
                 "JDA",
-                "JDA-4.1.1_101-withDependencies-no-opus")
+                "JDA-4.2.0_168-withDependencies-no-opus")
         // Initialize configuration files
         settings.init()
         commandSettings.init()
@@ -115,8 +115,8 @@ class DiscordBot : NMExtension() {
         }
     }
 
-    fun sendRedisBungee(message: String?) {
-        this.scheduler.runAsync(Runnable { networkManager.redisBungee.sendChannelMessage("NetworkManagerDiscordBot", message!!) }, false)
+    fun sendRedisBungee(message: String) {
+        this.scheduler.runAsync(Runnable { networkManager.redisBungee.sendChannelMessage("NetworkManagerDiscordBot", message) }, false)
     }
 
     private fun expireTokens() {

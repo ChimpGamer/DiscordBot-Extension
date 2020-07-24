@@ -10,31 +10,34 @@ plugins {
 
 repositories {
     mavenLocal()
+    jcenter()
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
-
-    maven { url = uri("https://jcenter.bintray.com") }
 
     maven { url = uri("https://jitpack.io") }
 
     maven { url = uri("http://repo.md-5.net/content/repositories/snapshots/") }
 
-    maven { url = uri("https://repo.maven.apache.org/maven2") }
+    maven { url = uri("https://repo.codemc.org/repository/maven-public") }
+
+    maven { url = uri("http://repo.maven.apache.org/maven2") }
 }
 
 dependencies {
-    compileOnly("net.kyori:text-api:3.0.4")
-    implementation("com.jagrosh:jda-utilities-command:3.0.3")
-    compileOnly("nl.chimpgamer.networkmanager:api:2.8.7")
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.8.7")
-    compileOnly("net.md-5:bungeecord-api:1.15-SNAPSHOT")
-    compileOnly("net.dv8tion:JDA:4.1.1_101")
-    compileOnly("com.github.Carleslc:Simple-YAML:1.4.1")
+    implementation("net.kyori:text-api:3.0.2")
+    implementation("com.jagrosh:jda-utilities-command:3.0.4")
+    implementation("net.md-5:bungeecord-api:1.15-SNAPSHOT")
+    implementation("nl.chimpgamer.networkmanager:api:2.8.8-SNAPSHOT")
+    implementation("nl.chimpgamer.networkmanager:bungeecord:2.8.8-SNAPSHOT") {
+        exclude("org.bstats:bstats-bungeecord:1.7")
+    }
+    implementation("net.dv8tion:JDA:4.2.0_168")
+    implementation("com.github.Carleslc:Simple-YAML:1.4.1")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
-    compileOnly(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.3.2"
+version = "1.3.3"
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
