@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.exceptions.PermissionException
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import java.math.BigInteger
 import java.security.SecureRandom
-import java.util.stream.Collectors
 
 object Utils {
     val UUID_REGEX: Regex = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")
@@ -68,7 +67,7 @@ object Utils {
                 .filter { role: Role -> role.guild.publicRole.id != role.id }
                 .filter { role: Role -> !member.roles.contains(role) }
                 .toCollection(rolesToAddFiltered)
-        val nonInteractableRolesToAdd = rolesToAddFiltered.stream().filter { role: Role -> !member.guild.selfMember.canInteract(role) }.collect(Collectors.toSet())
+        val nonInteractableRolesToAdd = rolesToAddFiltered.filter { role: Role -> !member.guild.selfMember.canInteract(role) }
         rolesToAddFiltered.removeAll(nonInteractableRolesToAdd)
         nonInteractableRolesToAdd.forEach { role: Role -> DiscordBot.instance!!.logger.warning("Failed to add role " + role.name + " to " + member.effectiveName + " because the bot's highest role is lower than the target role and thus can't interact with it") }
         rolesToRemove
@@ -76,7 +75,7 @@ object Utils {
                 .filter { role: Role -> role.guild.publicRole.id != role.id }
                 .filter { role: Role -> member.roles.contains(role) }
                 .toCollection(rolesToRemoveFiltered)
-        val nonInteractableRolesToRemove = rolesToRemoveFiltered.stream().filter { role: Role -> !member.guild.selfMember.canInteract(role) }.collect(Collectors.toSet())
+        val nonInteractableRolesToRemove = rolesToRemoveFiltered.filter { role: Role -> !member.guild.selfMember.canInteract(role) }
         rolesToRemoveFiltered.removeAll(nonInteractableRolesToRemove)
         nonInteractableRolesToRemove.forEach { role: Role -> DiscordBot.instance!!.logger.warning("Failed to remove role " + role.name + " from " + member.effectiveName + " because the bot's highest role is lower than the target role and thus can't interact with it") }
         member.guild.modifyMemberRoles(member, rolesToAddFiltered, rolesToRemoveFiltered).queue()
