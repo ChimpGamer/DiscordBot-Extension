@@ -27,7 +27,7 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
                     sb.append(proxiedPlayer.name).append(" - ").append(proxiedPlayer.server.info.name).append("\n")
                 }
             }
-            val playerList = sb.toString().trim { it <= ' ' }
+            val playerList = sb.toString().trim()
             sendChannelMessage(event.textChannel, playerList)
             return
         }
@@ -47,7 +47,7 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
             if (sb.isNotEmpty()) {
                 sb = StringBuilder(sb.toString().substring(0, sb.toString().length - 2))
             }
-            val playerList = sb.toString().trim { it <= ' ' }
+            val playerList = sb.toString().trim()
             sendChannelMessage(event.textChannel, playerList)
         }
     }
