@@ -20,17 +20,10 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         for (roleName in discordBot.settings.getStringList(Setting.DISCORD_SYNC_RANKS_LIST)) {
             val role = discordBot.discordManager.getRoleByName(roleName) ?: continue
             val groups = nl.chimpgamer.networkmanager.bungeecord.utils.Utils.getGroupsName(player)
-            for (group in groups) {
-                if (group.equals(role.name, ignoreCase = true)) {
-                    addRoles.add(role)
-                } else {
-                    if (groups.stream().noneMatch { it.equals(role.name, ignoreCase = true) }) {
-                        removeRoles.add(role)
-                    }
-                    /*if (member.getRoles().contains(role) && groups.stream().noneMatch(groupName -> groupName.equalsIgnoreCase(role.getName()))) {
-                        removeRoles.add(role);
-                    }*/
-                }
+            if (groups.any { it.equals(role.name, ignoreCase = true) }) {
+                addRoles.add(role)
+            } else {
+                removeRoles.add(role)
             }
         }
         // remove roles that the user already has from roles to add
