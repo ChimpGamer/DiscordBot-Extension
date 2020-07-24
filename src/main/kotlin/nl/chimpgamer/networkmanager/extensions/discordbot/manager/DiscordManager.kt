@@ -17,7 +17,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordListe
 import javax.security.auth.login.LoginException
 
 class DiscordManager(private val discordBot: DiscordBot) {
-    private val commandClientBuilder: CommandClientBuilder = CommandClientBuilder()
+    private val commandClientBuilder = CommandClientBuilder()
     private lateinit var jda: JDA
     lateinit var guild: Guild
     var verifiedRole: Role? = null

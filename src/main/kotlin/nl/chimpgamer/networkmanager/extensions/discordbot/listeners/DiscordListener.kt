@@ -4,8 +4,6 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import nl.chimpgamer.networkmanager.api.cache.modules.CachedPlayers
-import nl.chimpgamer.networkmanager.api.cache.modules.CachedValues
 import nl.chimpgamer.networkmanager.api.values.Command
 import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData
 import nl.chimpgamer.networkmanager.common.messaging.handlers.AdminChatMessageHandler
@@ -17,8 +15,8 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.GuildJoinCheckTa
 class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
         val discordUserManager = discordBot.discordUserManager
-        val cachedPlayers: CachedPlayers = discordBot.networkManager.cacheManager.cachedPlayers
-        val cachedValues: CachedValues = discordBot.networkManager.cacheManager.cachedValues
+        val cachedPlayers = discordBot.networkManager.cacheManager.cachedPlayers
+        val cachedValues = discordBot.networkManager.cacheManager.cachedValues
         if (!event.isFromType(ChannelType.TEXT) || event.author.isBot) {
             return
         }

@@ -124,7 +124,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     }
 
     private fun getToken(token: String): Token? {
-        return tokens.filter { it.token.equals(token, ignoreCase = true) }.firstOrNull()
+        return tokens.firstOrNull { it.token.equals(token, ignoreCase = true) }
     }
 
     fun verifyUser(player: Player, inputToken: String) {
