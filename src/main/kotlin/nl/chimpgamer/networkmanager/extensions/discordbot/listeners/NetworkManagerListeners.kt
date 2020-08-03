@@ -245,7 +245,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
                 .replace("%motd%", server.motd)
                 .replace("%ip%", server.ip)
                 .replace("%port%", server.port.toString())
-                .replace("%groups%", server.serverGroups.map { it.groupName }.joinToString())
+                .replace("%groups%", server.serverGroups.joinToString { it.groupName })
                 .replace("%isrestricted%", server.isRestricted.toString())
     }
 

@@ -35,7 +35,7 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
 
                 if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
                     val removeRoles: MutableSet<Role> = HashSet()
-                    for (roleName in discordBot.settings.getStringList(Setting.DISCORD_SYNC_RANKS_LIST)) {
+                    for ((_, roleName) in discordBot.settings.getMap(Setting.DISCORD_SYNC_RANKS_MAP)) {
                         val role = discordBot.discordManager.getRoleByName(roleName) ?: continue
                         removeRoles.add(role)
                     }

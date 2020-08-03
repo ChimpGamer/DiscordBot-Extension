@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
@@ -61,6 +63,8 @@ class DiscordManager(private val discordBot: DiscordBot) {
     @Throws(LoginException::class, InterruptedException::class)
     private fun initJDA() {
         jda = JDABuilder.createDefault(discordBot.settings.getString(Setting.DISCORD_TOKEN))
+                .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .addEventListeners(DiscordListener(discordBot))
                 .addEventListeners(commandClientBuilder.build())
                 .setAutoReconnect(true)
@@ -89,7 +93,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
             }
             commandClientBuilder
                     .setActivity(Activity.of(activityType, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
-                            .replace("%players%", discordBot.networkManager.proxy.players.size.toString())))
+                            .replace("%players%", discordBot.networkManager.proxy.onlineCount.toString())))
         } else {
             commandClientBuilder.setActivity(null)
         }

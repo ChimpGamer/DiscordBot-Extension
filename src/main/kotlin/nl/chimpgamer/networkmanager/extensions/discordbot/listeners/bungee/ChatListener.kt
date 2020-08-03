@@ -7,8 +7,8 @@ import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 
 class ChatListener(private val discordBot: DiscordBot) : Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -19,20 +19,14 @@ class ChatListener(private val discordBot: DiscordBot) : Listener {
         val proxiedPlayer = event.sender as ProxiedPlayer
         val currentServer = proxiedPlayer.server.info.name
         val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
-        var globalId: String? = "000000000000000000"
-        if (chatEventChannels.containsKey("all")) {
-            globalId = chatEventChannels["all"]
-        }
-        val globalChatTextChannel = discordBot.guild.getTextChannelById(globalId!!)
+        val globalId = chatEventChannels["all"] ?: "000000000000000000"
+        val globalChatTextChannel = discordBot.guild.getTextChannelById(globalId)
         globalChatTextChannel?.sendMessage(discordBot.messages.getString(DCMessage.EVENT_CHAT)
                 .replace("%playername%", proxiedPlayer.name)
                 .replace("%server%", currentServer)
                 .replace("%message%", event.message))?.queue()
-        var serverId: String? = "000000000000000000"
-        if (chatEventChannels.containsKey(currentServer)) {
-            serverId = chatEventChannels[currentServer]
-        }
-        val serverChatTextChannel = discordBot.guild.getTextChannelById(serverId!!)
+        val serverId = chatEventChannels[currentServer] ?: "000000000000000000"
+        val serverChatTextChannel = discordBot.guild.getTextChannelById(serverId)
         serverChatTextChannel?.sendMessage(discordBot.messages.getString(DCMessage.EVENT_CHAT)
                 .replace("%playername%", proxiedPlayer.name)
                 .replace("%server%", currentServer)

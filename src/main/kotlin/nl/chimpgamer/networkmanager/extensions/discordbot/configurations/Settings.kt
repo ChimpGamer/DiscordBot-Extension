@@ -10,8 +10,23 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
         for (setting in Setting.values()) {
             addDefault(setting.path, setting.defaultValue)
         }
+        convertRolesListToMap()
         copyDefaults(true)
         save()
+    }
+
+    private fun convertRolesListToMap() {
+        val rolesList = getStringList("bot.discord.sync.ranks.list")
+        if (rolesList.isEmpty()) {
+            set("bot.discord.sync.ranks.list", null)
+            return
+        }
+        val rolesMap = getMap(Setting.DISCORD_SYNC_RANKS_MAP).toMutableMap()
+        for (role in rolesList) {
+            rolesMap[role] = role
+        }
+        set(Setting.DISCORD_SYNC_RANKS_MAP.path, rolesMap)
+        set("bot.discord.sync.ranks.list", null)
     }
 
     private fun setupFile() {
@@ -46,10 +61,12 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
         return getStringList(setting.path)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun getMap(setting: Setting): Map<String, String> {
         val map: MutableMap<String, String> = HashMap()
-        for (key in DiscordBot.instance!!.settings.config.getConfigurationSection(setting.path).getKeys(false)) {
-            map[key] = DiscordBot.instance!!.settings.getString("${setting.path}.$key")
+        val mapSection = discordBot.settings.config.getConfigurationSection(setting.path) ?: return setting.defaultValue as Map<String, String>
+        for (key in mapSection.getKeys(false)) {
+            map[key] = discordBot.settings.getString("${setting.path}.$key")
         }
         return map
     }
@@ -68,7 +85,7 @@ enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_UNREGISTER_KICK_REASON("bot.discord.unregister.kick.reason", "You have been kicked from the ... discord because your account got unlinked!"),
     DISCORD_SYNC_USERNAME("bot.discord.sync.username", false),
     DISCORD_SYNC_RANKS_ENABLED("bot.discord.sync.ranks.enabled", false),
-    DISCORD_SYNC_RANKS_LIST("bot.discord.sync.ranks.list", listOf("VIP", "SuperVIP")),
+    DISCORD_SYNC_RANKS_MAP("bot.discord.sync.ranks.map", mapOf("vip" to "VIP", "supervip" to "SuperVIP")),
     DISCORD_EVENTS_STAFFCHAT_CHANNEL("bot.discord.events.staffchat.channel", "000000000000000000"),
     DISCORD_EVENTS_ADMINCHAT_CHANNEL("bot.discord.events.adminchat.channel", "000000000000000000"),
     DISCORD_EVENTS_TICKETS_CHANNEL("bot.discord.events.tickets.channel", "000000000000000000"),

@@ -21,7 +21,6 @@ class JsonEmbedBuilder {
     private var color = Role.DEFAULT_COLOR_RAW
     private var url: String? = null
     var title: String? = null
-        set
     private var timestamp: OffsetDateTime? = null
     private var showTimestamp: Boolean? = null
     private var thumbnail: Thumbnail? = null

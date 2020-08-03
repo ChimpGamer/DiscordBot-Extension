@@ -5,7 +5,7 @@ import nl.chimpgamer.networkmanager.api.sender.Sender
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 
-class NetworkManagerBotCommand(private val discordBot: DiscordBot, cmd: String?) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.admin"), "nmbot") {
+class NetworkManagerBotCommand(private val discordBot: DiscordBot, cmd: String) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.admin"), "nmbot") {
     override fun onExecute(sender: Sender, args: Array<String>) {
         if (args.size == 2) {
             if (args[0].equals("reload", ignoreCase = true)) {
@@ -32,12 +32,10 @@ class NetworkManagerBotCommand(private val discordBot: DiscordBot, cmd: String?)
     }
 
     override fun onTabComplete(sender: Sender, args: Array<String>): List<String> {
-        if (args.size == 1 && "reload".startsWith(args[0].toLowerCase())) {
-            return listOf("reload")
-        }
-        return if (args.size == 2) {
+        return if (args.size == 1 && "reload".startsWith(args[0], ignoreCase = true)) {
+            listOf("reload")
+        } else if (args.size == 2) {
             listOf("config", "settings", "messages", "jda")
         } else emptyList()
     }
-
 }

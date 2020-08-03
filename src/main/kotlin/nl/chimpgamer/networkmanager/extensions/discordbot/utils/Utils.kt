@@ -8,7 +8,7 @@ import java.math.BigInteger
 import java.security.SecureRandom
 
 object Utils {
-    val UUID_REGEX: Regex = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")
+    val UUID_REGEX = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")
 
     @JvmStatic
     fun sendChannelMessage(channel: MessageChannel, message: String?) {

@@ -17,10 +17,11 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         discordBot.logger.info("Syncing roles for " + member.effectiveName)
         val addRoles: MutableSet<Role> = HashSet()
         val removeRoles: MutableSet<Role> = HashSet()
-        for (roleName in discordBot.settings.getStringList(Setting.DISCORD_SYNC_RANKS_LIST)) {
+
+        for ((rankName, roleName) in discordBot.settings.getMap(Setting.DISCORD_SYNC_RANKS_MAP)) {
             val role = discordBot.discordManager.getRoleByName(roleName) ?: continue
             val groups = nl.chimpgamer.networkmanager.bungeecord.utils.Utils.getGroupsName(player)
-            if (groups.any { it.equals(role.name, ignoreCase = true) }) {
+            if (groups.any { it.equals(rankName, ignoreCase = true) }) {
                 addRoles.add(role)
             } else {
                 removeRoles.add(role)
@@ -29,7 +30,7 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         // remove roles that the user already has from roles to add
         addRoles.removeAll(member.roles)
         // remove roles that the user doesn't already have from roles to remove
-        removeRoles.removeIf { role: Role? -> !member.roles.contains(role) }
+        removeRoles.removeIf { role -> member.roles.contains(role) }
         /*println("AddRoles: $addRoles")
         println("RemoveRoles: $removeRoles")*/
         if (addRoles.isEmpty() && removeRoles.isEmpty()) {
@@ -38,7 +39,7 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         try {
             Utils.modifyRolesOfMember(member, addRoles, removeRoles)
         } catch (ex: PermissionException) {
-            if (ex.permission == Permission.UNKNOWN) {
+            if (ex.permission === Permission.UNKNOWN) {
                 discordBot.logger.warning("Could not set the role for " + member.effectiveName + " because " + ex.message)
             } else {
                 discordBot.logger.warning("Could not set the role for " + member.effectiveName + " because the bot does not have the required permission " + ex.permission.getName())
