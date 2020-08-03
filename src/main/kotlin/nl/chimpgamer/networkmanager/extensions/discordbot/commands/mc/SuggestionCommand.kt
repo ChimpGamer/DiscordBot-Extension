@@ -16,11 +16,11 @@ import java.util.*
 
 class SuggestionCommand(private val discordBot: DiscordBot, cmd: String) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.suggestion", "networkmanager.admin")) {
     override fun onExecute(sender: Sender, args: Array<String>) {
-        val player = sender as Player
+        sender as Player
         if (args.isNotEmpty()) {
-            if (Cooldown.isInCooldown(player.uuid, "SuggestionCMD")) {
-                player.sendMessage("&7You have to wait &c%cooldown% &7before you can send a new suggestion."
-                        .replace("%cooldown%", TimeUtils.getTimeString(player.language, Cooldown.getTimeLeft(player.uuid, name).toLong())))
+            if (Cooldown.isInCooldown(sender.uuid, "SuggestionCMD")) {
+                sender.sendMessage("&7You have to wait &c%cooldown% &7before you can send a new suggestion."
+                        .replace("%cooldown%", TimeUtils.getTimeString(sender.language, Cooldown.getTimeLeft(sender.uuid, name).toLong())))
                 return
             }
             val suggestion = args.joinToString(" ").trim()
@@ -34,18 +34,18 @@ class SuggestionCommand(private val discordBot: DiscordBot, cmd: String) : NMBun
                 if (fieldName == null || fieldValue == null) {
                     continue
                 }
-                val name = insertSuggestionPlaceholders(fieldName, player, player.server, suggestion)
-                val value = insertSuggestionPlaceholders(fieldValue, player, player.server, suggestion)
+                val name = insertSuggestionPlaceholders(fieldName, sender, sender.server, suggestion)
+                val value = insertSuggestionPlaceholders(fieldValue, sender, sender.server, suggestion)
                 val field1 = MessageEmbed.Field(name, value, field.isInline)
                 fields.add(field1)
             }
             jsonEmbedBuilder.fields = fields
             sendChannelMessage(suggestionsChannel,
                     jsonEmbedBuilder.build())
-            player.sendMessage(discordBot.messages.getString(MCMessage.SUGGESTION_SUCCESS))
-            Cooldown(player.uuid, "SuggestionCMD", 60).start()
+            sender.sendMessage(discordBot.messages.getString(MCMessage.SUGGESTION_SUCCESS))
+            Cooldown(sender.uuid, "SuggestionCMD", 60).start()
         } else {
-            player.sendMessage(discordBot.messages.getString(MCMessage.SUGGESTION_HELP))
+            sender.sendMessage(discordBot.messages.getString(MCMessage.SUGGESTION_HELP))
         }
     }
 

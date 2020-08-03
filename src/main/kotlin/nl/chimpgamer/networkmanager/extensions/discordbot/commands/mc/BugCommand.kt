@@ -16,11 +16,11 @@ import java.util.*
 
 class BugCommand(private val discordBot: DiscordBot, cmd: String) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.bug", "networkmanager.admin")) {
     override fun onExecute(sender: Sender, args: Array<String>) {
-        val player = sender as Player
+        sender as Player
         if (args.isNotEmpty()) {
-            if (Cooldown.isInCooldown(player.uuid, "BugCMD")) {
-                player.sendMessage("&7You have to wait &c%cooldown% &7before you can send a new bug report."
-                        .replace("%cooldown%", TimeUtils.getTimeString(player.language, Cooldown.getTimeLeft(player.uuid, name).toLong())))
+            if (Cooldown.isInCooldown(sender.uuid, "BugCMD")) {
+                sender.sendMessage("&7You have to wait &c%cooldown% &7before you can send a new bug report."
+                        .replace("%cooldown%", TimeUtils.getTimeString(sender.language, Cooldown.getTimeLeft(sender.uuid, name).toLong())))
                 return
             }
             val bug = args.joinToString(" ").trim()
@@ -34,18 +34,18 @@ class BugCommand(private val discordBot: DiscordBot, cmd: String) : NMBungeeComm
                 if (fieldName == null || fieldValue == null) {
                     continue
                 }
-                val name = insertBugReportPlaceholders(fieldName, player, player.server, bug)
-                val value = insertBugReportPlaceholders(fieldValue, player, player.server, bug)
+                val name = insertBugReportPlaceholders(fieldName, sender, sender.server, bug)
+                val value = insertBugReportPlaceholders(fieldValue, sender, sender.server, bug)
                 val field1 = MessageEmbed.Field(name, value, field.isInline)
                 fields.add(field1)
             }
             jsonEmbedBuilder.fields = fields
             sendChannelMessage(bugReportChannel,
                     jsonEmbedBuilder.build())
-            player.sendMessage(discordBot.messages.getString(MCMessage.BUG_SUCCESS))
-            Cooldown(player.uuid, "BugCMD", 60).start()
+            sender.sendMessage(discordBot.messages.getString(MCMessage.BUG_SUCCESS))
+            Cooldown(sender.uuid, "BugCMD", 60).start()
         } else {
-            player.sendMessage(discordBot.messages.getString(MCMessage.BUG_HELP))
+            sender.sendMessage(discordBot.messages.getString(MCMessage.BUG_HELP))
         }
     }
 
