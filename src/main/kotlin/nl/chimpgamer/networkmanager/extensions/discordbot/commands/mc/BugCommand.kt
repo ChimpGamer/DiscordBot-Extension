@@ -14,7 +14,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessa
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.util.*
 
-class BugCommand(private val discordBot: DiscordBot, cmd: String?) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.bug", "networkmanager.admin")) {
+class BugCommand(private val discordBot: DiscordBot, cmd: String) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.bug", "networkmanager.admin")) {
     override fun onExecute(sender: Sender, args: Array<String>) {
         val player = sender as Player
         if (args.isNotEmpty()) {
@@ -23,7 +23,7 @@ class BugCommand(private val discordBot: DiscordBot, cmd: String?) : NMBungeeCom
                         .replace("%cooldown%", TimeUtils.getTimeString(player.language, Cooldown.getTimeLeft(player.uuid, name).toLong())))
                 return
             }
-            val bug = args.joinToString().trim()
+            val bug = args.joinToString(" ").trim()
             val bugReportChannel = discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_BUGREPORT_CHANNEL))
                     ?: return
             val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.BUGREPORT_ALERT))

@@ -14,7 +14,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessa
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.util.*
 
-class SuggestionCommand(private val discordBot: DiscordBot, cmd: String?) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.suggestion", "networkmanager.admin")) {
+class SuggestionCommand(private val discordBot: DiscordBot, cmd: String) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.suggestion", "networkmanager.admin")) {
     override fun onExecute(sender: Sender, args: Array<String>) {
         val player = sender as Player
         if (args.isNotEmpty()) {
@@ -23,7 +23,7 @@ class SuggestionCommand(private val discordBot: DiscordBot, cmd: String?) : NMBu
                         .replace("%cooldown%", TimeUtils.getTimeString(player.language, Cooldown.getTimeLeft(player.uuid, name).toLong())))
                 return
             }
-            val suggestion = args.joinToString().trim()
+            val suggestion = args.joinToString(" ").trim()
             val suggestionsChannel = discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_SUGGESTION_CHANNEL))
                     ?: return
             val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.SUGGESTION_ALERT))
