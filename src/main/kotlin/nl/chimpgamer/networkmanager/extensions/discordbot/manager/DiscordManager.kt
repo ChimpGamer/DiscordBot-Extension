@@ -77,6 +77,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         commandClientBuilder
                 .setPrefix(discordBot.settings.getString(Setting.DISCORD_COMMAND_PREFIX))
                 .setOwnerId(discordBot.settings.getString(Setting.DISCORD_OWNER_ID))
+                .useHelpBuilder(false)
                 .addCommands(
                         PlayerListCommand(discordBot),
                         PlayersCommand(discordBot),
