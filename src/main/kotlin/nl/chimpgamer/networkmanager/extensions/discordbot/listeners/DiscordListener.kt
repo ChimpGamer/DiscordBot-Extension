@@ -39,7 +39,10 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
                         val data = PlayerMessageData(player.uuid, msg)
-                        data.permissions.addAll(listOf(perm1, perm2))
+                        data.permissions.apply {
+                            add(perm1)
+                            add(perm2)
+                        }
                         val handler = discordBot.networkManager.messagingServiceManager.getHandler(AdminChatMessageHandler::class.java)
                         handler.send(data)
                     } else {
@@ -60,7 +63,10 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
                         val data = PlayerMessageData(player.uuid, msg)
-                        data.permissions.addAll(listOf(perm1, perm2))
+                        data.permissions.apply {
+                            add(perm1)
+                            add(perm2)
+                        }
                         val handler = discordBot.networkManager.messagingServiceManager.getHandler(StaffChatMessageHandler::class.java)
                         handler.send(data)
                     } else {

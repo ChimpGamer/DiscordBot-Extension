@@ -17,7 +17,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChanne
 import java.util.*
 
 class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
-    private val replaceColorCodes = Regex("^(&)?&([0-9a-fk-orA-FK-OR])")
+    private val replaceColorCodes = Regex("(?i)&[0-9A-FK-OR]")
 
     @NMEvent
     fun onStaffChat(event: StaffChatEvent) {

@@ -144,7 +144,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         try {
             member.guild.modifyNickname(member, nickName).queue()
         } catch (ex: PermissionException) {
-            if (ex.permission == Permission.UNKNOWN) {
+            if (ex.permission === Permission.UNKNOWN) {
                 discordBot.logger.warning("Could not set the nickname for " + member.effectiveName + " because " + ex.message)
             } else {
                 discordBot.logger.warning("Could not set the nickname for " + member.effectiveName + " because the bot does not have the required permission " + ex.permission.getName())
@@ -156,7 +156,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         try {
             member.guild.addRoleToMember(member, role).queue()
         } catch (ex: PermissionException) {
-            if (ex.permission == Permission.UNKNOWN) {
+            if (ex.permission === Permission.UNKNOWN) {
                 discordBot.logger.warning("Could not set the role for " + member.effectiveName + " because " + ex.message)
             } else {
                 discordBot.logger.warning("Could not set the role for " + member.effectiveName + " because the bot does not have the required permission " + ex.permission.getName())
