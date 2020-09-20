@@ -102,7 +102,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     fun shutdownJDA() {
         discordBot.logger.info("Shutting down JDA...")
-        jda.shutdown()
+        jda.shutdownNow()
     }
 
     fun restartJDA(): Boolean {
@@ -122,7 +122,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         jda.presence.activity = activity
     }
 
-    fun updateActivity() {
+    fun updateActivity(players: Int) {
         if (discordBot.settings.getBoolean(Setting.DISCORD_STATUS_ENABLED)) {
             val activityType = try {
                 Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).toUpperCase())
@@ -131,7 +131,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
                 Activity.ActivityType.DEFAULT
             }
             setActivity(Activity.of(activityType, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
-                    .replace("%players%", discordBot.networkManager.proxy.players.size.toString())))
+                    .replace("%players%", players.toString())))
         }
     }
 

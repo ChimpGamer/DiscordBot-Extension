@@ -16,6 +16,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.JoinL
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.RedisBungeeListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager
+import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.ActivityUpdateTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.TokenExpiryTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DependencyDownloader
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DiscordPlaceholders
@@ -36,7 +37,7 @@ class DiscordBot : NMExtension() {
 
     public override fun onEnable() { // Extension startup logic
         instance = this
-        if (networkManager.platformType != PlatformType.BUNGEECORD) {
+        if (networkManager.platformType !== PlatformType.BUNGEECORD) {
             logger.severe("Hey, this NetworkManager extension is for BungeeCord only!")
             return
         }
@@ -60,6 +61,7 @@ class DiscordBot : NMExtension() {
 
         registerCommands()
         registerListeners()
+        ActivityUpdateTask(this).start()
         if (networkManager.isRedisBungee) {
             networkManager.registerListener(RedisBungeeListener(this))
             networkManager.redisBungee.registerPubSubChannels("NetworkManagerDiscordBot")

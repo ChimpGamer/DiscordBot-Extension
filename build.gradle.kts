@@ -4,7 +4,7 @@ plugins {
     base
     kotlin("jvm") version "1.3.72"
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
 repositories {
@@ -18,15 +18,14 @@ repositories {
 
     maven { url = uri("https://repo.codemc.org/repository/maven-public") }
 
-    maven { url = uri("http://repo.maven.apache.org/maven2") }
+    maven { url = uri("https://repo.maven.apache.org/maven2") }
 }
 
 dependencies {
-    implementation("net.kyori:text-api:3.0.2")
     implementation("com.jagrosh:jda-utilities-command:3.0.4")
-    implementation("net.md-5:bungeecord-api:1.15-SNAPSHOT")
-    implementation("nl.chimpgamer.networkmanager:api:2.8.9-SNAPSHOT")
-    implementation("nl.chimpgamer.networkmanager:bungeecord:2.8.9-SNAPSHOT") {
+    implementation("net.md-5:bungeecord-api:1.16-R0.2-SNAPSHOT")
+    implementation("nl.chimpgamer.networkmanager:api:2.8.9")
+    implementation("nl.chimpgamer.networkmanager:bungeecord:2.8.9") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
     implementation("net.dv8tion:JDA:4.2.0_168")
@@ -36,7 +35,7 @@ dependencies {
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.3.4-SNAPSHOT"
+version = "1.3.5"
 
 tasks {
     compileKotlin {
