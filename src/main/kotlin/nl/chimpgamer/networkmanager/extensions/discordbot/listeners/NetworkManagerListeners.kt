@@ -246,7 +246,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
                 .replace("%ip%", server.ip)
                 .replace("%port%", server.port.toString())
                 .replace("%groups%", server.serverGroups.joinToString { it.groupName })
-                .replace("%isrestricted%", server.isRestricted.toString())
+                .replace("%isrestricted%", server.restricted.toString())
     }
 
     private fun insertHelpOPPlaceholders(s: String?, event: HelpOPRequestEvent): String {
@@ -257,6 +257,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
     }
 
     private fun insertPunishmentPlaceholders(s: String?, event: PunishmentEvent): String {
+        if (s == null) return ""
         val parsed = Methods.parsePunishmentPlaceholders(event.punishment, 1, s)
         return ChatColor.stripColor(parsed.replace(replaceColorCodes, ""))
     }
@@ -264,9 +265,10 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
     private fun insertTicketPlaceholders(s: String?, event: TicketCreateEvent): String {
         val cachedPlayers = discordBot.networkManager.cacheManager.cachedPlayers
         val ticket = event.ticket
+        val creator = cachedPlayers.getName(ticket.creator) ?: "Unknown (Could not find name by creator UUID)"
         return s!!.replace("%id%", ticket.id.toString())
                 .replace("%title%", ticket.title)
-                .replace("%creator%", cachedPlayers.getName(ticket.creator))
+                .replace("%creator%", creator)
     }
 
     private fun insertChatLogPlaceholders(s: String?, event: ChatLogCreatedEvent): String {

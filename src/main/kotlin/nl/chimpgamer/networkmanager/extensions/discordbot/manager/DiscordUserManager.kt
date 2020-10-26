@@ -19,7 +19,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     val tokens: MutableList<Token> = ArrayList()
 
     fun load() {
-        discordBot.scheduler.runAsync(Runnable {
+        discordBot.scheduler.runAsync({
             try {
                 discordBot.mySQL.connection.use { connection ->
                     connection.prepareStatement("SELECT UUID, DiscordID, registered FROM nm_discordusers;").use { ps ->
@@ -40,7 +40,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     }
 
     fun load(uuid: UUID) {
-        discordBot.scheduler.runAsync(Runnable {
+        discordBot.scheduler.runAsync({
             try {
                 discordBot.mySQL.connection.use { connection ->
                     connection.prepareStatement("SELECT UUID, DiscordID, registered FROM nm_discordusers WHERE UUID=?;").use { ps ->

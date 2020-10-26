@@ -10,19 +10,19 @@ class Messages(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
     }
 
     fun getString(dcMessage: DCMessage): String {
-        return getString(dcMessage.path)
+        return getString(dcMessage.path) ?: error("The message ${dcMessage.path} does not exist!")
     }
 
     fun getString(mcMessage: MCMessage): String {
-        return getString(mcMessage.path)
+        return getString(mcMessage.path) ?: error("The message ${mcMessage.path} does not exist!")
     }
 
     private fun setupFile() {
         if (!file.exists()) {
-            try {
-                saveToFile(discordBot.getResource("messages.yml"))
+            discordBot.getResource("messages.yml")?.let {
+                saveToFile(it)
                 reload()
-            } catch (ex: NullPointerException) {
+            } ?: run {
                 try {
                     file.createNewFile()
                 } catch (ex1: IOException) {

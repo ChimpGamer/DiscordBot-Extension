@@ -6,8 +6,8 @@ import nl.chimpgamer.networkmanager.api.placeholders.PlaceholderHook
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 
 class DiscordPlaceholders(private val discordBot: DiscordBot) : PlaceholderHook() {
-    override fun onPlaceholderRequest(player: Player?, identifier: String): String? {
-        when (identifier.toLowerCase()) {
+    override fun onPlaceholderRequest(player: Player?, parameters: String): String? {
+        when (parameters.toLowerCase()) {
             "users" -> return discordBot.discordUserManager.discordUsers.size.toString()
             "guild_id" -> return discordBot.discordManager.guild.id
             "guild_name" -> return discordBot.discordManager.guild.name
@@ -17,7 +17,5 @@ class DiscordPlaceholders(private val discordBot: DiscordBot) : PlaceholderHook(
         return null
     }
 
-    override fun getIdentifier(): String {
-        return "discordbot"
-    }
+    override val identifier: String = "discordbot"
 }

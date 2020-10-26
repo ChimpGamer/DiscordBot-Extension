@@ -31,14 +31,14 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
 
     private fun setupFile() {
         if (!file.exists()) {
-            try {
-                saveToFile(discordBot.getResource("settings.yml"))
+            discordBot.getResource("settings.yml")?.let {
+                saveToFile(it)
                 reload()
-            } catch (ex: NullPointerException) {
+            } ?: run {
                 try {
                     file.createNewFile()
-                } catch (ex1: IOException) {
-                    ex1.printStackTrace()
+                } catch (ex: IOException) {
+                    ex.printStackTrace()
                 }
             }
         }
@@ -64,9 +64,9 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
     @Suppress("UNCHECKED_CAST")
     fun getMap(setting: Setting): Map<String, String> {
         val map: MutableMap<String, String> = HashMap()
-        val mapSection = discordBot.settings.config.getConfigurationSection(setting.path) ?: return setting.defaultValue as Map<String, String>
+        val mapSection = config.getConfigurationSection(setting.path) ?: return setting.defaultValue as Map<String, String>
         for (key in mapSection.getKeys(false)) {
-            map[key] = discordBot.settings.getString("${setting.path}.$key")
+            map[key] = getString("${setting.path}.$key")!!
         }
         return map
     }

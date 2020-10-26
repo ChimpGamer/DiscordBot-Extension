@@ -29,7 +29,7 @@ class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
                 return
             }
             if (discordBot.networkManager.isPlayerOnline(uuid, true)) {
-                val player = discordBot.networkManager.getPlayer(uuid)
+                val player = discordBot.networkManager.getPlayer(uuid) ?: return
                 val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
                 jsonEmbedBuilder.title = jsonEmbedBuilder.title?.replace("%playername%", player.name)
                 val fields: MutableList<MessageEmbed.Field> = LinkedList()
@@ -49,20 +49,25 @@ class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
                 sendChannelMessage(event.textChannel,
                         jsonEmbedBuilder.build())
             } else {
-                discordBot.scheduler.runAsync(Runnable {
+                discordBot.scheduler.runAsync({
                     val result = getOfflinePlayerPlaytime(uuid)
+                    val userName = result.first
+                    val playtime = result.second
+                    if (userName.isEmpty() || playtime == 0L) {
+                        return@runAsync
+                    }
                     val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
-                    jsonEmbedBuilder.title = jsonEmbedBuilder.title?.replace("%playername%", result[0])
+                    jsonEmbedBuilder.title = jsonEmbedBuilder.title?.replace("%playername%", userName)
                     val fields: MutableList<MessageEmbed.Field> = LinkedList()
                     for (field in jsonEmbedBuilder.fields) {
                         val name = field.name
-                                ?.replace("%playername%", result[0])
-                                ?.replace("%playtime%", TimeUtils.getTimeString(1, result[1].toLong() / 1000))
-                                ?.replace("%liveplaytime%", TimeUtils.getTimeString(1, result[1].toLong() / 1000))
+                                ?.replace("%playername%", userName)
+                                ?.replace("%playtime%", TimeUtils.getTimeString(1, playtime / 1000))
+                                ?.replace("%liveplaytime%", TimeUtils.getTimeString(1, playtime / 1000))
                         val value = field.value
-                                ?.replace("%playername%", result[0])
-                                ?.replace("%playtime%", TimeUtils.getTimeString(1, result[1].toLong() / 1000))
-                                ?.replace("%liveplaytime%", TimeUtils.getTimeString(1, result[1].toLong() / 1000))
+                                ?.replace("%playername%", userName)
+                                ?.replace("%playtime%", TimeUtils.getTimeString(1, playtime / 1000))
+                                ?.replace("%liveplaytime%", TimeUtils.getTimeString(1, playtime / 1000))
                         val field1 = MessageEmbed.Field(name, value, field.isInline)
                         fields.add(field1)
                     }
@@ -74,17 +79,17 @@ class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
         }
     }
 
-    private fun getOfflinePlayerPlaytime(uuid: UUID): Array<String> {
-        var result = arrayOf<String>()
+    private fun getOfflinePlayerPlaytime(uuid: UUID): Pair<String, Long> {
+        var pair = Pair("", 0L)
         try {
             discordBot.mySQL.connection.use { connection ->
-                connection.prepareStatement("SELECT username, playtime FROM nm_players WHERE uuid=?").use { ps ->
+                connection.prepareStatement("SELECT `username`, `playtime` FROM nm_players WHERE `uuid`=?;").use { ps ->
                     ps.setString(1, uuid.toString())
                     ps.executeQuery().use { rs ->
                         if (rs.next()) {
                             val username = rs.getString("username")
                             val playtime = rs.getLong("playtime")
-                            result = arrayOf(username, playtime.toString())
+                            pair = Pair(username, playtime)
                         }
                     }
                 }
@@ -92,7 +97,7 @@ class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
         } catch (ex: SQLException) {
             ex.printStackTrace()
         }
-        return result
+        return pair
     }
 
     init {

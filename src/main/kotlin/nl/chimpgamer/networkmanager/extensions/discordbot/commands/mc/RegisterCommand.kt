@@ -1,12 +1,12 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.commands.mc
 
-import nl.chimpgamer.networkmanager.api.commands.NMBungeeCommand
 import nl.chimpgamer.networkmanager.api.models.player.Player
-import nl.chimpgamer.networkmanager.api.sender.Sender
+import nl.chimpgamer.networkmanager.api.models.sender.Sender
+import nl.chimpgamer.networkmanager.api.utils.commands.NMBungeeCommand
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 
-class RegisterCommand(private val discordBot: DiscordBot, cmd: String, args: Array<String>) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.register", "networkmanager.admin"), *args) {
+class RegisterCommand(private val discordBot: DiscordBot, cmd: String, args: List<String>) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.register", "networkmanager.admin"), args) {
     override fun onExecute(sender: Sender, args: Array<String>) {
         sender as Player
         if (args.isEmpty()) {
@@ -22,10 +22,6 @@ class RegisterCommand(private val discordBot: DiscordBot, cmd: String, args: Arr
                 networkManager.debug("Verifying " + sender.realName + " with token: $token")
             }
         }
-    }
-
-    override fun onTabComplete(sender: Sender, args: Array<String>): List<String> {
-        return emptyList()
     }
 
     init {

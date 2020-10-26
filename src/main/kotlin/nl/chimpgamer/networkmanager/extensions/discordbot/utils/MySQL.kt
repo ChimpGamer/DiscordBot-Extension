@@ -1,12 +1,30 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.utils
 
-import nl.chimpgamer.networkmanager.api.communication.IMySQL
+import nl.chimpgamer.networkmanager.api.storage.Storage
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import java.sql.Connection
 import java.sql.SQLException
 
-class MySQL(discordBot: DiscordBot) {
-    private var nmMySQL: IMySQL? = null
+class MySQL(private val discordBot: DiscordBot) {
+    lateinit var nmStorage: Storage
+
+    fun initialize(): Boolean {
+        var result = false
+        if (discordBot.networkManager.storage.ping()) {
+            discordBot.networkManager.debug("&c| &cSuccessfully connected with MySQL! (NetworkManagerBot)")
+            nmStorage = discordBot.networkManager.storage
+            try {
+                create()
+                discordBot.networkManager.debug("&c| &cDone with Creating MySQL things! (NetworkManagerBot)")
+                result = true
+            } catch (ex: SQLException) {
+                ex.printStackTrace()
+            }
+        } else {
+            discordBot.error("&c| &cNo connection to Database (NetworkManagerBot)")
+        }
+        return result
+    }
 
     @Throws(SQLException::class)
     private fun create() {
@@ -16,25 +34,10 @@ class MySQL(discordBot: DiscordBot) {
 
     @Throws(SQLException::class)
     private fun createTable(sql: String) {
-        nmMySQL!!.connection.use { connection -> connection.prepareStatement(sql).use { ps -> ps.executeUpdate() } }
+        nmStorage.connection.use { connection -> connection.prepareStatement(sql).use { ps -> ps.executeUpdate() } }
     }
 
     @get:Throws(SQLException::class)
     val connection: Connection
-            get() = nmMySQL!!.connection
-
-    init {
-        if (discordBot.networkManager.mySQL.ping()) {
-            discordBot.networkManager.debug("&c| &cSuccessfully connected with MySQL! (NetworkManagerBot)")
-            nmMySQL = discordBot.networkManager.mySQL
-            try {
-                create()
-                discordBot.networkManager.debug("&c| &cDone with Creating MySQL things! (NetworkManagerBot)")
-            } catch (ex: SQLException) {
-                ex.printStackTrace()
-            }
-        } else {
-            discordBot.error("&c| &cNo connection to Database (NetworkManagerBot)")
-        }
-    }
+            get() = nmStorage.connection
 }

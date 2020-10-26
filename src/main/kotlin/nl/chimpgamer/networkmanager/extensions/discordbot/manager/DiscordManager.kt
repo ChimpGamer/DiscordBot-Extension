@@ -102,7 +102,9 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     fun shutdownJDA() {
         discordBot.logger.info("Shutting down JDA...")
-        jda.shutdownNow()
+        if (this::jda.isInitialized) {
+            jda.shutdownNow()
+        }
     }
 
     fun restartJDA(): Boolean {

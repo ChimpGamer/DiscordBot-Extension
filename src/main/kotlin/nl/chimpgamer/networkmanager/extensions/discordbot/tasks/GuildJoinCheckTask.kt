@@ -11,7 +11,7 @@ class GuildJoinCheckTask(private val discordBot: DiscordBot, private val member:
 
     override fun run() {
         val cachedPlayers = discordBot.networkManager.cacheManager.cachedPlayers
-        discordBot.networkManager.mySQL.connection.use { connection ->
+        discordBot.networkManager.storage.connection.use { connection ->
             try {
                 connection.prepareStatement("SELECT DiscordID, UUID FROM nm_discordusers WHERE DiscordID=?;").use { ps ->
                     ps.setString(1, member.user.id)

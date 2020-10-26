@@ -1,11 +1,11 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.commands.mc
 
-import nl.chimpgamer.networkmanager.api.commands.NMBungeeCommand
-import nl.chimpgamer.networkmanager.api.sender.Sender
+import nl.chimpgamer.networkmanager.api.models.sender.Sender
+import nl.chimpgamer.networkmanager.api.utils.commands.NMBungeeCommand
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 
-class NetworkManagerBotCommand(private val discordBot: DiscordBot, cmd: String) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.admin"), "nmbot") {
+class NetworkManagerBotCommand(private val discordBot: DiscordBot, cmd: String) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.admin"), listOf("nmbot")) {
     override fun onExecute(sender: Sender, args: Array<String>) {
         if (args.size == 2) {
             if (args[0].equals("reload", ignoreCase = true)) {

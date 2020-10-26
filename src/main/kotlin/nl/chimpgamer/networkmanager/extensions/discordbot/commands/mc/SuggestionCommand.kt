@@ -1,11 +1,11 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.commands.mc
 
 import net.dv8tion.jda.api.entities.MessageEmbed
-import nl.chimpgamer.networkmanager.api.commands.NMBungeeCommand
 import nl.chimpgamer.networkmanager.api.models.player.Player
-import nl.chimpgamer.networkmanager.api.sender.Sender
+import nl.chimpgamer.networkmanager.api.models.sender.Sender
 import nl.chimpgamer.networkmanager.api.utils.Cooldown
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
+import nl.chimpgamer.networkmanager.api.utils.commands.NMBungeeCommand
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
@@ -47,10 +47,6 @@ class SuggestionCommand(private val discordBot: DiscordBot, cmd: String) : NMBun
         } else {
             sender.sendMessage(discordBot.messages.getString(MCMessage.SUGGESTION_HELP))
         }
-    }
-
-    override fun onTabComplete(sender: Sender, args: Array<String>): List<String> {
-        return emptyList()
     }
 
     private fun insertSuggestionPlaceholders(s: String, player: Player, serverName: String, suggestion: String): String {

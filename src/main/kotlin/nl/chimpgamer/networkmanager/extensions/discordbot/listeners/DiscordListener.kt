@@ -27,7 +27,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         if (channel.guild == discordBot.guild) {
             if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL)) {
                 val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
-                val player = cachedPlayers.getPlayer(uuid)
+                val player = cachedPlayers.getPlayer(uuid) ?: return
                 if (cachedValues.getBoolean(Command.ADMINCHAT_ENABLED)) {
                     val alert = discordBot.networkManager.getMessage(player.language, "lang_adminchat_message")
                             .replace("%playername%", player.realName)
@@ -44,14 +44,14 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             add(perm2)
                         }
                         val handler = discordBot.networkManager.messagingServiceManager.getHandler(AdminChatMessageHandler::class.java)
-                        handler.send(data)
+                        handler?.send(data)
                     } else {
-                        discordBot.networkManager.sendMessageToStaff(alert, "all", perm1, perm2)
+                        discordBot.networkManager.universalUtils.sendMessageToStaff(alert, "all", perm1, perm2)
                     }
                 }
             } else if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL)) {
                 val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
-                val player = cachedPlayers.getPlayer(uuid)
+                val player = cachedPlayers.getPlayer(uuid) ?: return
                 if (cachedValues.getBoolean(Command.STAFFCHAT_ENABLED)) {
                     val alert = discordBot.networkManager.getMessage(player.language, "lang_staffchat_message")
                             .replace("%playername%", player.realName)
@@ -68,9 +68,9 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             add(perm2)
                         }
                         val handler = discordBot.networkManager.messagingServiceManager.getHandler(StaffChatMessageHandler::class.java)
-                        handler.send(data)
+                        handler?.send(data)
                     } else {
-                        discordBot.networkManager.sendMessageToStaff(alert, "all", perm1, perm2)
+                        discordBot.networkManager.universalUtils.sendMessageToStaff(alert, "all", perm1, perm2)
                     }
                 }
             }

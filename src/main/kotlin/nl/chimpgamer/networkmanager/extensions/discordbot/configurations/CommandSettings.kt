@@ -24,10 +24,10 @@ class CommandSettings(private val discordBot: DiscordBot) : FileUtils(discordBot
 
     private fun setupFile() {
         if (!file.exists()) {
-            try {
-                saveToFile(discordBot.getResource("commands.yml"))
+            discordBot.getResource("commands.yml")?.let {
+                saveToFile(it)
                 reload()
-            } catch (ex: NullPointerException) {
+            } ?: run {
                 try {
                     file.createNewFile()
                 } catch (ex1: IOException) {

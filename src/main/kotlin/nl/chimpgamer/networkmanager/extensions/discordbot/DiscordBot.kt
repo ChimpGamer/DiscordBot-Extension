@@ -41,6 +41,13 @@ class DiscordBot : NMExtension() {
             logger.severe("Hey, this NetworkManager extension is for BungeeCord only!")
             return
         }
+
+        // Initialize MySQL. If False stop plugin.
+        if (mySQL.initialize().not()) {
+            disable()
+            return
+        }
+
         val dd = DependencyDownloader(this)
         dd.downloadDependency(
                 "https://github.com/DV8FromTheWorld/JDA/releases/download/v4.2.0/JDA-4.2.0_168-withDependencies-no-opus.jar",
@@ -105,8 +112,8 @@ class DiscordBot : NMExtension() {
             commandManager.registerCommand(info.name, DiscordCommand(this, "discord"))
         }
         commandManager.registerCommands(info.name,
-                RegisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_COMMAND), arrayOf(commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_ALIASES))),
-                UnregisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), arrayOf(commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES))),
+                RegisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_COMMAND), listOf(commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_ALIASES))),
+                UnregisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), listOf(commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES))),
                 NetworkManagerBotCommand(this, "networkmanagerbot")
         )
     }
@@ -118,7 +125,7 @@ class DiscordBot : NMExtension() {
     }
 
     fun sendRedisBungee(message: String) {
-        this.scheduler.runAsync(Runnable { networkManager.redisBungee.sendChannelMessage("NetworkManagerDiscordBot", message) }, false)
+        this.scheduler.runAsync({ networkManager.redisBungee.sendChannelMessage("NetworkManagerDiscordBot", message) }, false)
     }
 
     private fun expireTokens() {
@@ -130,9 +137,8 @@ class DiscordBot : NMExtension() {
     val guild: Guild
             get() = this.discordManager.guild
 
-    override fun getNetworkManager(): NetworkManager {
-        return super.getNetworkManager() as NetworkManager
-    }
+    override val networkManager: NetworkManager
+        get() = super.networkManager as NetworkManager
 
     companion object {
         @JvmStatic
