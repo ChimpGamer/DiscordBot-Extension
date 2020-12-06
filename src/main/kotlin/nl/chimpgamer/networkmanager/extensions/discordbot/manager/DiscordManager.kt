@@ -94,7 +94,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
             }
             commandClientBuilder
                     .setActivity(Activity.of(activityType, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
-                            .replace("%players%", discordBot.networkManager.proxy.onlineCount.toString())))
+                            .replace("%players%", discordBot.networkManager.onlinePlayersCount.toString())))
         } else {
             commandClientBuilder.setActivity(null)
         }

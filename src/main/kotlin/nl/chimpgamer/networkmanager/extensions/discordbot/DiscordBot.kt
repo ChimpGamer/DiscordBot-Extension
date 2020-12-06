@@ -21,7 +21,6 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.TokenExpiryTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DependencyDownloader
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DiscordPlaceholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.MySQL
-import kotlin.collections.ArrayList
 
 class DiscordBot : NMExtension() {
     private val listeners: MutableList<NMListener> = ArrayList()
@@ -135,7 +134,7 @@ class DiscordBot : NMExtension() {
     }
 
     val guild: Guild
-            get() = this.discordManager.guild
+        get() = this.discordManager.guild
 
     override val networkManager: NetworkManager
         get() = super.networkManager as NetworkManager

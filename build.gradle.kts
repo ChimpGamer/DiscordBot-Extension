@@ -22,20 +22,20 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.jagrosh:jda-utilities-command:3.0.4")
+    implementation("com.jagrosh:jda-utilities-command:3.0.4")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.2-SNAPSHOT")
     //implementation("nl.chimpgamer.networkmanager:api:2.9.0-SNAPSHOT")
-    implementation("nl.chimpgamer.networkmanager:bungeecord:2.9.0-SNAPSHOT") {
+    implementation("nl.chimpgamer.networkmanager:bungeecord:2.9.0") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
-    implementation("net.dv8tion:JDA:4.2.0_168")
+    implementation("net.dv8tion:JDA:4.2.0_217")
     compileOnly("com.github.Carleslc:Simple-YAML:1.4.1")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
     compileOnly(kotlin("stdlib-jdk8"))
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.3.6-SNAPSHOT"
+version = "1.3.6"
 
 tasks {
     compileKotlin {
@@ -60,7 +60,7 @@ tasks {
             include(dependency("com.jagrosh:.*"))
         }
 
-        relocate("kotlin", "nl.chimpgamer.networkmanager.shaded.kotlin")
+        relocate("kotlin", "nl.chimpgamer.networkmanager.lib.kotlin")
         relocate("org.simpleyaml", "nl.chimpgamer.networkmanager.lib.simpleyaml")
         relocate("org.eclipse.jetty", "nl.chimpgamer.networkmanager.lib.jetty")
         relocate("javax.servlet", "nl.chimpgamer.networkmanager.lib.javax.servlet")

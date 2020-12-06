@@ -34,8 +34,8 @@ class BugCommand(private val discordBot: DiscordBot, cmd: String) : NMBungeeComm
                 if (fieldName == null || fieldValue == null) {
                     continue
                 }
-                val name = insertBugReportPlaceholders(fieldName, sender, sender.server, bug)
-                val value = insertBugReportPlaceholders(fieldValue, sender, sender.server, bug)
+                val name = insertBugReportPlaceholders(fieldName, sender, sender.server!!, bug)
+                val value = insertBugReportPlaceholders(fieldValue, sender, sender.server!!, bug)
                 val field1 = MessageEmbed.Field(name, value, field.isInline)
                 fields.add(field1)
             }

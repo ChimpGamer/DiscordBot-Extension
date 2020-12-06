@@ -1,13 +1,13 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.md_5.bungee.api.ChatColor
 import nl.chimpgamer.networkmanager.api.NMListener
 import nl.chimpgamer.networkmanager.api.event.NMEvent
 import nl.chimpgamer.networkmanager.api.event.events.*
 import nl.chimpgamer.networkmanager.api.event.events.ticket.TicketCreateEvent
 import nl.chimpgamer.networkmanager.api.models.punishments.Punishment
 import nl.chimpgamer.networkmanager.api.models.servers.Server
+import nl.chimpgamer.networkmanager.api.utils.stripColors
 import nl.chimpgamer.networkmanager.common.utils.Methods
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
@@ -17,7 +17,6 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChanne
 import java.util.*
 
 class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
-    private val replaceColorCodes = Regex("(?i)&[0-9A-FK-OR]")
 
     @NMEvent
     fun onStaffChat(event: StaffChatEvent) {
@@ -27,7 +26,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
         sendChannelMessage(staffChatChannel,
                 discordBot.messages.getString(DCMessage.EVENT_STAFFCHAT)
                         .replace("%playername%", event.sender.name)
-                        .replace("%server%", event.sender.server)
+                        .replace("%server%", event.sender.server!!)
                         .replace("%message%", event.message))
     }
 
@@ -39,7 +38,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
         sendChannelMessage(adminChatChannel,
                 discordBot.messages.getString(DCMessage.EVENT_ADMINCHAT)
                         .replace("%playername%", event.sender.name)
-                        .replace("%server%", event.sender.server)
+                        .replace("%server%", event.sender.server!!)
                         .replace("%message%", event.message))
     }
 
@@ -241,8 +240,9 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
 
     private fun insertServerPlaceholders(s: String?, server: Server): String {
         return s!!.replace("%id%", server.id.toString())
-                .replace("%name%", server.serverName)
-                .replace("%motd%", server.motd)
+                .replace("%name%", server.displayName.stripColors())
+                .replace("%servername%", server.displayName.stripColors())
+                .replace("%motd%", server.motd?.stripColors() ?: "No MOTD")
                 .replace("%ip%", server.ip)
                 .replace("%port%", server.port.toString())
                 .replace("%groups%", server.serverGroups.joinToString { it.groupName })
@@ -253,13 +253,13 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
         val sender = event.sender
         return s!!.replace("%message%", event.message)
                 .replace("%requester%", sender.name)
-                .replace("%server%", sender.server)
+                .replace("%server%", sender.server!!)
     }
 
     private fun insertPunishmentPlaceholders(s: String?, event: PunishmentEvent): String {
         if (s == null) return ""
         val parsed = Methods.parsePunishmentPlaceholders(event.punishment, 1, s)
-        return ChatColor.stripColor(parsed.replace(replaceColorCodes, ""))
+        return parsed.stripColors()
     }
 
     private fun insertTicketPlaceholders(s: String?, event: TicketCreateEvent): String {

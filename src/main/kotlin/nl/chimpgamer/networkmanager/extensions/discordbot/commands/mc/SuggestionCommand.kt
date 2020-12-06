@@ -34,8 +34,8 @@ class SuggestionCommand(private val discordBot: DiscordBot, cmd: String) : NMBun
                 if (fieldName == null || fieldValue == null) {
                     continue
                 }
-                val name = insertSuggestionPlaceholders(fieldName, sender, sender.server, suggestion)
-                val value = insertSuggestionPlaceholders(fieldValue, sender, sender.server, suggestion)
+                val name = insertSuggestionPlaceholders(fieldName, sender, sender.server!!, suggestion)
+                val value = insertSuggestionPlaceholders(fieldValue, sender, sender.server!!, suggestion)
                 val field1 = MessageEmbed.Field(name, value, field.isInline)
                 fields.add(field1)
             }

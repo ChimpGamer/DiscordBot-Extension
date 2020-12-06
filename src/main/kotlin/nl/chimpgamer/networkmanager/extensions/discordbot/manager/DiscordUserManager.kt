@@ -22,7 +22,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         discordBot.scheduler.runAsync({
             try {
                 discordBot.mySQL.connection.use { connection ->
-                    connection.prepareStatement("SELECT UUID, DiscordID, registered FROM nm_discordusers;").use { ps ->
+                    connection.prepareStatement("SELECT `UUID`, `DiscordID`, `registered` FROM nm_discordusers;").use { ps ->
                         ps.executeQuery().use { rs ->
                             while (rs.next()) {
                                 val uuid = UUID.fromString(rs.getString("UUID"))
@@ -43,7 +43,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         discordBot.scheduler.runAsync({
             try {
                 discordBot.mySQL.connection.use { connection ->
-                    connection.prepareStatement("SELECT UUID, DiscordID, registered FROM nm_discordusers WHERE UUID=?;").use { ps ->
+                    connection.prepareStatement("SELECT `UUID`, `DiscordID`, `registered` FROM nm_discordusers WHERE `UUID`=?;").use { ps ->
                         ps.setString(1, uuid.toString())
                         ps.executeQuery().use { rs ->
                             while (rs.next()) {

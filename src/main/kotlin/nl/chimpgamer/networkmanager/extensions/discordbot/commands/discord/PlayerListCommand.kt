@@ -19,11 +19,11 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
         }
         if (event.args.isEmpty()) {
             val sb = StringBuilder()
-            val players = discordBot.networkManager.proxy.players
+            val players = discordBot.networkManager.bootstrap.proxy.players
             if (players.isEmpty()) {
                 sb.append("There are currently no players online!")
             } else {
-                for (proxiedPlayer in discordBot.networkManager.proxy.players) {
+                for (proxiedPlayer in discordBot.networkManager.bootstrap.proxy.players) {
                     sb.append(proxiedPlayer.name).append(" - ").append(proxiedPlayer.server.info.name).append("\n")
                 }
             }
@@ -34,14 +34,14 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
         val args = event.args.split(" ").toTypedArray()
         if (args.size == 1) {
             val serverName = args[0]
-            val serverInfo = discordBot.networkManager.proxy.getServerInfo(serverName)
+            val serverInfo = discordBot.networkManager.bootstrap.proxy.getServerInfo(serverName)
             if (serverInfo == null) {
                 sendChannelMessage(event.textChannel, discordBot.messages.getString(DCMessage.COMMAND_PLAYERLIST_INVALID_SERVER)
                         .replace("%mention%", event.author.asMention)
                         .replace("%server%", serverName))
             }
             var sb = StringBuilder()
-            for (proxiedPlayer in discordBot.networkManager.proxy.getServerInfo(serverName).players) {
+            for (proxiedPlayer in discordBot.networkManager.bootstrap.proxy.getServerInfo(serverName).players) {
                 sb.append(proxiedPlayer.name).append(" - ").append(proxiedPlayer.server.info.name).append("\n")
             }
             if (sb.isNotEmpty()) {

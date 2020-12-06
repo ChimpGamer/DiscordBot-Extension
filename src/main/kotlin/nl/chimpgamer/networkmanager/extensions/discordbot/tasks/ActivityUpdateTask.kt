@@ -15,7 +15,7 @@ class ActivityUpdateTask(private val discordBot: DiscordBot) : Runnable {
     }
 
     override fun run() {
-        val playerCount = discordBot.networkManager.proxy.onlineCount
+        val playerCount = discordBot.networkManager.onlinePlayersCount
         if (playerCount != lastAmount) {
             discordBot.discordManager.updateActivity(playerCount)
             lastAmount = playerCount

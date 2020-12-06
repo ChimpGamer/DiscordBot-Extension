@@ -9,7 +9,7 @@ import java.nio.file.Files
 
 class DependencyDownloader(val discordBot: DiscordBot) {
     fun downloadDependency(url: String, name: String, fileName: String) {
-        val localPath = discordBot.networkManager.dataFolder.path + File.separator + "lib" + File.separator + fileName + ".jar"
+        val localPath = discordBot.networkManager.dataFolder.path + File.separator + "libs" + File.separator + fileName + ".jar"
         val file = File(localPath)
         if (!file.exists()) {
             discordBot.logger.info("Downloading $name ...")
@@ -21,7 +21,7 @@ class DependencyDownloader(val discordBot: DiscordBot) {
             }
         }
         discordBot.logger.info("Loading dependency $name ...")
-        discordBot.networkManager.pluginClassLoader.loadJar(file.toPath())
+        discordBot.networkManager.pluginClassLoader.addJarToClasspath(file.toPath())
     }
 
     @Throws(IOException::class)
