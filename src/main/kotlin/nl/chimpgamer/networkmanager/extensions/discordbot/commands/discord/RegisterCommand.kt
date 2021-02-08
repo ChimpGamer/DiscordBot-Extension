@@ -1,6 +1,5 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord
 
-import com.google.common.base.Preconditions
 import com.jagrosh.jdautilities.command.Command
 import com.jagrosh.jdautilities.command.CommandEvent
 import net.dv8tion.jda.api.entities.ChannelType
@@ -21,7 +20,7 @@ class RegisterCommand(private val discordBot: DiscordBot) : Command() {
             return
         }
         try {
-            Preconditions.checkNotNull(discordBot.guild, "The discord bot has not been connected to a discord server. Connect it to a discord server.")
+            checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
             if (discordBot.guild.getMember(event.author) == null) {
                 sendChannelMessage(event.channel, discordBot.messages.getString(DCMessage.REGISTRATION_NOT_IN_SERVER))
                 return

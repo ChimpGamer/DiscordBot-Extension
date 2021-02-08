@@ -1,6 +1,5 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.tasks
 
-import com.google.common.base.Preconditions
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import nl.chimpgamer.networkmanager.api.models.player.Player
@@ -23,7 +22,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     .replace("%playername%", this.player.name))
         } else {
             try {
-                Preconditions.checkNotNull(this.discordBot.guild, "The discord bot has not been connected to a discord server. Connect it to a discord server.")
+                checkNotNull(this.discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
                 val discordUserManager = this.discordBot.discordUserManager
                 val member: Member? = this.discordBot.guild.getMemberById(this.token.discordID)
                 if (member == null) {
