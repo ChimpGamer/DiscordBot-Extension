@@ -25,7 +25,7 @@ dependencies {
     implementation("com.jagrosh:jda-utilities-command:3.0.4")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.2-SNAPSHOT")
     //implementation("nl.chimpgamer.networkmanager:api:2.9.0-SNAPSHOT")
-    implementation("nl.chimpgamer.networkmanager:bungeecord:2.9.0") {
+    implementation("nl.chimpgamer.networkmanager:bungeecord:2.9.4-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
     implementation("net.dv8tion:JDA:4.2.0_217")
@@ -35,7 +35,7 @@ dependencies {
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.3.6"
+version = "1.3.7-SNAPSHOT"
 
 tasks {
     compileKotlin {

@@ -18,9 +18,14 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         val addRoles: MutableSet<Role> = HashSet()
         val removeRoles: MutableSet<Role> = HashSet()
 
+        val groups = nl.chimpgamer.networkmanager.bungeecord.utils.Utils.getGroupsName(player)
+        discordBot.networkManager.debug("Player has the following groups: ${groups.joinToString()}")
         for ((rankName, roleName) in discordBot.settings.getMap(Setting.DISCORD_SYNC_RANKS_MAP)) {
-            val role = discordBot.discordManager.getRoleByName(roleName) ?: continue
-            val groups = nl.chimpgamer.networkmanager.bungeecord.utils.Utils.getGroupsName(player)
+            val role = discordBot.discordManager.getRoleByName(roleName)
+            if (role == null) {
+                discordBot.logger.warning("Could not find role $roleName to sync.")
+                continue
+            }
             if (groups.any { it.equals(rankName, ignoreCase = true) }) {
                 addRoles.add(role)
             } else {
@@ -30,7 +35,9 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         // remove roles that the user already has from roles to add
         addRoles.removeAll(member.roles)
         // remove roles that the user doesn't already have from roles to remove
-        removeRoles.removeIf { role -> member.roles.contains(role) }
+        removeRoles.removeIf { role -> !member.roles.contains(role) }
+        discordBot.networkManager.debug("AddRoles: $addRoles")
+        discordBot.networkManager.debug("RemoveRoles: $removeRoles")
         /*println("AddRoles: $addRoles")
         println("RemoveRoles: $removeRoles")*/
         if (addRoles.isEmpty() && removeRoles.isEmpty()) {
