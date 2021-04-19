@@ -13,6 +13,14 @@ class DiscordPlaceholders(private val discordBot: DiscordBot) : PlaceholderHook(
             "guild_name" -> return discordBot.discordManager.guild.name
             "guild_members_online" -> return discordBot.discordManager.guild.members.filter { it.onlineStatus === OnlineStatus.ONLINE }.size.toString()
             "guild_members_total" -> return discordBot.discordManager.guild.memberCount.toString()
+            else -> {
+                if (parameters.startsWith("is_member_of_guild")) {
+                    val userId = parameters.replace("is_member_of_guild", "")
+                    val member = discordBot.discordManager.guild.getMemberById(userId)
+                        ?: return "$userId is not a member of the discord server."
+                    return "$userId (${member.asMention}) is a member of the discord server."
+                }
+            }
         }
         return null
     }
