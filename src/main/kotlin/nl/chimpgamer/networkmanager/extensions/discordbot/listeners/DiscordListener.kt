@@ -3,12 +3,14 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import nl.chimpgamer.networkmanager.api.values.Command
 import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData
 import nl.chimpgamer.networkmanager.common.messaging.handlers.AdminChatMessageHandler
 import nl.chimpgamer.networkmanager.common.messaging.handlers.StaffChatMessageHandler
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.GuildJoinCheckTask
 
@@ -30,11 +32,11 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                 val player = cachedPlayers.getPlayer(uuid) ?: return
                 if (cachedValues.getBoolean(Command.ADMINCHAT_ENABLED)) {
                     val alert = discordBot.networkManager.getMessage(player.language, "lang_adminchat_message")
-                            .replace("%playername%", player.realName)
-                            .replace("%username%", player.userName)
-                            .replace("%nickname%", player.nicknameOrUserName)
-                            .replace("%server%", "Discord")
-                            .replace("%message%", msg)
+                        .replace("%playername%", player.realName)
+                        .replace("%username%", player.userName)
+                        .replace("%nickname%", player.nicknameOrUserName)
+                        .replace("%server%", "Discord")
+                        .replace("%message%", msg)
                     val perm1 = "networkmanager.adminchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
@@ -43,7 +45,8 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             add(perm1)
                             add(perm2)
                         }
-                        val handler = discordBot.networkManager.messagingServiceManager.getHandler(AdminChatMessageHandler::class.java)
+                        val handler =
+                            discordBot.networkManager.messagingServiceManager.getHandler(AdminChatMessageHandler::class.java)
                         handler?.send(data)
                     } else {
                         discordBot.networkManager.universalUtils.sendMessageToStaff(alert, "all", perm1, perm2)
@@ -54,11 +57,11 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                 val player = cachedPlayers.getPlayer(uuid) ?: return
                 if (cachedValues.getBoolean(Command.STAFFCHAT_ENABLED)) {
                     val alert = discordBot.networkManager.getMessage(player.language, "lang_staffchat_message")
-                            .replace("%playername%", player.realName)
-                            .replace("%username%", player.userName)
-                            .replace("%nickname%", player.nicknameOrUserName)
-                            .replace("%server%", "Discord")
-                            .replace("%message%", msg)
+                        .replace("%playername%", player.realName)
+                        .replace("%username%", player.userName)
+                        .replace("%nickname%", player.nicknameOrUserName)
+                        .replace("%server%", "Discord")
+                        .replace("%message%", msg)
                     val perm1 = "networkmanager.staffchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
@@ -67,7 +70,8 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             add(perm1)
                             add(perm2)
                         }
-                        val handler = discordBot.networkManager.messagingServiceManager.getHandler(StaffChatMessageHandler::class.java)
+                        val handler =
+                            discordBot.networkManager.messagingServiceManager.getHandler(StaffChatMessageHandler::class.java)
                         handler?.send(data)
                     } else {
                         discordBot.networkManager.universalUtils.sendMessageToStaff(alert, "all", perm1, perm2)
@@ -81,6 +85,35 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         val member = event.member
         if (event.guild == discordBot.guild && !member.user.isBot) {
             discordBot.scheduler.runAsync(GuildJoinCheckTask(discordBot, member), false)
+        }
+    }
+
+    override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+        val member = event.member ?: return
+        val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
+        val chatChannel = chatEventChannels.entries.firstOrNull { it.value == event.channel.id } ?: return
+        val serverName = chatChannel.key
+        val eventChatMessageFormat = discordBot.messages.getString(MCMessage.EVENT_CHAT)
+        if (eventChatMessageFormat.isEmpty()) return
+        if (serverName.equals("all", ignoreCase = true)) {
+            discordBot.networkManager.cacheManager.cachedPlayers.players.values.forEach { player ->
+                player.sendMessage(
+                    eventChatMessageFormat.replace("%mention%", member.asMention)
+                        .replace("%textchannel%", event.channel.name)
+                        .replace("%message%", event.message.contentStripped)
+                )
+            }
+        } else {
+            val serverInfo = discordBot.networkManager.bootstrap.proxy.getServerInfo(serverName) ?: return
+            serverInfo.players.forEach { proxiedPlayer ->
+                val player = discordBot.networkManager.cacheManager.cachedPlayers.getIfLoaded(proxiedPlayer.uniqueId)
+                    ?: return@forEach
+                player.sendMessage(
+                    eventChatMessageFormat.replace("%mention%", member.asMention)
+                        .replace("%textchannel%", event.channel.name)
+                        .replace("%message%", event.message.contentStripped)
+                )
+            }
         }
     }
 }

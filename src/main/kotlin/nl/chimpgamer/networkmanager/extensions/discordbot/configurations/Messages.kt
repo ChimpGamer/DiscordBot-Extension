@@ -79,5 +79,7 @@ enum class MCMessage(val path: String) {
     RELOAD_CONFIG("minecraft.reload.config"),
     RELOAD_MESSAGES("minecraft.reload.messages"),
     RELOAD_JDA_SUCCESS("minecraft.reload.jda.success"),
-    RELOAD_JDA_FAILED("minecraft.reload.jda.success")
+    RELOAD_JDA_FAILED("minecraft.reload.jda.success"),
+
+    EVENT_CHAT("minecraft.event.chat")
 }
