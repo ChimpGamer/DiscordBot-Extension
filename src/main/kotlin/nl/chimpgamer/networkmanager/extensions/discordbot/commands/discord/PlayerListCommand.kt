@@ -41,7 +41,9 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
                         .replace("%server%", serverName))
             }
             var sb = StringBuilder()
+            val premiumVanishHook = discordBot.networkManager.pluginHookManager.premiumVanishHook.orElse(null)
             for (proxiedPlayer in discordBot.networkManager.bootstrap.proxy.getServerInfo(serverName).players) {
+                if (premiumVanishHook?.isVanished(proxiedPlayer.uniqueId) == true) continue
                 sb.append(proxiedPlayer.name).append(" - ").append(proxiedPlayer.server.info.name).append("\n")
             }
             if (sb.isNotEmpty()) {
