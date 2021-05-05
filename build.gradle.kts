@@ -1,10 +1,9 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    base
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.30"
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "6.0.0"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 repositories {
@@ -25,7 +24,7 @@ dependencies {
     implementation("com.jagrosh:jda-utilities-command:3.0.4")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.2-SNAPSHOT")
     //implementation("nl.chimpgamer.networkmanager:api:2.9.0-SNAPSHOT")
-    implementation("nl.chimpgamer.networkmanager:bungeecord:2.9.4-SNAPSHOT") {
+    implementation("nl.chimpgamer.networkmanager:bungeecord:2.9.5-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
     implementation("net.dv8tion:JDA:4.2.0_217")
