@@ -22,7 +22,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     .replace("%playername%", this.player.name))
         } else {
             try {
-                checkNotNull(this.discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
+                checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
                 val discordUserManager = this.discordBot.discordUserManager
                 val member: Member? = this.discordBot.guild.getMemberById(this.token.discordID)
                 if (member == null) {
