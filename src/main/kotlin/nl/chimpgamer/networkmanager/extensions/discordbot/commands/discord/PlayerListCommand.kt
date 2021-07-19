@@ -23,7 +23,9 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
             if (players.isEmpty()) {
                 sb.append("There are currently no players online!")
             } else {
+                val premiumVanishHook = discordBot.networkManager.pluginHookManager.premiumVanishHook.orElse(null)
                 for (proxiedPlayer in discordBot.networkManager.bootstrap.proxy.players) {
+                    if (premiumVanishHook?.isVanished(proxiedPlayer.uniqueId) == true) continue
                     sb.append(proxiedPlayer.name).append(" - ").append(proxiedPlayer.server.info.name).append("\n")
                 }
             }
@@ -36,9 +38,11 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
             val serverName = args[0]
             val serverInfo = discordBot.networkManager.bootstrap.proxy.getServerInfo(serverName)
             if (serverInfo == null) {
-                sendChannelMessage(event.textChannel, discordBot.messages.getString(DCMessage.COMMAND_PLAYERLIST_INVALID_SERVER)
+                sendChannelMessage(
+                    event.textChannel, discordBot.messages.getString(DCMessage.COMMAND_PLAYERLIST_INVALID_SERVER)
                         .replace("%mention%", event.author.asMention)
-                        .replace("%server%", serverName))
+                        .replace("%server%", serverName)
+                )
             }
             var sb = StringBuilder()
             val premiumVanishHook = discordBot.networkManager.pluginHookManager.premiumVanishHook.orElse(null)
