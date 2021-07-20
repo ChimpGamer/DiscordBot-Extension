@@ -89,6 +89,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
     }
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+        if (event.author.isBot) return
         val member = event.member ?: return
         val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
         val chatChannel = chatEventChannels.entries.firstOrNull { it.value == event.channel.id } ?: return
