@@ -1,8 +1,6 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 
 import net.dv8tion.jda.api.entities.MessageEmbed
-import nl.chimpgamer.networkmanager.api.NMListener
-import nl.chimpgamer.networkmanager.api.event.NMEvent
 import nl.chimpgamer.networkmanager.api.event.events.*
 import nl.chimpgamer.networkmanager.api.event.events.ticket.TicketCreateEvent
 import nl.chimpgamer.networkmanager.api.models.punishments.Punishment
@@ -16,10 +14,9 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.util.*
 
-class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
+class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
-    @NMEvent
-    fun onStaffChat(event: StaffChatEvent) {
+    private fun onStaffChat(event: StaffChatEvent) {
         if (event.isCancelled) return
         val staffChatChannel = discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL))
                 ?: return
@@ -30,8 +27,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
                         .replace("%message%", event.message))
     }
 
-    @NMEvent
-    fun onAdminChat(event: AdminChatEvent) {
+    private fun onAdminChat(event: AdminChatEvent) {
         if (event.isCancelled) return
         val adminChatChannel = discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL))
                 ?: return
@@ -42,8 +38,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
                         .replace("%message%", event.message))
     }
 
-    @NMEvent
-    fun onServerStatusChange(event: ServerStatusChangeEvent) {
+    private fun onServerStatusChange(event: ServerStatusChangeEvent) {
         val server = event.server
         val serverChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_SERVERSTATUS_CHANNELS)
         val globalId: String = serverChannels["all"] ?: "000000000000000000"
@@ -120,8 +115,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
         }
     }
 
-    @NMEvent
-    fun onPunishment(event: PunishmentEvent) {
+    private fun onPunishment(event: PunishmentEvent) {
         if (event.punishment.type === Punishment.Type.NOTE) {
             return
         }
@@ -183,8 +177,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
         }
     }
 
-    @NMEvent
-    fun onHelpOP(event: HelpOPRequestEvent) {
+    private fun onHelpOP(event: HelpOPRequestEvent) {
         if (event.isCancelled) {
             return
         }
@@ -203,8 +196,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
                 jsonEmbedBuilder.build())
     }
 
-    @NMEvent
-    fun onTicketCreate(event: TicketCreateEvent) {
+    private fun onTicketCreate(event: TicketCreateEvent) {
         if (event.isCancelled) {
             return
         }
@@ -222,8 +214,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
                 jsonEmbedBuilder.build())
     }
 
-    @NMEvent
-    fun onChatLogCreated(event: ChatLogCreatedEvent) {
+    private fun onChatLogCreated(event: ChatLogCreatedEvent) {
         val chatLogChannel = discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_CHATLOG_CHANNEL))
                 ?: return
         val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.CHATLOG_ALERT))
@@ -279,6 +270,18 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) : NMListener {
                 .replace("%tracked%", tracked.name)
                 .replace("%server%", event.server)
                 .replace("%url%", event.chatLogUrl)
+    }
+
+    init {
+        discordBot.eventBus.run {
+            subscribe(StaffChatEvent::class.java, ::onStaffChat)
+            subscribe(AdminChatEvent::class.java, ::onAdminChat)
+            subscribe(ServerStatusChangeEvent::class.java, ::onServerStatusChange)
+            subscribe(PunishmentEvent::class.java, ::onPunishment)
+            subscribe(HelpOPRequestEvent::class.java, ::onHelpOP)
+            subscribe(TicketCreateEvent::class.java, ::onTicketCreate)
+            subscribe(ChatLogCreatedEvent::class.java, ::onChatLogCreated)
+        }
     }
 
 }

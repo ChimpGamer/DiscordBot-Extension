@@ -1,7 +1,7 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot
 
+import io.github.slimjar.app.builder.ApplicationBuilder
 import net.dv8tion.jda.api.entities.Guild
-import nl.chimpgamer.networkmanager.api.NMListener
 import nl.chimpgamer.networkmanager.api.extensions.NMExtension
 import nl.chimpgamer.networkmanager.api.utils.PlatformType
 import nl.chimpgamer.networkmanager.bungeecord.NetworkManager
@@ -18,23 +18,50 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.ActivityUpdateTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.TokenExpiryTask
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DependencyDownloader
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DiscordPlaceholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.MySQL
+import java.io.File
+import java.time.Duration
+import java.time.Instant
+import java.util.logging.Level
 
 class DiscordBot : NMExtension() {
-    private val listeners: MutableList<NMListener> = ArrayList()
 
     // Configuration files
     val settings = Settings(this)
     val commandSettings = CommandSettings(this)
-    val messages = Messages(this)
+    lateinit var messages: Messages
 
     val mySQL = MySQL(this)
     val discordUserManager = DiscordUserManager(this)
     lateinit var discordManager: DiscordManager
 
     public override fun onEnable() { // Extension startup logic
+        val dependencyDirectory = File(networkManagerPlugin.dataFolder, "libraries")
+        logger.log(Level.INFO, "Loading Libraries...")
+        logger.log(Level.INFO, "Note: This might take a few minutes on first run. Kindly ensure internet connectivity.")
+        val startInstant = Instant.now()
+        try {
+            val slimJarJsonUrl = javaClass.classLoader.getResource("slimjar.json")
+            ApplicationBuilder
+                .appending("DiscordBot")
+                .dependencyFileUrl(slimJarJsonUrl)
+                .downloadDirectoryPath(dependencyDirectory.toPath())
+                .build()
+            val endInstant = Instant.now()
+            val timeTaken = Duration.between(startInstant, endInstant).toMillis()
+            val timeTakenSeconds = timeTaken / 1000.0
+            logger.log(Level.INFO, "Loaded libraries in {0} seconds", timeTakenSeconds)
+        } catch (exception: Exception) {
+            logger.log(
+                Level.SEVERE,
+                "Unable to load dependencies... Please ensure an active Internet connection on first run!"
+            )
+            exception.printStackTrace()
+            disable()
+            return
+        }
+
         instance = this
         if (networkManager.platformType !== PlatformType.BUNGEECORD) {
             logger.severe("Hey, this NetworkManager extension is for BungeeCord only!")
@@ -47,14 +74,10 @@ class DiscordBot : NMExtension() {
             return
         }
 
-        val dd = DependencyDownloader(this)
-        dd.downloadDependency(
-                "https://github.com/DV8FromTheWorld/JDA/releases/download/v4.2.0/JDA-4.2.0_168-withDependencies-no-opus.jar",
-                "JDA",
-                "JDA-4.2.0_168-withDependencies-no-opus")
         // Initialize configuration files
         settings.init()
         commandSettings.init()
+        messages = Messages(this)
         messages.init()
 
         discordUserManager.load()
@@ -77,7 +100,7 @@ class DiscordBot : NMExtension() {
 
     public override fun onDisable() { // Extension shutdown logic
         expireTokens()
-        unregisterListeners()
+
         networkManager.commandManager.unregisterAllBySource(info.name)
         this.discordManager.shutdownJDA()
     }
@@ -89,10 +112,7 @@ class DiscordBot : NMExtension() {
     }
 
     private fun registerListeners() {
-        this.listeners.add(NetworkManagerListeners(this))
-        for (listener in this.listeners) {
-            this.eventHandler.registerListener(listener)
-        }
+        NetworkManagerListeners(this)
         networkManager.registerListeners(
                 JoinLeaveListener(this),
                 ChatListener(this)
@@ -115,12 +135,6 @@ class DiscordBot : NMExtension() {
                 UnregisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), listOf(commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES))),
                 NetworkManagerBotCommand(this, "networkmanagerbot")
         )
-    }
-
-    private fun unregisterListeners() {
-        for (listener in this.listeners) {
-            this.eventHandler.unregisterListener(listener)
-        }
     }
 
     fun sendRedisBungee(message: String) {

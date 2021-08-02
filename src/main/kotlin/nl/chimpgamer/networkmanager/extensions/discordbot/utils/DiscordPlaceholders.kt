@@ -7,7 +7,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 
 class DiscordPlaceholders(private val discordBot: DiscordBot) : PlaceholderHook() {
     override fun onPlaceholderRequest(player: Player?, parameters: String): String? {
-        when (parameters.toLowerCase()) {
+        when (parameters.lowercase()) {
             "users" -> return discordBot.discordUserManager.discordUsers.size.toString()
             "guild_id" -> return discordBot.discordManager.guild.id
             "guild_name" -> return discordBot.discordManager.guild.name

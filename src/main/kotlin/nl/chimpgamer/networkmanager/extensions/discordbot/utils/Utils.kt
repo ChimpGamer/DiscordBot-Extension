@@ -82,7 +82,7 @@ object Utils {
     }
 
     fun firstUpperCase(var0: String): String {
-        return var0.substring(0, 1).toUpperCase() + var0.substring(1)
+        return var0.substring(0, 1).uppercase() + var0.substring(1)
     }
 
     @JvmStatic

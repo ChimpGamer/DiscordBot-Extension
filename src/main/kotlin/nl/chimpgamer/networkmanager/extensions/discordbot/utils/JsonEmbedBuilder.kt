@@ -1,18 +1,23 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.utils
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializer
 import net.dv8tion.jda.api.entities.EmbedType
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.MessageEmbed.*
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.internal.entities.EntityBuilder
-import net.dv8tion.jda.internal.utils.Checks
 import net.dv8tion.jda.internal.utils.Helpers
-import nl.chimpgamer.networkmanager.api.utils.GsonUtils.gson
 import nl.chimpgamer.networkmanager.api.utils.GsonUtils.prettyGson
 import java.awt.Color
-import java.time.*
+import java.time.OffsetDateTime
+import java.time.LocalDateTime
+import java.time.DateTimeException
+import java.time.Instant
+import java.time.ZoneOffset
 import java.time.temporal.TemporalAccessor
-import java.util.*
+import java.util.LinkedList
 import java.util.regex.Pattern
 
 class JsonEmbedBuilder {
@@ -27,6 +32,7 @@ class JsonEmbedBuilder {
     private val author: AuthorInfo? = null
     private var footer: Footer? = null
     private var image: ImageInfo? = null
+
     //&& color == null color alone is not enough to send
     val isEmpty: Boolean
         get() = title == null && description.isEmpty() && timestamp == null //&& color == null color alone is not enough to send
@@ -59,9 +65,8 @@ class JsonEmbedBuilder {
     }
 
     fun appendDescription(description: CharSequence): JsonEmbedBuilder {
-        Checks.notNull(description, "description")
-        Checks.check(this.description.length + description.length <= TEXT_MAX_LENGTH,
-                "Description cannot be longer than %d characters.", TEXT_MAX_LENGTH)
+        check(this.description.length + description.length <= TEXT_MAX_LENGTH)
+        { "Description cannot be longer than $TEXT_MAX_LENGTH characters." }
         this.description.append(description)
         return this
     }
@@ -89,8 +94,10 @@ class JsonEmbedBuilder {
                         val instant = Instant.from(temporal)
                         OffsetDateTime.ofInstant(instant, offset)
                     } catch (ex: DateTimeException) {
-                        throw DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
-                                temporal + " of type " + temporal.javaClass.name, ex)
+                        throw DateTimeException(
+                            "Unable to obtain OffsetDateTime from TemporalAccessor: " +
+                                    temporal + " of type " + temporal.javaClass.name, ex
+                        )
                     }
                 }
             }
@@ -133,7 +140,10 @@ class JsonEmbedBuilder {
         return this
     }
 
-    fun setFooter(text: String?, iconUrl: String?): JsonEmbedBuilder { //We only check if the text is null because its presence is what determines if the
+    fun setFooter(
+        text: String?,
+        iconUrl: String?
+    ): JsonEmbedBuilder { //We only check if the text is null because its presence is what determines if the
 // footer will appear in the embed.
         footer = if (text == null) {
             null
@@ -181,18 +191,33 @@ class JsonEmbedBuilder {
 
     fun build(): MessageEmbed {
         check(!isEmpty) { "Cannot build an empty embed!" }
-        check(description.length <= TEXT_MAX_LENGTH) { String.format("Description is longer than %d! Please limit your input!", TEXT_MAX_LENGTH) }
+        check(description.length <= TEXT_MAX_LENGTH) {
+            String.format(
+                "Description is longer than %d! Please limit your input!",
+                TEXT_MAX_LENGTH
+            )
+        }
         val descrip = if (description.isEmpty()) null else description.toString()
-        if (timestamp == null && showTimestamp != null && showTimestamp!!) {
+            .replace("%newline%", "\n")
+        if (timestamp == null && showTimestamp == true) {
             timestamp = OffsetDateTime.now()
         }
-        return EntityBuilder.createMessageEmbed(url, title, descrip, EmbedType.RICH, timestamp,
-                color, thumbnail, null, author, null, footer, image, LinkedList(fields))
+        return EntityBuilder.createMessageEmbed(
+            url, title, descrip, EmbedType.RICH, timestamp,
+            color, thumbnail, null, author, null, footer, image, LinkedList(fields)
+        )
     }
 
     companion object {
+        private val gson: Gson = GsonBuilder()
+            .registerTypeAdapter(
+                OffsetDateTime::class.java,
+                JsonDeserializer { json, _, _ -> OffsetDateTime.parse(json.toString()) })
+            .create()
+
         const val ZERO_WIDTH_SPACE = "\u200E"
-        val URL_PATTERN: Pattern = Pattern.compile("\\s*(https?|attachment)://.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE)!!
+        val URL_PATTERN: Pattern = Pattern.compile("\\s*(https?|attachment)://.+\\..{2,}\\s*", Pattern.CASE_INSENSITIVE)
+
         @JvmStatic
         fun fromJson(json: String?): JsonEmbedBuilder {
             return gson.fromJson(json, JsonEmbedBuilder::class.java)

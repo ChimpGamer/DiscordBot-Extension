@@ -9,7 +9,7 @@ class NetworkManagerBotCommand(private val discordBot: DiscordBot, cmd: String) 
     override fun onExecute(sender: Sender, args: Array<String>) {
         if (args.size == 2) {
             if (args[0].equals("reload", ignoreCase = true)) {
-                when (args[1].toLowerCase()) {
+                when (args[1].lowercase()) {
                     "config", "settings" -> {
                         discordBot.settings.reload()
                         sender.sendMessage(discordBot.messages.getString(MCMessage.RELOAD_CONFIG))

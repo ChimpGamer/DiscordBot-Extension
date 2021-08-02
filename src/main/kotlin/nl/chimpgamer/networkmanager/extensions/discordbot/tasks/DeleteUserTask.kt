@@ -24,7 +24,7 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 discordUserManager.discordUsers.remove(player.uuid)
 
                 val member = discordBot.guild.getMemberById(discordId)
-                this.discordBot.eventHandler.callEvent(PlayerUnregisteredEvent(player, member))
+                this.discordBot.eventBus.post(PlayerUnregisteredEvent(player, member))
 
                 if (discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED)) {
                     val verifiedRole = discordBot.discordManager.verifiedRole

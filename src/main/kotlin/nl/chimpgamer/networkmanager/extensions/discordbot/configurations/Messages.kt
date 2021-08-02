@@ -2,11 +2,10 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.configurations
 
 import nl.chimpgamer.networkmanager.api.utils.FileUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-import java.io.IOException
 
 class Messages(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFolder.absolutePath, "messages.yml") {
     fun init() {
-        setupFile()
+        setupFile(discordBot.getResource("messages.yml"))
     }
 
     fun getString(dcMessage: DCMessage): String {
@@ -15,21 +14,6 @@ class Messages(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
 
     fun getString(mcMessage: MCMessage): String {
         return getString(mcMessage.path) ?: error("The message ${mcMessage.path} does not exist!")
-    }
-
-    private fun setupFile() {
-        if (!file.exists()) {
-            discordBot.getResource("messages.yml")?.let {
-                saveToFile(it)
-                reload()
-            } ?: run {
-                try {
-                    file.createNewFile()
-                } catch (ex1: IOException) {
-                    ex1.printStackTrace()
-                }
-            }
-        }
     }
 }
 

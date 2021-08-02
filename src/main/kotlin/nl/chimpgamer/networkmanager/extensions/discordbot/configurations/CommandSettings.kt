@@ -2,11 +2,10 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.configurations
 
 import nl.chimpgamer.networkmanager.api.utils.FileUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-import java.io.IOException
 
 class CommandSettings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFolder.absolutePath, "commands.yml") {
     fun init() {
-        setupFile()
+        setupFile(discordBot.getResource("commands.yml"))
         for (commandSetting in CommandSetting.values()) {
             addDefault(commandSetting.path, commandSetting.defaultValue)
         }
@@ -20,21 +19,6 @@ class CommandSettings(private val discordBot: DiscordBot) : FileUtils(discordBot
 
     fun getString(commandSetting: CommandSetting): String {
         return getString(commandSetting.path, commandSetting.defaultValue as String)
-    }
-
-    private fun setupFile() {
-        if (!file.exists()) {
-            discordBot.getResource("commands.yml")?.let {
-                saveToFile(it)
-                reload()
-            } ?: run {
-                try {
-                    file.createNewFile()
-                } catch (ex1: IOException) {
-                    ex1.printStackTrace()
-                }
-            }
-        }
     }
 }
 

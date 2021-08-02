@@ -87,7 +87,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
                 )
         if (discordBot.settings.getBoolean(Setting.DISCORD_STATUS_ENABLED)) {
             val activityType = try {
-                Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).toUpperCase())
+                Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).uppercase())
             } catch (ex: IllegalArgumentException) {
                 discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using DEFAULT.")
                 Activity.ActivityType.DEFAULT
@@ -127,7 +127,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
     fun updateActivity(players: Int) {
         if (discordBot.settings.getBoolean(Setting.DISCORD_STATUS_ENABLED)) {
             val activityType = try {
-                Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).toUpperCase())
+                Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).uppercase())
             } catch (ex: IllegalArgumentException) {
                 discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using DEFAULT.")
                 Activity.ActivityType.DEFAULT

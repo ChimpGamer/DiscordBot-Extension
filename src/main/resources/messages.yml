@@ -61,7 +61,7 @@ discord:
       response: |-
         {
           "title": "Thanks for registering!",
-          "description": "\nJoin our Server and type in **/register %token%**",
+          "description": "%newline%Join our Server and type in **/register %token%**",
           "color": 15860242
         }
       expired: |-
@@ -103,7 +103,7 @@ discord:
           "inline": true
         }
       ],
-      "description": "\n**TICKET DETAILS**",
+      "description": "%newline%**TICKET DETAILS**",
       "color": -20561,
       "title": "__Server Moderation__",
       "showTimestamp": true,
@@ -130,7 +130,7 @@ discord:
           "inline": true
         }
       ],
-      "description": "\n**HELPOP DETAILS**",
+      "description": "%newline%**HELPOP DETAILS**",
       "color": -20561,
       "title": "__Server Moderation__",
       "showTimestamp": true,
@@ -163,7 +163,7 @@ discord:
             "inline": true
           }
         ],
-        "description": "\n**SERVER DETAILS**",
+        "description": "%newline%**SERVER DETAILS**",
         "color": -65536,
         "title": "__Server Administration__",
         "showTimestamp": true,
@@ -198,7 +198,7 @@ discord:
             "inline": true
           }
         ],
-        "description": "\n**SERVER DETAILS**",
+        "description": "%newline%**SERVER DETAILS**",
         "color": -16711936,
         "title": "__Server Administration__",
         "showTimestamp": true,
@@ -263,7 +263,7 @@ discord:
           "inline": true
         }
       ],
-      "description": "\n**PUNISHMENT DETAILS**",
+      "description": "%newline%**PUNISHMENT DETAILS**",
       "color": -2551040,
       "title": "__Server Moderation__",
       "showTimestamp": true
@@ -312,7 +312,7 @@ discord:
           "inline": true
         }
       ],
-      "description": "\n**UNPUNISHMENT DETAILS**",
+      "description": "%newline%**UNPUNISHMENT DETAILS**",
       "color": -842110,
       "title": "__Server Moderation__",
       "showTimestamp": true
@@ -361,7 +361,7 @@ discord:
           "inline": true
         }
       ],
-      "description": "\n**REPORT DETAILS**",
+      "description": "%newline%**REPORT DETAILS**",
       "color": -2551040,
       "title": "__Server Moderation__",
       "showTimestamp": true
@@ -385,7 +385,7 @@ discord:
           "inline": true
         }
       ],
-      "description": "\n**BUG REPORT DETAILS**",
+      "description": "%newline%**BUG REPORT DETAILS**",
       "color": -2551040,
       "title": "__Server Moderation__",
       "showTimestamp": true
@@ -409,7 +409,7 @@ discord:
           "inline": true
         }
       ],
-      "description": "\n**SUGGESTION DETAILS**",
+      "description": "%newline%**SUGGESTION DETAILS**",
       "color": -2551040,
       "title": "__Server Moderation__",
       "showTimestamp": true
@@ -438,7 +438,7 @@ discord:
           "inline": true
          }
       ],
-      "description": "\n**CHATLOG DETAILS**",
+      "description": "%newline%**CHATLOG DETAILS**",
       "color": -2551040,
       "title": "__Server Moderation__",
       "showTimestamp": true

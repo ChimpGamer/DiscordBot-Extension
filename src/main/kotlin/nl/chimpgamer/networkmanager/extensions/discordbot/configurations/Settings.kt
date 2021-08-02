@@ -2,11 +2,10 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.configurations
 
 import nl.chimpgamer.networkmanager.api.utils.FileUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-import java.io.IOException
 
 class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFolder.absolutePath, "settings.yml") {
     fun init() {
-        setupFile()
+        setupFile(discordBot.getResource("settings.yml"))
         for (setting in Setting.values()) {
             addDefault(setting.path, setting.defaultValue)
         }
@@ -27,21 +26,6 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
         }
         set(Setting.DISCORD_SYNC_RANKS_MAP.path, rolesMap)
         set("bot.discord.sync.ranks.list", null)
-    }
-
-    private fun setupFile() {
-        if (!file.exists()) {
-            discordBot.getResource("settings.yml")?.let {
-                saveToFile(it)
-                reload()
-            } ?: run {
-                try {
-                    file.createNewFile()
-                } catch (ex: IOException) {
-                    ex.printStackTrace()
-                }
-            }
-        }
     }
 
     override fun reload() {

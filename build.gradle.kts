@@ -1,9 +1,8 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.5.21"
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("io.github.slimjar") version "1.2.1"
 }
 
 repositories {
@@ -11,9 +10,11 @@ repositories {
     jcenter()
     maven("https://oss.sonatype.org/content/repositories/snapshots")
 
+    maven("https://m2.dv8tion.net/releases")
+
     maven("https://jitpack.io")
 
-    maven("http://repo.md-5.net/content/repositories/snapshots/")
+    maven("https://repo.md-5.net/content/repositories/snapshots/")
 
     maven("https://repo.codemc.org/repository/maven-public")
 
@@ -24,17 +25,28 @@ dependencies {
     implementation("com.jagrosh:jda-utilities-command:3.0.4")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.2-SNAPSHOT")
     //implementation("nl.chimpgamer.networkmanager:api:2.9.0-SNAPSHOT")
-    implementation("nl.chimpgamer.networkmanager:bungeecord:2.9.5-SNAPSHOT") {
+    implementation("nl.chimpgamer.networkmanager:bungeecord:2.9.9-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
-    implementation("net.dv8tion:JDA:4.2.0_217")
-    compileOnly("com.github.Carleslc:Simple-YAML:1.4.1")
+    slim("net.dv8tion:JDA:4.3.0_277") {
+        exclude("club.minnced", "opus-java")
+    }
+    compileOnly("io.github.slimjar:slimjar:1.2.4")
+    compileOnly("com.github.Carleslc:Simple-YAML:1.7.2")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
     compileOnly(kotlin("stdlib-jdk8"))
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
 version = "1.3.7-SNAPSHOT"
+
+publishing {
+    publications {
+        register("mavenJava", MavenPublication::class) {
+            from(components["java"])
+        }
+    }
+}
 
 tasks {
     compileKotlin {
@@ -45,10 +57,7 @@ tasks {
     }
 
     processResources {
-        val tokens = mapOf("version" to project.version)
-        from(sourceSets["main"].resources.srcDirs) {
-            filter<ReplaceTokens>("tokens" to tokens)
-        }
+        expand("version" to project.version)
     }
 
     shadowJar {
@@ -59,12 +68,22 @@ tasks {
             include(dependency("com.jagrosh:.*"))
         }
 
-        relocate("kotlin", "nl.chimpgamer.networkmanager.lib.kotlin")
-        relocate("org.simpleyaml", "nl.chimpgamer.networkmanager.lib.simpleyaml")
-        relocate("org.eclipse.jetty", "nl.chimpgamer.networkmanager.lib.jetty")
-        relocate("javax.servlet", "nl.chimpgamer.networkmanager.lib.javax.servlet")
-        relocate("com.google.gson", "nl.chimpgamer.networkmanager.lib.gson")
-        relocate("com.jagrosh.jdautilities", "nl.chimpgamer.networkmanager.shaded.com.jagrosh.jdautilities")
+        val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
+        val libPackage = "nl.chimpgamer.networkmanager.lib"
+        relocate("io.github.slimjar", "$shadedPackage.slimjar")
+        relocate("net.kyori", "$shadedPackage.kyori")
+
+        relocate("kotlin", "$libPackage.kotlin")
+        relocate("org.simpleyaml", "$libPackage.simpleyaml")
+        relocate("org.eclipse.jetty", "$libPackage.jetty")
+        relocate("javax.servlet", "$libPackage.javax.servlet")
+        relocate("com.jagrosh.jdautilities", "$shadedPackage.com.jagrosh.jdautilities")
+    }
+
+    slimJar {
+        shade = false
+
+        relocate("net.dv8tion.jda", "nl.chimpgamer.networkmanager.lib.jda")
     }
 
     build {

@@ -17,8 +17,8 @@ import java.sql.SQLException
 class VerifyUserTask(private val discordBot: DiscordBot, private val player: Player, private val token: Token) : Runnable {
 
     override fun run() {
-        if (this.token.created + 300000 < System.currentTimeMillis()) { // Token Expired
-            this.player.sendMessage(discordBot.messages.getString(MCMessage.REGISTER_TOKEN_EXPIRED)
+        if (token.created + 300000 < System.currentTimeMillis()) { // Token Expired
+            player.sendMessage(discordBot.messages.getString(MCMessage.REGISTER_TOKEN_EXPIRED)
                     .replace("%playername%", this.player.name))
         } else {
             try {
@@ -44,7 +44,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     }
                     this.player.sendMessage(discordBot.messages.getString(MCMessage.REGISTER_COMPLETED)
                             .replace("%playername%", this.player.name))
-                    this.discordBot.networkManager.eventHandler.callEvent(PlayerRegisteredEvent(this.player, member))
+                    this.discordBot.eventBus.post(PlayerRegisteredEvent(this.player, member))
                     if (this.discordBot.networkManager.isRedisBungee) {
                         this.discordBot.sendRedisBungee("load " + this.player.uuid)
                     }
