@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.api.values.Command
 import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData
 import nl.chimpgamer.networkmanager.common.messaging.handlers.AdminChatMessageHandler
@@ -96,23 +97,30 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         val serverName = chatChannel.key
         val eventChatMessageFormat = discordBot.messages.getString(MCMessage.EVENT_CHAT)
         if (eventChatMessageFormat.isEmpty()) return
+        val cachedPlayers = discordBot.networkManager.cacheManager.cachedPlayers
+
+        val playerUUID = discordBot.discordUserManager.getUuidByDiscordId(member.id) ?: return
+        val player = cachedPlayers.getIfLoaded(playerUUID) ?: return
+
         if (serverName.equals("all", ignoreCase = true)) {
-            discordBot.networkManager.cacheManager.cachedPlayers.players.values.forEach { player ->
-                player.sendMessage(
-                    eventChatMessageFormat.replace("%mention%", member.asMention)
+            cachedPlayers.players.values.forEach { target ->
+                target.sendMessage(
+                    Placeholders.setPlaceholders(player, eventChatMessageFormat
+                        .replace("%mention%", member.asMention)
                         .replace("%textchannel%", event.channel.name)
-                        .replace("%message%", event.message.contentStripped)
+                        .replace("%message%", event.message.contentStripped))
                 )
             }
         } else {
             val serverInfo = discordBot.networkManager.bootstrap.proxy.getServerInfo(serverName) ?: return
             serverInfo.players.forEach { proxiedPlayer ->
-                val player = discordBot.networkManager.cacheManager.cachedPlayers.getIfLoaded(proxiedPlayer.uniqueId)
-                    ?: return@forEach
-                player.sendMessage(
-                    eventChatMessageFormat.replace("%mention%", member.asMention)
+                val target = cachedPlayers.getIfLoaded(proxiedPlayer.uniqueId) ?: return@forEach
+                target.sendMessage(
+                    Placeholders.setPlaceholders(player, eventChatMessageFormat
+                        .replace("%mention%", member.asMention)
                         .replace("%textchannel%", event.channel.name)
                         .replace("%message%", event.message.contentStripped)
+                    )
                 )
             }
         }
