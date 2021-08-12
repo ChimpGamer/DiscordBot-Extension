@@ -38,7 +38,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                         .replace("%nickname%", player.nicknameOrUserName)
                         .replace("%server%", "Discord")
                         .replace("%message%", msg)
-                    val perm1 = "networkmanager.adminchat"
+                    val perm1 = "networkmanager.command.adminchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
                         val data = PlayerMessageData(player.uuid, msg)
@@ -63,7 +63,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                         .replace("%nickname%", player.nicknameOrUserName)
                         .replace("%server%", "Discord")
                         .replace("%message%", msg)
-                    val perm1 = "networkmanager.staffchat"
+                    val perm1 = "networkmanager.command.staffchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
                         val data = PlayerMessageData(player.uuid, msg)
