@@ -106,7 +106,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
             cachedPlayers.players.values.forEach { target ->
                 target.sendMessage(
                     Placeholders.setPlaceholders(player, eventChatMessageFormat
-                        .replace("%mention%", member.asMention)
+                        .replace("%discordname%", member.effectiveName)
                         .replace("%textchannel%", event.channel.name)
                         .replace("%message%", event.message.contentStripped))
                 )
@@ -117,7 +117,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                 val target = cachedPlayers.getIfLoaded(proxiedPlayer.uniqueId) ?: return@forEach
                 target.sendMessage(
                     Placeholders.setPlaceholders(player, eventChatMessageFormat
-                        .replace("%mention%", member.asMention)
+                        .replace("%discordname%", member.effectiveName)
                         .replace("%textchannel%", event.channel.name)
                         .replace("%message%", event.message.contentStripped)
                     )
