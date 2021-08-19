@@ -33,7 +33,6 @@ class JsonEmbedBuilder {
     private var footer: Footer? = null
     private var image: ImageInfo? = null
 
-    //&& color == null color alone is not enough to send
     val isEmpty: Boolean
         get() = title == null && description.isEmpty() && timestamp == null //&& color == null color alone is not enough to send
                 && thumbnail == null && author == null && footer == null && image == null && fields.isEmpty()

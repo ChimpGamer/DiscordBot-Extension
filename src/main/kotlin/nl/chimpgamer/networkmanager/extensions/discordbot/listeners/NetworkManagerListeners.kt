@@ -41,7 +41,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     private fun onServerStatusChange(event: ServerStatusChangeEvent) {
         val server = event.server
         val serverChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_SERVERSTATUS_CHANNELS)
-        val globalId: String = serverChannels["all"] ?: "000000000000000000"
+        val globalId = serverChannels["all"] ?: "000000000000000000"
         val globalServerTextChannel = discordBot.guild.getTextChannelById(globalId)
         if (globalServerTextChannel != null) {
             val jsonEmbedBuilder: JsonEmbedBuilder
@@ -77,7 +77,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
                         jsonEmbedBuilder.build())
             }
         }
-        val channelId: String = serverChannels[server.serverName] ?: "000000000000000000"
+        val channelId = serverChannels[server.serverName] ?: "000000000000000000"
         val serverStatusChannel = discordBot.guild.getTextChannelById(channelId)
         if (serverStatusChannel != null) {
             val jsonEmbedBuilder: JsonEmbedBuilder
@@ -230,7 +230,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     }
 
     private fun insertServerPlaceholders(s: String?, server: Server): String {
-        return s!!.replace("%id%", server.id.toString())
+        if (s == null) return ""
+        return s.replace("%id%", server.id.toString())
                 .replace("%name%", server.displayName.stripColors())
                 .replace("%servername%", server.displayName.stripColors())
                 .replace("%motd%", server.motd?.stripColors() ?: "No MOTD")
@@ -242,7 +243,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
     private fun insertHelpOPPlaceholders(s: String?, event: HelpOPRequestEvent): String {
         val sender = event.sender
-        return s!!.replace("%message%", event.message)
+        if (s == null) return ""
+        return s.replace("%message%", event.message)
                 .replace("%requester%", sender.name)
                 .replace("%server%", sender.server!!)
     }
@@ -256,8 +258,9 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     private fun insertTicketPlaceholders(s: String?, event: TicketCreateEvent): String {
         val cachedPlayers = discordBot.networkManager.cacheManager.cachedPlayers
         val ticket = event.ticket
+        if (s == null) return ""
         val creator = cachedPlayers.getName(ticket.creator) ?: "Unknown (Could not find name by creator UUID)"
-        return s!!.replace("%id%", ticket.id.toString())
+        return s.replace("%id%", ticket.id.toString())
                 .replace("%title%", ticket.title)
                 .replace("%creator%", creator)
     }
@@ -265,7 +268,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     private fun insertChatLogPlaceholders(s: String?, event: ChatLogCreatedEvent): String {
         val creator = event.creator
         val tracked = event.tracked
-        return s!!.replace("%id%", event.chatLogId.toString())
+        if (s == null) return ""
+        return s.replace("%id%", event.chatLogId.toString())
                 .replace("%creator%", creator.name)
                 .replace("%tracked%", tracked.name)
                 .replace("%server%", event.server)

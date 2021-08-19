@@ -155,6 +155,6 @@ class DiscordBot : NMExtension() {
 
     companion object {
         @JvmStatic
-        var instance: DiscordBot? = null
+        lateinit var instance: DiscordBot
     }
 }
