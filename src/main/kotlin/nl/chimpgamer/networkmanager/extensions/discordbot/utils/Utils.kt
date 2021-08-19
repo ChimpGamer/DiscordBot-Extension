@@ -11,51 +11,51 @@ object Utils {
     val UUID_REGEX = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")
 
     @JvmStatic
-    fun sendChannelMessage(channel: MessageChannel, message: String?) {
+    fun sendChannelMessage(channel: MessageChannel, message: String) {
         try {
-            channel.sendMessage(message!!).queue()
+            channel.sendMessage(message).queue()
         } catch (ex: PermissionException) {
-            DiscordBot.instance!!.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
+            DiscordBot.instance.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
         }
     }
 
     @JvmStatic
-    fun sendChannelMessage(channel: MessageChannel, message: MessageEmbed?) {
+    fun sendChannelMessage(channel: MessageChannel, message: MessageEmbed) {
         try {
-            channel.sendMessage(message!!).queue()
+            channel.sendMessage(message).queue()
         } catch (ex: PermissionException) {
-            DiscordBot.instance!!.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
+            DiscordBot.instance.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
         }
     }
 
     @JvmStatic
-    fun sendMessageComplete(channel: MessageChannel, message: String?): Message? {
+    fun sendMessageComplete(channel: MessageChannel, message: String): Message? {
         try {
-            return channel.sendMessage(message!!).complete()
+            return channel.sendMessage(message).complete()
         } catch (ex: PermissionException) {
-            DiscordBot.instance!!.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
-        }
-        return null
-    }
-
-    @JvmStatic
-    fun sendMessageComplete(channel: MessageChannel, message: MessageEmbed?): Message? {
-        try {
-            return channel.sendMessage(message!!).complete()
-        } catch (ex: PermissionException) {
-            DiscordBot.instance!!.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
+            DiscordBot.instance.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
         }
         return null
     }
 
     @JvmStatic
-    fun editMessage(currentMessage: Message, newMessage: String?) {
-        currentMessage.editMessage(newMessage!!).queue()
+    fun sendMessageComplete(channel: MessageChannel, message: MessageEmbed): Message? {
+        try {
+            return channel.sendMessage(message).complete()
+        } catch (ex: PermissionException) {
+            DiscordBot.instance.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
+        }
+        return null
     }
 
     @JvmStatic
-    fun editMessage(currentMessage: Message, newMessage: MessageEmbed?) {
-        currentMessage.editMessage(newMessage!!).queue()
+    fun editMessage(currentMessage: Message, newMessage: String) {
+        currentMessage.editMessage(newMessage).queue()
+    }
+
+    @JvmStatic
+    fun editMessage(currentMessage: Message, newMessage: MessageEmbed) {
+        currentMessage.editMessage(newMessage).queue()
     }
 
     @Throws(InsufficientPermissionException::class)
@@ -69,7 +69,7 @@ object Utils {
                 .toCollection(rolesToAddFiltered)
         val nonInteractableRolesToAdd = rolesToAddFiltered.filter { role: Role -> !member.guild.selfMember.canInteract(role) }
         rolesToAddFiltered.removeAll(nonInteractableRolesToAdd)
-        nonInteractableRolesToAdd.forEach { role: Role -> DiscordBot.instance!!.logger.warning("Failed to add role " + role.name + " to " + member.effectiveName + " because the bot's highest role is lower than the target role and thus can't interact with it") }
+        nonInteractableRolesToAdd.forEach { role: Role -> DiscordBot.instance.logger.warning("Failed to add role " + role.name + " to " + member.effectiveName + " because the bot's highest role is lower than the target role and thus can't interact with it") }
         rolesToRemove
                 .filter { role: Role -> !role.isManaged }
                 .filter { role: Role -> role.guild.publicRole.id != role.id }
@@ -77,12 +77,8 @@ object Utils {
                 .toCollection(rolesToRemoveFiltered)
         val nonInteractableRolesToRemove = rolesToRemoveFiltered.filter { role: Role -> !member.guild.selfMember.canInteract(role) }
         rolesToRemoveFiltered.removeAll(nonInteractableRolesToRemove)
-        nonInteractableRolesToRemove.forEach { role: Role -> DiscordBot.instance!!.logger.warning("Failed to remove role " + role.name + " from " + member.effectiveName + " because the bot's highest role is lower than the target role and thus can't interact with it") }
+        nonInteractableRolesToRemove.forEach { role: Role -> DiscordBot.instance.logger.warning("Failed to remove role " + role.name + " from " + member.effectiveName + " because the bot's highest role is lower than the target role and thus can't interact with it") }
         member.guild.modifyMemberRoles(member, rolesToAddFiltered, rolesToRemoveFiltered).queue()
-    }
-
-    fun firstUpperCase(var0: String): String {
-        return var0.substring(0, 1).uppercase() + var0.substring(1)
     }
 
     @JvmStatic

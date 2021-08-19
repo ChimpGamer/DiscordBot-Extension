@@ -22,6 +22,10 @@ class CreateTokenTask(private val discordBot: DiscordBot, private val channel: M
         } else {
             Utils.sendMessageComplete(this.channel, msgStr)
         }
-        this.discordBot.discordUserManager.insertToken(token, this.discordID, message!!)
+        if (message == null) {
+            discordBot.logger.warning("Failed to send REGISTRATION_TOKEN_RESPONSE!")
+            return
+        }
+        this.discordBot.discordUserManager.insertToken(token, this.discordID, message)
     }
 }

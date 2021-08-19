@@ -17,8 +17,9 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
     override fun run() {
         val discordUserManager = discordBot.discordUserManager
         try {
-            if (discordUserManager.existsInDatabase(player.uuid.toString())) {
-                val discordId = discordUserManager.getDiscordIdByUuid(player.uuid)!!
+            val discordId = discordUserManager.getDiscordIdByUuid(player.uuid)
+            // If discordId is not null the user exists in the database.
+            if (discordId != null) {
 
                 discordUserManager.deleteUserFromDatabase(player.uuid)
                 discordUserManager.discordUsers.remove(player.uuid)
