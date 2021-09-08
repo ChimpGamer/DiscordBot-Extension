@@ -69,8 +69,12 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
 
                 val executeCommands = discordBot.settings.getStringList(Setting.DISCORD_UNREGISTER_EXECUTE_COMMANDS)
                 if (executeCommands.isNotEmpty()) {
-                    executeCommands.forEach { command -> ProxyServer.getInstance().pluginManager.dispatchCommand(
-                        ProxyServer.getInstance().console, command) }
+                    executeCommands.forEach { command ->
+                        ProxyServer.getInstance().pluginManager.dispatchCommand(
+                            ProxyServer.getInstance().console,
+                            command.replace("%playername%", player.name)
+                        )
+                    }
                 }
 
                 if (player.isOnline) {

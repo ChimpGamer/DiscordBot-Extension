@@ -15,12 +15,15 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import java.sql.SQLException
 
-class VerifyUserTask(private val discordBot: DiscordBot, private val player: Player, private val token: Token) : Runnable {
+class VerifyUserTask(private val discordBot: DiscordBot, private val player: Player, private val token: Token) :
+    Runnable {
 
     override fun run() {
         if (token.created + 300000 < System.currentTimeMillis()) { // Token Expired
-            player.sendMessage(discordBot.messages.getString(MCMessage.REGISTER_TOKEN_EXPIRED)
-                    .replace("%playername%", this.player.name))
+            player.sendMessage(
+                discordBot.messages.getString(MCMessage.REGISTER_TOKEN_EXPIRED)
+                    .replace("%playername%", this.player.name)
+            )
         } else {
             try {
                 checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
@@ -31,8 +34,10 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     return
                 }
                 if (discordUserManager.existsInDatabase(this.player.uuid.toString())) { // User is already registered...
-                    this.player.sendMessage(discordBot.messages.getString(MCMessage.REGISTER_ACCOUNT_ALREADY_LINKED)
-                            .replace("%playername%", this.player.name))
+                    this.player.sendMessage(
+                        discordBot.messages.getString(MCMessage.REGISTER_ACCOUNT_ALREADY_LINKED)
+                            .replace("%playername%", this.player.name)
+                    )
                 } else {
                     // User is not registered yet...
                     discordUserManager.tokens.remove(this.token) // Remove token
@@ -44,8 +49,10 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     } else {
                         Utils.editMessage(this.token.message, registrationCompleted)
                     }
-                    this.player.sendMessage(discordBot.messages.getString(MCMessage.REGISTER_COMPLETED)
-                            .replace("%playername%", this.player.name))
+                    this.player.sendMessage(
+                        discordBot.messages.getString(MCMessage.REGISTER_COMPLETED)
+                            .replace("%playername%", this.player.name)
+                    )
                     this.discordBot.eventBus.post(PlayerRegisteredEvent(this.player, member))
                     if (this.discordBot.networkManager.isRedisBungee) {
                         this.discordBot.sendRedisBungee("load " + this.player.uuid)
@@ -66,12 +73,19 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
 
                     val executeCommands = discordBot.settings.getStringList(Setting.DISCORD_REGISTER_EXECUTE_COMMANDS)
                     if (executeCommands.isNotEmpty()) {
-                        executeCommands.forEach { command -> ProxyServer.getInstance().pluginManager.dispatchCommand(ProxyServer.getInstance().console, command) }
+                        executeCommands.forEach { command ->
+                            ProxyServer.getInstance().pluginManager.dispatchCommand(
+                                ProxyServer.getInstance().console,
+                                command.replace("%playername%", player.name)
+                            )
+                        }
                     }
                 }
             } catch (ex: SQLException) {
-                this.player.sendMessage(discordBot.messages.getString(MCMessage.REGISTER_ERROR)
-                        .replace("%playername%", this.player.name))
+                this.player.sendMessage(
+                    discordBot.messages.getString(MCMessage.REGISTER_ERROR)
+                        .replace("%playername%", this.player.name)
+                )
                 ex.printStackTrace()
             }
         }
