@@ -16,7 +16,7 @@ class DiscordPlaceholders(private val discordBot: DiscordBot) : PlaceholderHook(
             "guild_boost_count" -> return discordBot.discordManager.guild.boostCount.toString()
             "is_registered" -> {
                 if (player == null) return null
-                return discordBot.discordUserManager.existsInDatabase(player.uuid.toString()).toString()
+                return discordBot.discordUserManager.discordUsers.containsKey(player.uuid).toString()
             }
             "member_name" -> {
                 if (player == null) return null

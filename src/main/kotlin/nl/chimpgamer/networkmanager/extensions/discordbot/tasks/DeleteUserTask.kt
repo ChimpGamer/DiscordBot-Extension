@@ -3,6 +3,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.tasks
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.md_5.bungee.api.ProxyServer
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerUnregisteredEvent
@@ -64,6 +65,12 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
 
                 if (discordBot.settings.getBoolean(Setting.DISCORD_UNREGISTER_KICK_ENABLED)) {
                     member?.kick(discordBot.settings.getString(Setting.DISCORD_UNREGISTER_KICK_REASON))
+                }
+
+                val executeCommands = discordBot.settings.getStringList(Setting.DISCORD_UNREGISTER_EXECUTE_COMMANDS)
+                if (executeCommands.isNotEmpty()) {
+                    executeCommands.forEach { command -> ProxyServer.getInstance().pluginManager.dispatchCommand(
+                        ProxyServer.getInstance().console, command) }
                 }
 
                 if (player.isOnline) {

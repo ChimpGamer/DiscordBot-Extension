@@ -36,7 +36,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         val guilds = jda.guilds
 
         when {
-            guilds.isNullOrEmpty() -> {
+            guilds.isEmpty() -> {
                 discordBot.logger.warning("The Bot is not a member of a guild!")
             }
             guilds.size > 1 -> {

@@ -1,8 +1,8 @@
 plugins {
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.5.30"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("io.github.slimjar") version "1.2.1"
+    id("io.github.slimjar") version "1.3.0"
 }
 
 repositories {
@@ -18,14 +18,16 @@ repositories {
 
     maven("https://repo.codemc.org/repository/maven-public")
 
-    maven("https://repo.maven.apache.org/maven2")
+    maven("https://repo.vshnv.tech/releases")
 }
 
 dependencies {
+    compileOnly("io.github.slimjar:slimjar:1.2.6")
+    compileOnly(kotlin("stdlib-jdk8"))
     implementation("com.jagrosh:jda-utilities-command:3.0.4")
-    compileOnly("net.md-5:bungeecord-api:1.16-R0.2-SNAPSHOT")
+    compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
     //implementation("nl.chimpgamer.networkmanager:api:2.9.0-SNAPSHOT")
-    implementation("nl.chimpgamer.networkmanager:bungeecord:2.9.9-SNAPSHOT") {
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.9.9-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
     slim("net.dv8tion:JDA:4.3.0_277") {
@@ -34,7 +36,6 @@ dependencies {
     compileOnly("io.github.slimjar:slimjar:1.2.4")
     compileOnly("com.github.Carleslc:Simple-YAML:1.7.2")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
-    compileOnly(kotlin("stdlib-jdk8"))
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"

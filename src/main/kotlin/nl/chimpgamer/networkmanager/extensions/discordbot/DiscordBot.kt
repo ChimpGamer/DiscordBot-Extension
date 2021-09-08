@@ -131,8 +131,8 @@ class DiscordBot : NMExtension() {
             commandManager.registerCommand(info.name, DiscordCommand(this, "discord"))
         }
         commandManager.registerCommands(info.name,
-                RegisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_COMMAND), listOf(commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_ALIASES))),
-                UnregisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), listOf(commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES))),
+                RegisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_COMMAND), commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_ALIASES).split(", ")),
+                UnregisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES).split(", ")),
                 NetworkManagerBotCommand(this, "networkmanagerbot")
         )
     }

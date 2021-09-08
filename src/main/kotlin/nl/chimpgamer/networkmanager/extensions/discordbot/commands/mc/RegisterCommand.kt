@@ -6,7 +6,7 @@ import nl.chimpgamer.networkmanager.api.utils.commands.NMBungeeCommand
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 
-class RegisterCommand(private val discordBot: DiscordBot, cmd: String, args: List<String>) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.register", "networkmanager.admin"), args) {
+class RegisterCommand(private val discordBot: DiscordBot, cmd: String, aliases: List<String>) : NMBungeeCommand(discordBot.networkManager, cmd, listOf("networkmanager.bot.register", "networkmanager.admin"), aliases) {
     override fun onExecute(sender: Sender, args: Array<String>) {
         sender as Player
         if (args.isEmpty()) {

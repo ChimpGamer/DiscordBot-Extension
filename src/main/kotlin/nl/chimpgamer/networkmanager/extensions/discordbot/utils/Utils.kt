@@ -10,7 +10,6 @@ import java.security.SecureRandom
 object Utils {
     val UUID_REGEX = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")
 
-    @JvmStatic
     fun sendChannelMessage(channel: MessageChannel, message: String) {
         try {
             channel.sendMessage(message).queue()
@@ -28,7 +27,6 @@ object Utils {
         }
     }
 
-    @JvmStatic
     fun sendMessageComplete(channel: MessageChannel, message: String): Message? {
         try {
             return channel.sendMessage(message).complete()
@@ -38,7 +36,6 @@ object Utils {
         return null
     }
 
-    @JvmStatic
     fun sendMessageComplete(channel: MessageChannel, message: MessageEmbed): Message? {
         try {
             return channel.sendMessage(message).complete()
@@ -48,12 +45,10 @@ object Utils {
         return null
     }
 
-    @JvmStatic
     fun editMessage(currentMessage: Message, newMessage: String) {
         currentMessage.editMessage(newMessage).queue()
     }
 
-    @JvmStatic
     fun editMessage(currentMessage: Message, newMessage: MessageEmbed) {
         currentMessage.editMessage(newMessage).queue()
     }
@@ -81,7 +76,6 @@ object Utils {
         member.guild.modifyMemberRoles(member, rolesToAddFiltered, rolesToRemoveFiltered).queue()
     }
 
-    @JvmStatic
     fun generateToken(): String {
         return BigInteger(64, SecureRandom()).toString(32)
     }

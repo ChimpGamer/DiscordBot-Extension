@@ -72,8 +72,10 @@ enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_STATUS_MESSAGE("bot.discord.status.message", "%players% players on your server"),
     DISCORD_REGISTER_ADD_ROLE_ENABLED("bot.discord.register.addRole.enabled", false),
     DISCORD_REGISTER_ADD_ROLE_ROLE_NAME("bot.discord.register.addRole.roleName", "YourVerifiedRoleNameHere"),
+    DISCORD_REGISTER_EXECUTE_COMMANDS("bot.discord.register.executeCommands", emptyList<String>()),
     DISCORD_UNREGISTER_KICK_ENABLED("bot.discord.unregister.kick.enabled", false),
     DISCORD_UNREGISTER_KICK_REASON("bot.discord.unregister.kick.reason", "You have been kicked from the ... discord because your account got unlinked!"),
+    DISCORD_UNREGISTER_EXECUTE_COMMANDS("bot.discord.unregister.executeCommands", emptyList<String>()),
     DISCORD_SYNC_USERNAME("bot.discord.sync.username", false),
     DISCORD_SYNC_RANKS_ENABLED("bot.discord.sync.ranks.enabled", false),
     DISCORD_SYNC_RANKS_MAP("bot.discord.sync.ranks.map", mapOf("vip" to "VIP", "supervip" to "SuperVIP")),
@@ -87,5 +89,7 @@ enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_EVENTS_SUGGESTION_CHANNEL("bot.discord.events.suggestion.channel", "000000000000000000"),
     DISCORD_EVENTS_BUGREPORT_CHANNEL("bot.discord.events.bugreport.channel", "000000000000000000"),
     DISCORD_EVENTS_CHAT_CHANNELS("bot.discord.events.chat", mapOf("all" to "000000000000000000")),
-    DISCORD_EVENTS_SERVERSTATUS_CHANNELS("bot.discord.events.serverStatus", mapOf("all" to "000000000000000000"))
+    DISCORD_EVENTS_SERVERSTATUS_CHANNELS("bot.discord.events.serverStatus", mapOf("all" to "000000000000000000")),
+    DISCORD_EVENTS_LOGIN_CHANNEL("bot.discord.events.login", "000000000000000000"),
+    DISCORD_EVENTS_FIRST_LOGIN_CHANNEL("bot.discord.events.firstlogin", "000000000000000000")
 }
