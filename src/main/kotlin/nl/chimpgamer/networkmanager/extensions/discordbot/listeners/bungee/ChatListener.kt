@@ -6,6 +6,7 @@ import net.md_5.bungee.api.event.ChatEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
 import net.md_5.bungee.event.EventPriority
+import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
@@ -17,21 +18,22 @@ class ChatListener(private val discordBot: DiscordBot) : Listener {
             return
         }
         val proxiedPlayer = event.sender as ProxiedPlayer
-        val currentServer = proxiedPlayer.server.info.name
+        val player = discordBot.networkManager.getPlayer(proxiedPlayer.uniqueId) ?: return
+        val currentServer = player.name
         val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
         val globalId = chatEventChannels["all"] ?: "000000000000000000"
         val globalChatTextChannel = discordBot.guild.getTextChannelById(globalId)
-        globalChatTextChannel?.sendMessage(discordBot.messages.getString(DCMessage.EVENT_CHAT)
-                .replace("%playername%", proxiedPlayer.name)
-                .replace("%server%", currentServer)
-                .replace("%message%", event.message))?.queue()
+        var message = discordBot.messages.getString(DCMessage.EVENT_CHAT)
+            .replace("%playername%", proxiedPlayer.name)
+            .replace("%server%", currentServer)
+            .replace("%message%", event.message
+                .replace(FinderUtil.USER_MENTION.toRegex(), "")
+                .replace(FinderUtil.ROLE_MENTION.toRegex(), ""))
+        message = Placeholders.setPlaceholders(player, message)
+
+        globalChatTextChannel?.sendMessage(message)?.queue()
         val serverId = chatEventChannels[currentServer] ?: "000000000000000000"
         val serverChatTextChannel = discordBot.guild.getTextChannelById(serverId)
-        serverChatTextChannel?.sendMessage(discordBot.messages.getString(DCMessage.EVENT_CHAT)
-                .replace("%playername%", proxiedPlayer.name)
-                .replace("%server%", currentServer)
-                .replace("%message%", event.message
-                        .replace(FinderUtil.USER_MENTION.toRegex(), "")
-                        .replace(FinderUtil.ROLE_MENTION.toRegex(), "")))?.queue()
+        serverChatTextChannel?.sendMessage(message)?.queue()
     }
 }
