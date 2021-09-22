@@ -36,6 +36,8 @@ class DiscordBot : NMExtension() {
     val discordUserManager = DiscordUserManager(this)
     lateinit var discordManager: DiscordManager
 
+    private val activityUpdateTask = ActivityUpdateTask(this)
+
     public override fun onEnable() { // Extension startup logic
         val dependencyDirectory = File(networkManagerPlugin.dataFolder, "libraries")
         logger.log(Level.INFO, "Loading Libraries...")
@@ -90,7 +92,7 @@ class DiscordBot : NMExtension() {
 
         registerCommands()
         registerListeners()
-        ActivityUpdateTask(this).start()
+        activityUpdateTask.start()
         if (networkManager.isRedisBungee) {
             networkManager.registerListener(RedisBungeeListener(this))
             networkManager.redisBungee.registerPubSubChannels("NetworkManagerDiscordBot")
@@ -100,6 +102,7 @@ class DiscordBot : NMExtension() {
 
     public override fun onDisable() { // Extension shutdown logic
         expireTokens()
+        activityUpdateTask.stop()
 
         networkManager.commandManager.unregisterAllBySource(info.name)
         this.discordManager.shutdownJDA()
