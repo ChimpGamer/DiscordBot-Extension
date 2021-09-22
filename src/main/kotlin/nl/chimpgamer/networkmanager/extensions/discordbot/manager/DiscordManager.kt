@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.MemberCachePolicy
+import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
@@ -132,8 +133,8 @@ class DiscordManager(private val discordBot: DiscordBot) {
                 discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using DEFAULT.")
                 Activity.ActivityType.DEFAULT
             }
-            setActivity(Activity.of(activityType, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
-                    .replace("%players%", players.toString())))
+            setActivity(Activity.of(activityType, Placeholders.Companion.setPlaceholders(null, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
+                    .replace("%players%", players.toString()))))
         }
     }
 
