@@ -24,6 +24,12 @@ class DiscordPlaceholders(private val discordBot: DiscordBot) : PlaceholderHook(
                 val member = discordBot.guild.getMemberById(userId) ?: return "Member not found"
                 return member.effectiveName
             }
+            "user_current_voicechannel" -> {
+                if (player == null) return null
+                val userId = discordBot.discordUserManager.getDiscordIdByUuid(player.uuid) ?: return ""
+                val member = discordBot.guild.getMemberById(userId) ?: return "Member not found"
+                return member.voiceState?.channel?.name ?: "null"
+            }
             else -> {
                 if (parameters.startsWith("is_member_of_guild_")) {
                     val userId = parameters.replace("is_member_of_guild_", "")
