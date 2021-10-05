@@ -65,7 +65,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                             discordBot.discordManager.addRoleToMember(member, verifiedRole)
                         }
                     }
-                    if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME)) {
+                    if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)) {
                         val format = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
                         discordBot.discordManager.setNickName(member, format)
                     }

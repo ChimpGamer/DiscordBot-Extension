@@ -22,7 +22,7 @@ class JoinLeaveListener(private val discordBot: DiscordBot) : Listener {
         val discordId = discordBot.discordUserManager.getDiscordIdByUuid(proxiedPlayer.uniqueId) ?: return
         checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
         val member = discordBot.guild.getMemberById(discordId) ?: return
-        if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME)) {
+        if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)) {
             val format = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
             discordBot.discordManager.setNickName(member, format)
         }
