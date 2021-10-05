@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.5.30"
+    kotlin("jvm") version "1.5.31"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.0.0"
     id("io.github.slimjar") version "1.3.0"
@@ -33,13 +33,12 @@ dependencies {
     slim("net.dv8tion:JDA:4.3.0_277") {
         exclude("club.minnced", "opus-java")
     }
-    compileOnly("io.github.slimjar:slimjar:1.2.4")
     compileOnly("com.github.Carleslc:Simple-YAML:1.7.2")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.3.8"
+version = "1.4.0"
 
 publishing {
     publications {

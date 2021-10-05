@@ -77,6 +77,7 @@ enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_UNREGISTER_KICK_REASON("bot.discord.unregister.kick.reason", "You have been kicked from the ... discord because your account got unlinked!"),
     DISCORD_UNREGISTER_EXECUTE_COMMANDS("bot.discord.unregister.executeCommands", emptyList<String>()),
     DISCORD_SYNC_USERNAME("bot.discord.sync.username", false),
+    DISCORD_SYNC_USERNAME_FORMAT("bot.discord.sync.username.format", "%playername%"),
     DISCORD_SYNC_RANKS_ENABLED("bot.discord.sync.ranks.enabled", false),
     DISCORD_SYNC_RANKS_MAP("bot.discord.sync.ranks.map", mapOf("vip" to "VIP", "supervip" to "SuperVIP")),
     DISCORD_EVENTS_STAFFCHAT_CHANNEL("bot.discord.events.staffchat.channel", "000000000000000000"),

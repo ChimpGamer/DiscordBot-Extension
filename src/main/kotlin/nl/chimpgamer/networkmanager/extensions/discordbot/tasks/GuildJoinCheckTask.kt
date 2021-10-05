@@ -1,6 +1,7 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.tasks
 
 import net.dv8tion.jda.api.entities.Member
+import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
@@ -26,7 +27,8 @@ class GuildJoinCheckTask(private val discordBot: DiscordBot, private val member:
                                 }
                             }
                             if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME)) {
-                                discordBot.discordManager.setNickName(member, player.name)
+                                val format = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
+                                discordBot.discordManager.setNickName(member, format)
                             }
                             if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
                                 discordBot.scheduler.runSync(SyncRanksTask(discordBot, player))

@@ -143,9 +143,14 @@ class DiscordManager(private val discordBot: DiscordBot) {
             discordBot.logger.info("Can't set the nickname of a null member")
             return
         }
+        var finalNickname = nickName
+        if (nickName.length > 32) {
+            discordBot.logger.info("The new nickname of ${member.effectiveName} exceeds the maximum limit of 32 characters.")
+            finalNickname = finalNickname.substring(0, 32)
+        }
         discordBot.logger.info("Setting nickname for " + member.effectiveName)
         try {
-            member.guild.modifyNickname(member, nickName).queue()
+            member.guild.modifyNickname(member, finalNickname).queue()
         } catch (ex: PermissionException) {
             if (ex.permission === Permission.UNKNOWN) {
                 discordBot.logger.warning("Could not set the nickname for " + member.effectiveName + " because " + ex.message)

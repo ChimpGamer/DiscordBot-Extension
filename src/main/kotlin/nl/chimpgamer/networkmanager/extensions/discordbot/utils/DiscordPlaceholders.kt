@@ -18,6 +18,16 @@ class DiscordPlaceholders(private val discordBot: DiscordBot) : PlaceholderHook(
                 if (player == null) return null
                 return discordBot.discordUserManager.discordUsers.containsKey(player.uuid).toString()
             }
+            "user_id" -> {
+                if (player == null) return null
+                return discordBot.discordUserManager.getDiscordIdByUuid(player.uuid) ?: return ""
+            }
+            "user_name" -> {
+                if (player == null) return null
+                val userId = discordBot.discordUserManager.getDiscordIdByUuid(player.uuid) ?: return ""
+                val member = discordBot.guild.getMemberById(userId) ?: return "Member not found"
+                return member.user.name
+            }
             "member_name" -> {
                 if (player == null) return null
                 val userId = discordBot.discordUserManager.getDiscordIdByUuid(player.uuid) ?: return ""

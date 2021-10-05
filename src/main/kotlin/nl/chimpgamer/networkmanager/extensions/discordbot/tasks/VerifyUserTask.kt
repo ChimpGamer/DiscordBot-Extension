@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.md_5.bungee.api.ProxyServer
 import nl.chimpgamer.networkmanager.api.models.player.Player
+import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.common.utils.Methods
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerRegisteredEvent
@@ -65,7 +66,8 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                         }
                     }
                     if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME)) {
-                        discordBot.discordManager.setNickName(member, this.player.name)
+                        val format = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
+                        discordBot.discordManager.setNickName(member, format)
                     }
                     if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
                         discordBot.scheduler.runDelayed(SyncRanksTask(discordBot, player), 1)
