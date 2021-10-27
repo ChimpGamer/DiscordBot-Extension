@@ -38,7 +38,7 @@ dependencies {
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.4.0"
+version = "1.4.1"
 
 publishing {
     publications {
