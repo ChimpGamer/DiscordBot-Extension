@@ -11,7 +11,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.TokenExpiryTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.VerifyUserTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import java.sql.SQLException
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 class DiscordUserManager(private val discordBot: DiscordBot) {
@@ -43,7 +43,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         discordBot.scheduler.runAsync({
             try {
                 discordBot.mySQL.connection.use { connection ->
-                    connection.prepareStatement("SELECT `UUID`, `DiscordID`, `registered` FROM nm_discordusers WHERE `UUID`=?;").use { ps ->
+                    connection.prepareStatement("SELECT `DiscordID`, `registered` FROM nm_discordusers WHERE `UUID`=?;").use { ps ->
                         ps.setString(1, uuid.toString())
                         ps.executeQuery().use { rs ->
                             while (rs.next()) {
@@ -120,7 +120,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     }
 
     fun getUuidByDiscordId(id: String): UUID? {
-        return discordUsers.entries.filter { it.value.discordId == id }.map { it.key }.firstOrNull()
+        return discordUsers.filterValues { it.discordId == id }.map { it.key }.firstOrNull()
     }
 
     private fun getToken(token: String): Token? {
