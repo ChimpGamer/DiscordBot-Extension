@@ -93,9 +93,11 @@ class DiscordManager(private val discordBot: DiscordBot) {
                 discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using DEFAULT.")
                 Activity.ActivityType.DEFAULT
             }
+            val statusMessage = Placeholders.setPlaceholders(null, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
+                .replace("%players%", discordBot.networkManager.onlinePlayersCount.toString()))
+
             commandClientBuilder
-                    .setActivity(Activity.of(activityType, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
-                            .replace("%players%", discordBot.networkManager.onlinePlayersCount.toString())))
+                    .setActivity(Activity.of(activityType, statusMessage))
         } else {
             commandClientBuilder.setActivity(null)
         }
@@ -133,8 +135,12 @@ class DiscordManager(private val discordBot: DiscordBot) {
                 discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using DEFAULT.")
                 Activity.ActivityType.DEFAULT
             }
-            setActivity(Activity.of(activityType, Placeholders.Companion.setPlaceholders(null, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
-                    .replace("%players%", players.toString()))))
+            val statusMessage = Placeholders.setPlaceholders(null, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
+                .replace("%players%", players.toString()))
+
+            println(statusMessage)
+
+            setActivity(Activity.of(activityType, statusMessage))
         }
     }
 
