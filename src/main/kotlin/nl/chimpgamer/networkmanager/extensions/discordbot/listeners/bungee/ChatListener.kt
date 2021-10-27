@@ -19,7 +19,7 @@ class ChatListener(private val discordBot: DiscordBot) : Listener {
         }
         val proxiedPlayer = event.sender as ProxiedPlayer
         val player = discordBot.networkManager.getPlayer(proxiedPlayer.uniqueId) ?: return
-        val currentServer = player.name
+        val currentServer = player.server ?: "Unknown"
         val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
         val globalId = chatEventChannels["all"] ?: "000000000000000000"
         val globalChatTextChannel = discordBot.guild.getTextChannelById(globalId)
