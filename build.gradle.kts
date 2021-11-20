@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.5.31"
+    kotlin("jvm") version "1.6.0"
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.0"
     id("io.github.slimjar") version "1.3.0"
 }
 
@@ -38,7 +38,7 @@ dependencies {
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.4.1"
+version = "1.4.2"
 
 publishing {
     publications {
