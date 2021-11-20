@@ -31,7 +31,7 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
     override fun reload() {
         super.reload()
         val roleName = getString(Setting.DISCORD_REGISTER_ADD_ROLE_ROLE_NAME)
-        val role = discordBot.discordManager.getRoleByName(roleName)
+        val role = discordBot.discordManager.getRole(roleName)
         if (role != null) {
             discordBot.logger.info("Verified Role is: '${role.name}' (${role.id})")
         } else {

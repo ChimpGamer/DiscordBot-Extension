@@ -21,7 +21,7 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         val groups = nl.chimpgamer.networkmanager.bungeecord.utils.Utils.getGroupsName(player)
         discordBot.networkManager.debug("Player has the following groups: ${groups.joinToString()}")
         for ((rankName, roleName) in discordBot.settings.getMap(Setting.DISCORD_SYNC_RANKS_MAP)) {
-            val role = discordBot.discordManager.getRoleByName(roleName)
+            val role = discordBot.discordManager.getRole(roleName)
             if (role == null) {
                 discordBot.logger.warning("Could not find role $roleName to sync.")
                 continue

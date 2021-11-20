@@ -1,6 +1,7 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.manager
 
 import com.jagrosh.jdautilities.command.CommandClientBuilder
+import com.jagrosh.jdautilities.commons.utils.FinderUtil
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.Permission
@@ -50,7 +51,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         }
         if (success) {
             val roleName = discordBot.settings.getString(Setting.DISCORD_REGISTER_ADD_ROLE_ROLE_NAME)
-            val role = getRoleByName(roleName)
+            val role = getRole(roleName)
             if (role != null) {
                 discordBot.logger.info("Verified Role is: '${role.name}' (${role.id})")
             } else {
@@ -178,8 +179,12 @@ class DiscordManager(private val discordBot: DiscordBot) {
         }
     }
 
-    fun getRoleByName(roleName: String): Role? {
-        val roles = guild.getRolesByName(roleName, true)
-        return roles.firstOrNull { it.name.equals(roleName, ignoreCase = true) }
+    fun getRole(query: String): Role? {
+        return if (FinderUtil.DISCORD_ID.matcher(query).matches()) {
+            guild.getRoleById(query)
+        } else {
+            val roles = guild.getRolesByName(query, true)
+            roles.firstOrNull { it.name.equals(query, ignoreCase = true) }
+        }
     }
 }
