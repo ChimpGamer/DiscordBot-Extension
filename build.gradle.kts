@@ -27,7 +27,7 @@ dependencies {
     implementation("com.jagrosh:jda-utilities-command:3.0.4")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
     //implementation("nl.chimpgamer.networkmanager:api:2.9.0-SNAPSHOT")
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.9.9-SNAPSHOT") {
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.10.4") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
     slim("net.dv8tion:JDA:4.3.0_277") {

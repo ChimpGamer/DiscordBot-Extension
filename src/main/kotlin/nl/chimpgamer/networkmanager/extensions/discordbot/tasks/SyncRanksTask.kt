@@ -33,7 +33,7 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
             }
         }
         // remove roles that the user already has from roles to add
-        addRoles.removeAll(member.roles)
+        addRoles.removeAll(member.roles.toSet())
         // remove roles that the user doesn't already have from roles to remove
         removeRoles.removeIf { role -> !member.roles.contains(role) }
         discordBot.networkManager.debug("AddRoles: $addRoles")
