@@ -2,7 +2,6 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.tasks
 
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
-import net.md_5.bungee.api.ProxyServer
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.common.utils.Methods
@@ -13,6 +12,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessa
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.RedisBungeeUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import java.sql.SQLException
 
@@ -56,7 +56,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     )
                     this.discordBot.eventBus.post(PlayerRegisteredEvent(this.player, member))
                     if (this.discordBot.networkManager.isRedisBungee) {
-                        this.discordBot.sendRedisBungee("load " + this.player.uuid)
+                        RedisBungeeUtils.sendRedisBungeeMessage(discordBot, "load " + player.uuid)
                     }
                     if (discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED)) {
                         val verifiedRole: Role? = this.discordBot.discordManager.verifiedRole
@@ -76,10 +76,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     val executeCommands = discordBot.settings.getStringList(Setting.DISCORD_REGISTER_EXECUTE_COMMANDS)
                     if (executeCommands.isNotEmpty()) {
                         executeCommands.forEach { command ->
-                            ProxyServer.getInstance().pluginManager.dispatchCommand(
-                                ProxyServer.getInstance().console,
-                                command.replace("%playername%", player.name)
-                            )
+                            discordBot.networkManager.executeConsoleCommand(command.replace("%playername%", player.name))
                         }
                     }
                 }

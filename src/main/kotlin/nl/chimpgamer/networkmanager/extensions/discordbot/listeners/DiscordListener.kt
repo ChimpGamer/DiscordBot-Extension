@@ -112,9 +112,8 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                 )
             }
         } else {
-            val serverInfo = discordBot.networkManager.bootstrap.proxy.getServerInfo(serverName) ?: return
-            serverInfo.players.forEach { proxiedPlayer ->
-                val target = cachedPlayers.getIfLoaded(proxiedPlayer.uniqueId) ?: return@forEach
+            discordBot.networkManager.getPlayersOnServer(serverName).keys.forEach { targetPlayerUUID ->
+                val target = cachedPlayers.getIfLoaded(targetPlayerUUID) ?: return@forEach
                 target.sendMessage(
                     Placeholders.setPlaceholders(player, eventChatMessageFormat
                         .replace("%discordname%", member.effectiveName)

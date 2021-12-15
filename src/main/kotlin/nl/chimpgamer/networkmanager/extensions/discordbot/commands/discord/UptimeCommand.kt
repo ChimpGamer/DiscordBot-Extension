@@ -18,9 +18,9 @@ class UptimeCommand(private val discordBot: DiscordBot) : Command() {
         if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_UPTIME_ENABLED)) {
             return
         }
-        val bungeeuptime = ManagementFactory.getRuntimeMXBean().startTime
+        val uptime = ManagementFactory.getRuntimeMXBean().startTime
         sendChannelMessage(event.textChannel,
-                TimeUtils.getTimeString(1, (System.currentTimeMillis() - bungeeuptime) / 1000))
+                TimeUtils.getTimeString(1, (System.currentTimeMillis() - uptime) / 1000))
     }
 
     init {

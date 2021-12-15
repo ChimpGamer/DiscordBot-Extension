@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.exceptions.PermissionException
 import nl.chimpgamer.networkmanager.api.models.player.Player
+import nl.chimpgamer.networkmanager.common_proxy.utils.PermissionPluginUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
@@ -18,7 +19,7 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         val addRoles: MutableSet<Role> = HashSet()
         val removeRoles: MutableSet<Role> = HashSet()
 
-        val groups = nl.chimpgamer.networkmanager.bungeecord.utils.Utils.getGroupsName(player)
+        val groups = PermissionPluginUtils.getGroupsName(discordBot.networkManager, player)
         discordBot.networkManager.debug("Player has the following groups: ${groups.joinToString()}")
         for ((rankName, roleName) in discordBot.settings.getMap(Setting.DISCORD_SYNC_RANKS_MAP)) {
             val role = discordBot.discordManager.getRole(roleName)

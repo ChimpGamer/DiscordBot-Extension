@@ -3,10 +3,15 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
+import nl.chimpgamer.networkmanager.bungeecord.NetworkManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import java.util.*
 
 class RedisBungeeListener(private val discordBot: DiscordBot) : Listener {
+    init {
+        (discordBot.networkManager as NetworkManager).redisBungee.registerPubSubChannels("NetworkManagerDiscordBot")
+    }
+
     @EventHandler
     fun onPubSubMessage(event: PubSubMessageEvent) {
         if (event.channel != "NetworkManagerDiscordBot") {

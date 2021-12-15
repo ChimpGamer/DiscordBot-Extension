@@ -19,14 +19,15 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
         }
         if (event.args.isEmpty()) {
             val sb = StringBuilder()
-            val players = discordBot.networkManager.bootstrap.proxy.players
+            val players = discordBot.networkManager.cacheManager.cachedPlayers.players.values
             if (players.isEmpty()) {
                 sb.append("There are currently no players online!")
             } else {
                 val premiumVanishHook = discordBot.networkManager.pluginHookManager.premiumVanishHook.orElse(null)
-                for (proxiedPlayer in discordBot.networkManager.bootstrap.proxy.players) {
-                    if (premiumVanishHook?.isEnabled == true && premiumVanishHook.isVanished(proxiedPlayer.uniqueId)) continue
-                    sb.append(proxiedPlayer.name).append(" - ").append(proxiedPlayer.server.info.name).append("\n")
+                for (player in players) {
+                    if (!player.isOnline) continue
+                    if (premiumVanishHook?.isEnabled == true && premiumVanishHook.isVanished(player.uuid)) continue
+                    sb.append(player.name).append(" - ").append(player.server).append("\n")
                 }
             }
             val playerList = sb.toString().trim()
@@ -36,8 +37,7 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
         val args = event.args.split(" ").toTypedArray()
         if (args.size == 1) {
             val serverName = args[0]
-            val serverInfo = discordBot.networkManager.bootstrap.proxy.getServerInfo(serverName)
-            if (serverInfo == null) {
+            if (!discordBot.networkManager.getAllServerNames().contains(serverName)) {
                 sendChannelMessage(
                     event.textChannel, discordBot.messages.getString(DCMessage.COMMAND_PLAYERLIST_INVALID_SERVER)
                         .replace("%mention%", event.author.asMention)
@@ -46,9 +46,9 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
             }
             var sb = StringBuilder()
             val premiumVanishHook = discordBot.networkManager.pluginHookManager.premiumVanishHook.orElse(null)
-            for (proxiedPlayer in discordBot.networkManager.bootstrap.proxy.getServerInfo(serverName).players) {
-                if (premiumVanishHook?.isEnabled == true && premiumVanishHook.isVanished(proxiedPlayer.uniqueId)) continue
-                sb.append(proxiedPlayer.name).append(" - ").append(proxiedPlayer.server.info.name).append("\n")
+            for (player in discordBot.networkManager.cacheManager.cachedPlayers.players.values) {
+                if (premiumVanishHook?.isEnabled == true && premiumVanishHook.isVanished(player.uuid)) continue
+                sb.append(player.name).append(" - ").append(player.server).append("\n")
             }
             if (sb.isNotEmpty()) {
                 sb = StringBuilder(sb.toString().substring(0, sb.toString().length - 2))

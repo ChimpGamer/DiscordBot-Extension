@@ -1,6 +1,8 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 
+import com.jagrosh.jdautilities.commons.utils.FinderUtil
 import net.dv8tion.jda.api.entities.MessageEmbed
+import nl.chimpgamer.networkmanager.api.event.PostOrders
 import nl.chimpgamer.networkmanager.api.event.events.*
 import nl.chimpgamer.networkmanager.api.event.events.player.AsyncPlayerLoginEvent
 import nl.chimpgamer.networkmanager.api.event.events.ticket.TicketCreateEvent
@@ -330,6 +332,27 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             .replace("%url%", event.chatLogUrl)
     }
 
+    private fun onPlayerChat(event: PlayerChatEvent) {
+        if (event.isCancelled) return
+        val player = event.player
+        val currentServer = player.server ?: "Unknown"
+        val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
+        val globalId = chatEventChannels["all"] ?: "000000000000000000"
+        val globalChatTextChannel = discordBot.guild.getTextChannelById(globalId)
+        var message = discordBot.messages.getString(DCMessage.EVENT_CHAT)
+            .replace("%playername%", player.name)
+            .replace("%server%", currentServer)
+            .replace("%message%", event.message
+                .replace(FinderUtil.USER_MENTION.toRegex(), "")
+                .replace(FinderUtil.ROLE_MENTION.toRegex(), ""))
+        message = Placeholders.setPlaceholders(player, message)
+
+        globalChatTextChannel?.sendMessage(message)?.queue()
+        val serverId = chatEventChannels[currentServer] ?: "000000000000000000"
+        val serverChatTextChannel = discordBot.guild.getTextChannelById(serverId)
+        serverChatTextChannel?.sendMessage(message)?.queue()
+    }
+
     init {
         discordBot.eventBus.run {
             subscribe(StaffChatEvent::class.java, ::onStaffChat)
@@ -340,6 +363,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             subscribe(TicketCreateEvent::class.java, ::onTicketCreate)
             subscribe(ChatLogCreatedEvent::class.java, ::onChatLogCreated)
             subscribe(AsyncPlayerLoginEvent::class.java, ::onAsyncPlayerLogin)
+            subscribe(PlayerChatEvent::class.java, ::onPlayerChat, PostOrders.LAST)
         }
     }
 

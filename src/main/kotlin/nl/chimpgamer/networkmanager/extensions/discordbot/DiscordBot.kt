@@ -4,16 +4,16 @@ import io.github.slimjar.app.builder.ApplicationBuilder
 import net.dv8tion.jda.api.entities.Guild
 import nl.chimpgamer.networkmanager.api.extensions.NMExtension
 import nl.chimpgamer.networkmanager.api.utils.PlatformType
-import nl.chimpgamer.networkmanager.bungeecord.NetworkManager
+import nl.chimpgamer.networkmanager.common_proxy.plugin.NetworkManagerPluginProxyBase
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.mc.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSettings
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Messages
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Settings
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.NetworkManagerListeners
-import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.ChatListener
-import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.JoinLeaveListener
+import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.BungeeCordJoinLeaveListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.RedisBungeeListener
+import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.velocity.VelocityJoinLeaveListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.ActivityUpdateTask
@@ -65,8 +65,8 @@ class DiscordBot : NMExtension() {
         }
 
         instance = this
-        if (networkManager.platformType !== PlatformType.BUNGEECORD) {
-            logger.severe("Hey, this NetworkManager extension is for BungeeCord only!")
+        if (networkManager.platformType.isProxy.not()) {
+            logger.severe("Hey, this NetworkManager extension is for BungeeCord and Velocity only!")
             return
         }
 
@@ -95,7 +95,6 @@ class DiscordBot : NMExtension() {
         activityUpdateTask.start()
         if (networkManager.isRedisBungee) {
             networkManager.registerListener(RedisBungeeListener(this))
-            networkManager.redisBungee.registerPubSubChannels("NetworkManagerDiscordBot")
         }
         networkManager.placeholderManager.registerPlaceholder(DiscordPlaceholders(this))
     }
@@ -104,7 +103,6 @@ class DiscordBot : NMExtension() {
         expireTokens()
         activityUpdateTask.stop()
 
-        networkManager.commandManager.unregisterAllBySource(info.name)
         this.discordManager.shutdownJDA()
     }
 
@@ -116,32 +114,36 @@ class DiscordBot : NMExtension() {
 
     private fun registerListeners() {
         NetworkManagerListeners(this)
-        networkManager.registerListeners(
-                JoinLeaveListener(this),
-                ChatListener(this)
-        )
+        if (networkManager.platformType === PlatformType.BUNGEECORD) {
+            networkManager.registerListeners(
+                BungeeCordJoinLeaveListener(this)
+            )
+        } else if (networkManager.platformType === PlatformType.VELOCITY) {
+            networkManager.registerListeners(
+                VelocityJoinLeaveListener(this)
+            )
+        }
     }
 
     private fun registerCommands() {
-        val commandManager = networkManager.commandManager
+        val cloudCommandManager = networkManager.cloudCommandManager
+
         if (commandSettings.getBoolean(CommandSetting.MINECRAFT_BUG_ENABLED)) {
-            commandManager.registerCommand(info.name, BugCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_BUG_COMMAND)))
+            cloudCommandManager.commandManager.command(CloudBugCommand(this).getCommand(commandSettings.getString(CommandSetting.MINECRAFT_BUG_COMMAND)))
         }
         if (commandSettings.getBoolean(CommandSetting.MINECRAFT_SUGGESTION_ENABLED)) {
-            commandManager.registerCommand(info.name, SuggestionCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_SUGGESTION_COMMAND)))
+            cloudCommandManager.commandManager.command(CloudBugCommand(this)
+                .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_SUGGESTION_COMMAND)))
         }
         if (commandSettings.getBoolean(CommandSetting.MINECRAFT_DISCORD_ENABLED)) {
-            commandManager.registerCommand(info.name, DiscordCommand(this, "discord"))
+            cloudCommandManager.commandManager.command(CloudDiscordCommand(this).getCommand("discord"))
         }
-        commandManager.registerCommands(info.name,
-                RegisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_COMMAND), commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_ALIASES).split(", ")),
-                UnregisterCommand(this, commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES).split(", ")),
-                NetworkManagerBotCommand(this, "networkmanagerbot")
-        )
-    }
 
-    fun sendRedisBungee(message: String) {
-        this.scheduler.runAsync({ networkManager.redisBungee.sendChannelMessage("NetworkManagerDiscordBot", message) }, false)
+        cloudCommandManager.commandManager.command(CloudRegisterCommand(this)
+            .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_COMMAND), *commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_ALIASES).split(", ").toTypedArray()))
+        cloudCommandManager.commandManager.command(CloudUnregisterCommand(this)
+            .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), *commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES).split(", ").toTypedArray()))
+        cloudCommandManager.annotationParser.parse(CloudNetworkManagerBotCommand(this))
     }
 
     private fun expireTokens() {
@@ -153,8 +155,8 @@ class DiscordBot : NMExtension() {
     val guild: Guild
         get() = this.discordManager.guild
 
-    override val networkManager: NetworkManager
-        get() = super.networkManager as NetworkManager
+    override val networkManager: NetworkManagerPluginProxyBase
+        get() = super.networkManager as NetworkManagerPluginProxyBase
 
     companion object {
         @JvmStatic

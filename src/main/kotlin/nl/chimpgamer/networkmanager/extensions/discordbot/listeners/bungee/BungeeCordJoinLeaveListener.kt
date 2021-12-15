@@ -9,7 +9,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.SyncRanksTask
 
-class JoinLeaveListener(private val discordBot: DiscordBot) : Listener {
+class BungeeCordJoinLeaveListener(private val discordBot: DiscordBot) : Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onLogin(event: PostLoginEvent) {

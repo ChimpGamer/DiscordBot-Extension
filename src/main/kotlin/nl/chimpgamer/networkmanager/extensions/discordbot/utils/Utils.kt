@@ -63,7 +63,7 @@ object Utils {
                 .filter { role: Role -> !member.roles.contains(role) }
                 .toCollection(rolesToAddFiltered)
         val nonInteractableRolesToAdd = rolesToAddFiltered.filter { role: Role -> !member.guild.selfMember.canInteract(role) }
-        rolesToAddFiltered.removeAll(nonInteractableRolesToAdd)
+        rolesToAddFiltered.removeAll(nonInteractableRolesToAdd.toSet())
         nonInteractableRolesToAdd.forEach { role: Role -> DiscordBot.instance.logger.warning("Failed to add role " + role.name + " to " + member.effectiveName + " because the bot's highest role is lower than the target role and thus can't interact with it") }
         rolesToRemove
                 .filter { role: Role -> !role.isManaged }
@@ -71,7 +71,7 @@ object Utils {
                 .filter { role: Role -> member.roles.contains(role) }
                 .toCollection(rolesToRemoveFiltered)
         val nonInteractableRolesToRemove = rolesToRemoveFiltered.filter { role: Role -> !member.guild.selfMember.canInteract(role) }
-        rolesToRemoveFiltered.removeAll(nonInteractableRolesToRemove)
+        rolesToRemoveFiltered.removeAll(nonInteractableRolesToRemove.toSet())
         nonInteractableRolesToRemove.forEach { role: Role -> DiscordBot.instance.logger.warning("Failed to remove role " + role.name + " from " + member.effectiveName + " because the bot's highest role is lower than the target role and thus can't interact with it") }
         member.guild.modifyMemberRoles(member, rolesToAddFiltered, rolesToRemoveFiltered).queue()
     }

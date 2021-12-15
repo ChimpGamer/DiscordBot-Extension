@@ -6,7 +6,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import java.sql.SQLException
-import java.util.*
+import java.util.UUID
 
 class GuildJoinCheckTask(private val discordBot: DiscordBot, private val member: Member) : Runnable {
 
