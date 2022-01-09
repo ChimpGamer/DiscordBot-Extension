@@ -26,7 +26,7 @@ minecraft:
       success:  '&4» &7Successfully reloaded &cJDA'
       failed: '&4» &7Failed to reload &cJDA! &7See console for more information.'
   event:
-    chat: '%mention% said in %textchannel%: %message%'
+    chat: '%discordname% said in %textchannel%: %message%'
 
 discord:
   event:
