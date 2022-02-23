@@ -1,7 +1,6 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 
 import com.jagrosh.jdautilities.commons.utils.FinderUtil
-import net.dv8tion.jda.api.entities.MessageEmbed
 import nl.chimpgamer.networkmanager.api.event.PostOrders
 import nl.chimpgamer.networkmanager.api.event.events.*
 import nl.chimpgamer.networkmanager.api.event.events.player.AsyncPlayerLoginEvent
@@ -9,13 +8,16 @@ import nl.chimpgamer.networkmanager.api.event.events.ticket.TicketCreateEvent
 import nl.chimpgamer.networkmanager.api.models.punishments.Punishment
 import nl.chimpgamer.networkmanager.api.models.servers.Server
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
+import nl.chimpgamer.networkmanager.api.utils.TimeUtils
 import nl.chimpgamer.networkmanager.api.utils.stripColors
-import nl.chimpgamer.networkmanager.common.utils.Methods
+import nl.chimpgamer.networkmanager.api.values.Message
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
+import nl.chimpgamer.networkmanager.extensions.discordbot.modals.JsonMessageEmbed
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
+import java.text.SimpleDateFormat
 import java.util.*
 
 class NetworkManagerListeners(private val discordBot: DiscordBot) {
@@ -52,88 +54,20 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val server = event.server
         val serverChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_SERVERSTATUS_CHANNELS)
         val globalId = serverChannels["all"] ?: "000000000000000000"
-        val globalServerTextChannel = discordBot.guild.getTextChannelById(globalId)
-        if (globalServerTextChannel != null) {
-            val jsonEmbedBuilder: JsonEmbedBuilder
-            if (event.isOnline) { // Server went on
-                jsonEmbedBuilder =
-                    JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.SERVER_STATUS_ONLINE))
-                jsonEmbedBuilder
-                    .setTitle(insertServerPlaceholders(jsonEmbedBuilder.title, server))
-                    .setDescription(insertServerPlaceholders(jsonEmbedBuilder.description.toString(), server))
-                val fields: MutableList<MessageEmbed.Field> = LinkedList()
-                for (field in jsonEmbedBuilder.fields) {
-                    val name = insertServerPlaceholders(field.name, server)
-                    val value = insertServerPlaceholders(field.value, server)
-                    val field1 = MessageEmbed.Field(name, value, field.isInline)
-                    fields.add(field1)
-                }
-                jsonEmbedBuilder.fields = fields
-                sendChannelMessage(
-                    globalServerTextChannel,
-                    jsonEmbedBuilder.build()
-                )
-            } else { // Server went off
-                jsonEmbedBuilder =
-                    JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.SERVER_STATUS_OFFLINE))
-                jsonEmbedBuilder
-                    .setTitle(insertServerPlaceholders(jsonEmbedBuilder.title, server))
-                    .setDescription(insertServerPlaceholders(jsonEmbedBuilder.description.toString(), server))
-                val fields: MutableList<MessageEmbed.Field> = LinkedList()
-                for (field in jsonEmbedBuilder.fields) {
-                    val name = insertServerPlaceholders(field.name, server)
-                    val value = insertServerPlaceholders(field.value, server)
-                    val field1 = MessageEmbed.Field(name, value, field.isInline)
-                    fields.add(field1)
-                }
-                jsonEmbedBuilder.fields = fields
-                sendChannelMessage(
-                    globalServerTextChannel,
-                    jsonEmbedBuilder.build()
-                )
-            }
-        }
         val channelId = serverChannels[server.serverName] ?: "000000000000000000"
-        val serverStatusChannel = discordBot.guild.getTextChannelById(channelId)
-        if (serverStatusChannel != null) {
-            val jsonEmbedBuilder: JsonEmbedBuilder
-            if (event.isOnline) { // Server went on
-                jsonEmbedBuilder =
-                    JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.SERVER_STATUS_ONLINE))
-                jsonEmbedBuilder
-                    .setTitle(insertServerPlaceholders(jsonEmbedBuilder.title, server))
-                    .setDescription(insertServerPlaceholders(jsonEmbedBuilder.description.toString(), server))
-                val fields: MutableList<MessageEmbed.Field> = LinkedList()
-                for (field in jsonEmbedBuilder.fields) {
-                    val name = insertServerPlaceholders(field.name, server)
-                    val value = insertServerPlaceholders(field.value, server)
-                    val field1 = MessageEmbed.Field(name, value, field.isInline)
-                    fields.add(field1)
-                }
-                jsonEmbedBuilder.fields = fields
-                sendChannelMessage(
-                    serverStatusChannel,
-                    jsonEmbedBuilder.build()
-                )
-            } else { // Server went off
-                jsonEmbedBuilder =
-                    JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.SERVER_STATUS_OFFLINE))
-                jsonEmbedBuilder
-                    .setTitle(insertServerPlaceholders(jsonEmbedBuilder.title, server))
-                    .setDescription(insertServerPlaceholders(jsonEmbedBuilder.description.toString(), server))
-                val fields: MutableList<MessageEmbed.Field> = LinkedList()
-                for (field in jsonEmbedBuilder.fields) {
-                    val name = insertServerPlaceholders(field.name, server)
-                    val value = insertServerPlaceholders(field.value, server)
-                    val field1 = MessageEmbed.Field(name, value, field.isInline)
-                    fields.add(field1)
-                }
-                jsonEmbedBuilder.fields = fields
-                sendChannelMessage(
-                    serverStatusChannel,
-                    jsonEmbedBuilder.build()
-                )
-            }
+        val textChannel =
+            discordBot.guild.getTextChannelById(globalId) ?: discordBot.guild.getTextChannelById(channelId)
+        if (textChannel != null) {
+            val dcMessage = if (event.isOnline) DCMessage.SERVER_STATUS_ONLINE else DCMessage.SERVER_STATUS_OFFLINE
+
+            var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(dcMessage))
+            jsonMessageEmbed = jsonMessageEmbed.toBuilder()
+                .title(insertServerPlaceholders(jsonMessageEmbed.title, server))
+                .description(insertServerPlaceholders(jsonMessageEmbed.description, server))
+                .parsePlaceholdersToFields { text -> insertServerPlaceholders(text, server) }
+                .build()
+
+            sendChannelMessage(textChannel, jsonMessageEmbed.toMessageEmbed())
         }
     }
 
@@ -145,66 +79,30 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             val reportChannel =
                 discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_REPORT_CHANNEL))
                     ?: return
-            val jsonEmbedBuilder: JsonEmbedBuilder
             if (event.punishment.isActive) {
-                jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.REPORT_ALERT))
-                jsonEmbedBuilder
-                    .setTitle(insertPunishmentPlaceholders(jsonEmbedBuilder.title, event))
-                    .setDescription(insertPunishmentPlaceholders(jsonEmbedBuilder.description.toString(), event))
-                val fields: MutableList<MessageEmbed.Field> = LinkedList()
-                for (field in jsonEmbedBuilder.fields) {
-                    val name = insertPunishmentPlaceholders(field.name, event)
-                    val value = insertPunishmentPlaceholders(field.value, event)
-                    val field1 = MessageEmbed.Field(name, value, field.isInline)
-                    fields.add(field1)
-                }
-                jsonEmbedBuilder.fields = fields
-                sendChannelMessage(
-                    reportChannel,
-                    jsonEmbedBuilder.build()
-                )
+                var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.REPORT_ALERT))
+                jsonMessageEmbed = jsonMessageEmbed.toBuilder()
+                    .title(insertPunishmentPlaceholders(jsonMessageEmbed.title, event))
+                    .description(insertPunishmentPlaceholders(jsonMessageEmbed.description, event))
+                    .parsePlaceholdersToFields { text -> insertPunishmentPlaceholders(text, event) }
+                    .build()
+
+                sendChannelMessage(reportChannel, jsonMessageEmbed.toMessageEmbed())
             }
         } else {
             val punishmentsChannel =
                 discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_PUNISHMENT_CHANNEL))
                     ?: return
-            val jsonEmbedBuilder: JsonEmbedBuilder
-            if (event.punishment.isActive) {
-                jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.PUNISHMENT_ALERT))
-                jsonEmbedBuilder
-                    .setTitle(insertPunishmentPlaceholders(jsonEmbedBuilder.title, event))
-                    .setDescription(insertPunishmentPlaceholders(jsonEmbedBuilder.description.toString(), event))
-                val fields: MutableList<MessageEmbed.Field> = LinkedList()
-                for (field in jsonEmbedBuilder.fields) {
-                    val name = insertPunishmentPlaceholders(field.name, event)
-                    val value = insertPunishmentPlaceholders(field.value, event)
-                    val field1 = MessageEmbed.Field(name, value, field.isInline)
-                    fields.add(field1)
-                }
-                jsonEmbedBuilder.fields = fields
-                sendChannelMessage(
-                    punishmentsChannel,
-                    jsonEmbedBuilder.build()
-                )
-            } else {
-                jsonEmbedBuilder =
-                    JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.UNPUNISHMENT_ALERT))
-                jsonEmbedBuilder
-                    .setTitle(insertPunishmentPlaceholders(jsonEmbedBuilder.title, event))
-                    .setDescription(insertPunishmentPlaceholders(jsonEmbedBuilder.description.toString(), event))
-                val fields: MutableList<MessageEmbed.Field> = LinkedList()
-                for (field in jsonEmbedBuilder.fields) {
-                    val name = insertPunishmentPlaceholders(field.name, event)
-                    val value = insertPunishmentPlaceholders(field.value, event)
-                    val field1 = MessageEmbed.Field(name, value, field.isInline)
-                    fields.add(field1)
-                }
-                jsonEmbedBuilder.fields = fields
-                sendChannelMessage(
-                    punishmentsChannel,
-                    jsonEmbedBuilder.build()
-                )
-            }
+
+            val dcMessage = if (event.punishment.isActive) DCMessage.PUNISHMENT_ALERT else DCMessage.UNPUNISHMENT_ALERT
+            var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(dcMessage))
+            jsonMessageEmbed = jsonMessageEmbed.toBuilder()
+                .title(insertPunishmentPlaceholders(jsonMessageEmbed.title, event))
+                .description(insertPunishmentPlaceholders(jsonMessageEmbed.description, event))
+                .parsePlaceholdersToFields { text -> insertPunishmentPlaceholders(text, event) }
+                .build()
+
+            sendChannelMessage(punishmentsChannel, jsonMessageEmbed.toMessageEmbed())
         }
     }
 
@@ -215,19 +113,14 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val helpOPChannel =
             discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_HELPOP_CHANNEL))
                 ?: return
-        val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.HELPOP_ALERT))
-        val fields: MutableList<MessageEmbed.Field> = LinkedList()
-        for (field in jsonEmbedBuilder.fields) {
-            val name = insertHelpOPPlaceholders(field.name, event)
-            val value = insertHelpOPPlaceholders(field.value, event)
-            val field1 = MessageEmbed.Field(name, value, field.isInline)
-            fields.add(field1)
-        }
-        jsonEmbedBuilder.fields = fields
-        sendChannelMessage(
-            helpOPChannel,
-            jsonEmbedBuilder.build()
-        )
+        var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.HELPOP_ALERT))
+        jsonMessageEmbed = jsonMessageEmbed.toBuilder()
+            .title(insertHelpOPPlaceholders(jsonMessageEmbed.title, event))
+            .description(insertHelpOPPlaceholders(jsonMessageEmbed.description, event))
+            .parsePlaceholdersToFields { text -> insertHelpOPPlaceholders(text, event) }
+            .build()
+
+        sendChannelMessage(helpOPChannel, jsonMessageEmbed.toMessageEmbed())
     }
 
     private fun onTicketCreate(event: TicketCreateEvent) {
@@ -237,36 +130,29 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val ticketChannel =
             discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_TICKETS_CHANNEL))
                 ?: return
-        val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.TICKET_CREATE_ALERT))
-        val fields: MutableList<MessageEmbed.Field> = LinkedList()
-        for (field in jsonEmbedBuilder.fields) {
-            val name = insertTicketPlaceholders(field.name, event)
-            val value = insertTicketPlaceholders(field.value, event)
-            fields.add(MessageEmbed.Field(name, value, field.isInline))
-        }
-        jsonEmbedBuilder.fields = fields
-        sendChannelMessage(
-            ticketChannel,
-            jsonEmbedBuilder.build()
-        )
+        var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.TICKET_CREATE_ALERT))
+        jsonMessageEmbed = jsonMessageEmbed.toBuilder()
+            .title(insertTicketPlaceholders(jsonMessageEmbed.title, event))
+            .description(insertTicketPlaceholders(jsonMessageEmbed.description, event))
+            .parsePlaceholdersToFields { text -> insertTicketPlaceholders(text, event) }
+            .build()
+
+        sendChannelMessage(ticketChannel, jsonMessageEmbed.toMessageEmbed())
     }
 
     private fun onChatLogCreated(event: ChatLogCreatedEvent) {
         val chatLogChannel =
             discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_CHATLOG_CHANNEL))
                 ?: return
-        val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.CHATLOG_ALERT))
-        val fields: MutableList<MessageEmbed.Field> = LinkedList()
-        for (field in jsonEmbedBuilder.fields) {
-            val name = insertChatLogPlaceholders(field.name, event)
-            val value = insertChatLogPlaceholders(field.value, event)
-            fields.add(MessageEmbed.Field(name, value, field.isInline))
-        }
-        jsonEmbedBuilder.fields = fields
-        sendChannelMessage(
-            chatLogChannel,
-            jsonEmbedBuilder.build()
-        )
+
+        var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.CHATLOG_ALERT))
+        jsonMessageEmbed = jsonMessageEmbed.toBuilder()
+            .title(insertChatLogPlaceholders(jsonMessageEmbed.title, event))
+            .description(insertChatLogPlaceholders(jsonMessageEmbed.description, event))
+            .parsePlaceholdersToFields { text -> insertChatLogPlaceholders(text, event) }
+            .build()
+
+        sendChannelMessage(chatLogChannel, jsonMessageEmbed.toMessageEmbed())
     }
 
     private fun onAsyncPlayerLogin(event: AsyncPlayerLoginEvent) {
@@ -275,14 +161,20 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             val channel =
                 discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_LOGIN_CHANNEL))
                     ?: return
-            sendChannelMessage(channel, Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_PLAYERLOGIN)))
+            sendChannelMessage(
+                channel,
+                Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_PLAYERLOGIN))
+            )
             return
         }
 
         val channel =
             discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_FIRST_LOGIN_CHANNEL))
                 ?: return
-        sendChannelMessage(channel, Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_FIRST_PLAYERLOGIN)))
+        sendChannelMessage(
+            channel,
+            Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_FIRST_PLAYERLOGIN))
+        )
     }
 
     private fun insertServerPlaceholders(s: String?, server: Server): String {
@@ -307,7 +199,46 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
     private fun insertPunishmentPlaceholders(s: String?, event: PunishmentEvent): String {
         if (s == null) return ""
-        val parsed = Methods.parsePunishmentPlaceholders(event.punishment, 1, s)
+        val networkManager = discordBot.networkManager
+        val cachedPlayers = networkManager.cacheManager.cachedPlayers
+        val punishment = event.punishment
+        // TODO: Make setting to define this value
+        val languageId = 1
+
+        val parsed = s
+            .replace("%id%", punishment.id.toString())
+            .replace("%type%",
+                punishment.type.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
+            .replace("%uuid%", punishment.uuid.toString())
+            .replace("%playername%", punishment.username ?: "Unknown")
+            .replace("%username%", punishment.username ?: "Unknown")
+            .replace("%ip%", punishment.ip)
+            .replace("%server%", punishment.server ?: "Global")
+            .replace("%reason%", punishment.reason)
+            .replace("%unbanreason%", punishment.unbanReason ?: "None")
+            .replace("%appeal-message%", networkManager.getMessage(languageId, Message.BAN_APPEAL_MESSAGE))
+            .replace(
+                "%punisher%",
+                if (cachedPlayers.isConsole(punishment.punisher)) "Console" else punishment.punisherName ?: "Unknown"
+            )
+            .replace(
+                "%time%", SimpleDateFormat(networkManager.getMessage(languageId, Message.PUNISHMENT_DATETIME_FORMAT))
+                    .format(Date(punishment.time))
+            )
+            .replace(
+                "%ends%", SimpleDateFormat(networkManager.getMessage(languageId, Message.PUNISHMENT_DATETIME_FORMAT))
+                    .format(Date(punishment.end))
+            ).replace(
+                "%expires%",
+                if (punishment.end == -1L) networkManager.getMessage(
+                    languageId,
+                    Message.NEVER
+                ) else TimeUtils.getTimeString(
+                    languageId,
+                    Utils.ceilDiv(punishment.end - System.currentTimeMillis(), 1000)
+                )
+            )
+
         return parsed.stripColors()
     }
 
@@ -342,9 +273,11 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         var message = discordBot.messages.getString(DCMessage.EVENT_CHAT)
             .replace("%playername%", player.name)
             .replace("%server%", currentServer)
-            .replace("%message%", event.message
-                .replace(FinderUtil.USER_MENTION.toRegex(), "")
-                .replace(FinderUtil.ROLE_MENTION.toRegex(), ""))
+            .replace(
+                "%message%", event.message
+                    .replace(FinderUtil.USER_MENTION.toRegex(), "")
+                    .replace(FinderUtil.ROLE_MENTION.toRegex(), "")
+            )
         message = Placeholders.setPlaceholders(player, message)
 
         globalChatTextChannel?.sendMessage(message)?.queue()
@@ -366,5 +299,4 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             subscribe(PlayerChatEvent::class.java, ::onPlayerChat, PostOrders.LAST)
         }
     }
-
 }

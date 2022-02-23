@@ -15,9 +15,11 @@ minecraft:
   bug:
     help: '&4» &c/bug [bug]'
     success: '&a&l(!) &6Successfully notified the staff about the bug you encountered!'
+    cooldown: '&7You have to wait &c%cooldown% &7before you can send a new bug report.'
   suggestion:
     help: '&4» &c/suggestion [suggestion]'
     success: '&a&l(!) &6Successfully notified the staff about your suggestion!'
+    cooldown: '&7You have to wait &c%cooldown% &7before you can send a new suggestion.'
   discord-response: '&7Join us on Discord at &6http://yourdiscordinvitelink.gg'
   reload:
     config: '&4» &7Reloaded &cConfig'

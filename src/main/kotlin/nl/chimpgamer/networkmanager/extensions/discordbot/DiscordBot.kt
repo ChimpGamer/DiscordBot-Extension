@@ -129,10 +129,11 @@ class DiscordBot : NMExtension() {
         val cloudCommandManager = networkManager.cloudCommandManager
 
         if (commandSettings.getBoolean(CommandSetting.MINECRAFT_BUG_ENABLED)) {
-            cloudCommandManager.commandManager.command(CloudBugCommand(this).getCommand(commandSettings.getString(CommandSetting.MINECRAFT_BUG_COMMAND)))
+            cloudCommandManager.commandManager.command(CloudBugCommand(this)
+                .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_BUG_COMMAND)))
         }
         if (commandSettings.getBoolean(CommandSetting.MINECRAFT_SUGGESTION_ENABLED)) {
-            cloudCommandManager.commandManager.command(CloudBugCommand(this)
+            cloudCommandManager.commandManager.command(CloudSuggestionCommand(this)
                 .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_SUGGESTION_COMMAND)))
         }
         if (commandSettings.getBoolean(CommandSetting.MINECRAFT_DISCORD_ENABLED)) {

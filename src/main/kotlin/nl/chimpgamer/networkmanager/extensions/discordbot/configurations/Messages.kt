@@ -59,9 +59,12 @@ enum class MCMessage(val path: String) {
     UNREGISTER_NOT_REGISTERED("minecraft.unregister.not-registered"),
     BUG_HELP("minecraft.bug.help"),
     BUG_SUCCESS("minecraft.bug.success"),
+    BUG_COOLDOWN("minecraft.bug.cooldown"),
     SUGGESTION_HELP("minecraft.suggestion.help"),
     SUGGESTION_SUCCESS("minecraft.suggestion.success"),
+    SUGGESTION_COOLDOWN("minecraft.suggestion.cooldown"),
     DISCORD_RESPONSE("minecraft.discord-response"),
+
     RELOAD_CONFIG("minecraft.reload.config"),
     RELOAD_MESSAGES("minecraft.reload.messages"),
     RELOAD_JDA_SUCCESS("minecraft.reload.jda.success"),

@@ -17,12 +17,11 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.GuildJoinCheckTa
 
 class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
+        if (!event.isFromType(ChannelType.TEXT) || event.author.isBot) return
+
         val discordUserManager = discordBot.discordUserManager
         val cachedPlayers = discordBot.networkManager.cacheManager.cachedPlayers
         val cachedValues = discordBot.networkManager.cacheManager.cachedValues
-        if (!event.isFromType(ChannelType.TEXT) || event.author.isBot) {
-            return
-        }
         val user = event.author
         val channel = event.textChannel
         val message = event.message
@@ -102,27 +101,22 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         val playerUUID = discordBot.discordUserManager.getUuidByDiscordId(member.id) ?: return
         val player = cachedPlayers.getIfLoaded(playerUUID) ?: return
 
+        val message = Placeholders.setPlaceholders(
+            player, eventChatMessageFormat
+                .replace("%mention%", member.asMention)
+                .replace("%discordname%", member.effectiveName)
+                .replace("%textchannel%", event.channel.name)
+                .replace("%message%", event.message.contentStripped)
+        )
+
         if (serverName.equals("all", ignoreCase = true)) {
             cachedPlayers.players.values.forEach { target ->
-                target.sendMessage(
-                    Placeholders.setPlaceholders(player, eventChatMessageFormat
-                        .replace("%mention%", member.asMention)
-                        .replace("%discordname%", member.effectiveName)
-                        .replace("%textchannel%", event.channel.name)
-                        .replace("%message%", event.message.contentStripped))
-                )
+                target.sendMessage(message)
             }
         } else {
             discordBot.networkManager.getPlayersOnServer(serverName).keys.forEach { targetPlayerUUID ->
                 val target = cachedPlayers.getIfLoaded(targetPlayerUUID) ?: return@forEach
-                target.sendMessage(
-                    Placeholders.setPlaceholders(player, eventChatMessageFormat
-                        .replace("%mention%", member.asMention)
-                        .replace("%discordname%", member.effectiveName)
-                        .replace("%textchannel%", event.channel.name)
-                        .replace("%message%", event.message.contentStripped)
-                    )
-                )
+                target.sendMessage(message)
             }
         }
     }

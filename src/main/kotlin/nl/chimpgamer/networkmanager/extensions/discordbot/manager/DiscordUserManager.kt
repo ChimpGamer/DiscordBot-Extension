@@ -134,7 +134,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     }
 
     fun insertToken(inputToken: String, uuid: String, message: Message) {
-        val token: Token = NMToken(inputToken, uuid, message)
+        val token = NMToken(inputToken, uuid, message)
         tokens.add(token)
         discordBot.scheduler.runDelayed(TokenExpiryTask(discordBot, token), 60L)
     }

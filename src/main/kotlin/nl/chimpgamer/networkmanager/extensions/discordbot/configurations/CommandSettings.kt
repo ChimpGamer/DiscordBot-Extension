@@ -20,6 +20,10 @@ class CommandSettings(private val discordBot: DiscordBot) : FileUtils(discordBot
     fun getString(commandSetting: CommandSetting): String {
         return getString(commandSetting.path, commandSetting.defaultValue as String)
     }
+
+    fun getInt(commandSetting: CommandSetting): Int {
+        return getInt(commandSetting.path, commandSetting.defaultValue as Int)
+    }
 }
 
 enum class CommandSetting(val path: String, val defaultValue: Any) {
@@ -36,8 +40,10 @@ enum class CommandSetting(val path: String, val defaultValue: Any) {
     MINECRAFT_DISCORD_ENABLED("commands.minecraft.discord.enabled", false),
     MINECRAFT_SUGGESTION_ENABLED("commands.minecraft.suggestion.enabled", false),
     MINECRAFT_SUGGESTION_COMMAND("commands.minecraft.suggestion.command", "suggestion"),
+    MINECRAFT_SUGGESTION_COOLDOWN("commands.minecraft.suggestion.cooldown", 60),
     MINECRAFT_BUG_ENABLED("commands.minecraft.bug.enabled", false),
     MINECRAFT_BUG_COMMAND("commands.minecraft.bug.command", "bug"),
+    MINECRAFT_BUG_COOLDOWN("commands.minecraft.bug.cooldown", 60),
     MINECRAFT_REGISTER_COMMAND("commands.minecraft.register.command", "register"),
     MINECRAFT_REGISTER_ALIASES("commands.minecraft.register.aliases", "link"),
     MINECRAFT_UNREGISTER_COMMAND("commands.minecraft.unregister.command", "unregister"),

@@ -9,7 +9,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerUnreg
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
+import nl.chimpgamer.networkmanager.extensions.discordbot.modals.JsonMessageEmbed
 import java.sql.SQLException
 
 class DeleteUserTask(private val discordBot: DiscordBot, private val player: Player) : Runnable {
@@ -56,9 +56,9 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 val unregisterNotification = discordBot.messages.getString(DCMessage.REGISTRATION_UNREGISTER_NOTIFICATION)
                         .replace("%command_prefix%", discordBot.settings.getString(Setting.DISCORD_COMMAND_PREFIX))
                 if (unregisterNotification.isNotEmpty()) {
-                    val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(unregisterNotification)
+                    val jsonMessageEmbed = JsonMessageEmbed.fromJson(unregisterNotification)
                     member?.user?.openPrivateChannel()?.queue {
-                        it.sendMessage(jsonEmbedBuilder.build()).queue()
+                        it.sendMessage(jsonMessageEmbed.toMessageEmbed()).queue()
                     }
                 }
 

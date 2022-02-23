@@ -12,13 +12,10 @@ import java.sql.SQLException
 
 class RegisterCommand(private val discordBot: DiscordBot) : Command() {
     override fun execute(event: CommandEvent) {
-        if (event.author.isBot) {
-            return
-        }
+        if (event.author.isBot) return
+        if (!event.isFromType(ChannelType.PRIVATE)) return
+
         val discordUserManager = discordBot.discordUserManager
-        if (!event.isFromType(ChannelType.PRIVATE)) {
-            return
-        }
         try {
             checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
             if (discordBot.guild.getMember(event.author) == null) {

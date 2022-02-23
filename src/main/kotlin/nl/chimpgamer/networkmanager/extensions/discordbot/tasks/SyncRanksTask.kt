@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.exceptions.PermissionException
 import nl.chimpgamer.networkmanager.api.models.player.Player
-import nl.chimpgamer.networkmanager.common_proxy.utils.PermissionPluginUtils
+import nl.chimpgamer.networkmanager.api.utils.PermissionPluginUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils

@@ -4,24 +4,20 @@ import com.jagrosh.jdautilities.command.Command
 import com.jagrosh.jdautilities.command.CommandEvent
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
-import net.dv8tion.jda.api.entities.MessageEmbed
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
+import nl.chimpgamer.networkmanager.extensions.discordbot.modals.JsonMessageEmbed
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.sql.SQLException
 import java.util.*
 
 class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
     override fun execute(event: CommandEvent) {
-        if (!event.isFromType(ChannelType.TEXT)) {
-            return
-        }
-        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYTIME_ENABLED)) {
-            return
-        }
+        if (!event.isFromType(ChannelType.TEXT)) return
+        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYTIME_ENABLED)) return
+
         if (event.args.isEmpty()) {
             val uuid = discordBot.discordUserManager.getUuidByDiscordId(event.author.id)
             if (uuid == null) {
@@ -30,24 +26,17 @@ class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
             }
             if (discordBot.networkManager.isPlayerOnline(uuid, true)) {
                 val player = discordBot.networkManager.getPlayer(uuid) ?: return
-                val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
-                jsonEmbedBuilder.title = jsonEmbedBuilder.title?.replace("%playername%", player.name)
-                val fields: MutableList<MessageEmbed.Field> = LinkedList()
-                for (field in jsonEmbedBuilder.fields) {
-                    val name = field.name
-                            ?.replace("%playername%", player.name)
-                            ?.replace("%playtime%", TimeUtils.getTimeString(player.language, player.playtime / 1000))
-                            ?.replace("%liveplaytime%", TimeUtils.getTimeString(player.language, player.playtime / 1000))
-                    val value = field.value
-                            ?.replace("%playername%", player.name)
-                            ?.replace("%playtime%", TimeUtils.getTimeString(player.language, player.playtime / 1000))
-                            ?.replace("%liveplaytime%", TimeUtils.getTimeString(player.language, player.playtime / 1000))
-                    val field1 = MessageEmbed.Field(name, value, field.isInline)
-                    fields.add(field1)
-                }
-                jsonEmbedBuilder.fields = fields
+                var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
+                jsonMessageEmbed = jsonMessageEmbed.toBuilder()
+                    .title(jsonMessageEmbed.title?.replace("%playername%", player.name))
+                    .parsePlaceholdersToFields(mapOf(
+                    "%playername%" to player.name,
+                    "%playtime%" to TimeUtils.getTimeString(player.language, player.playtime / 1000),
+                    "%liveplaytime%" to TimeUtils.getTimeString(player.language, player.livePlaytime / 1000)
+                )).build()
+
                 sendChannelMessage(event.textChannel,
-                        jsonEmbedBuilder.build())
+                        jsonMessageEmbed.toMessageEmbed())
             } else {
                 discordBot.scheduler.runAsync({
                     val result = getOfflinePlayerPlaytime(uuid)
@@ -56,24 +45,17 @@ class PlaytimeCommand(private val discordBot: DiscordBot) : Command() {
                     if (userName.isEmpty() || playtime == 0L) {
                         return@runAsync
                     }
-                    val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
-                    jsonEmbedBuilder.title = jsonEmbedBuilder.title?.replace("%playername%", userName)
-                    val fields: MutableList<MessageEmbed.Field> = LinkedList()
-                    for (field in jsonEmbedBuilder.fields) {
-                        val name = field.name
-                                ?.replace("%playername%", userName)
-                                ?.replace("%playtime%", TimeUtils.getTimeString(1, playtime / 1000))
-                                ?.replace("%liveplaytime%", TimeUtils.getTimeString(1, playtime / 1000))
-                        val value = field.value
-                                ?.replace("%playername%", userName)
-                                ?.replace("%playtime%", TimeUtils.getTimeString(1, playtime / 1000))
-                                ?.replace("%liveplaytime%", TimeUtils.getTimeString(1, playtime / 1000))
-                        val field1 = MessageEmbed.Field(name, value, field.isInline)
-                        fields.add(field1)
-                    }
-                    jsonEmbedBuilder.fields = fields
+                    var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
+                    jsonMessageEmbed = jsonMessageEmbed.toBuilder()
+                        .title(jsonMessageEmbed.title?.replace("%playername%", userName))
+                        .parsePlaceholdersToFields(mapOf(
+                            "%playername%" to userName,
+                            "%playtime%" to TimeUtils.getTimeString(1, playtime / 1000),
+                            "%liveplaytime%" to TimeUtils.getTimeString(1, playtime / 1000)
+                        )).build()
+
                     sendChannelMessage(event.textChannel,
-                            jsonEmbedBuilder.build())
+                            jsonMessageEmbed.toMessageEmbed())
                 }, false)
             }
         }

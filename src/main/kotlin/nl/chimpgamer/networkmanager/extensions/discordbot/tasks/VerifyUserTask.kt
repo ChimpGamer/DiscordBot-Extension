@@ -4,14 +4,13 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
-import nl.chimpgamer.networkmanager.common.utils.Methods
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.events.PlayerRegisteredEvent
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
+import nl.chimpgamer.networkmanager.extensions.discordbot.modals.JsonMessageEmbed
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.RedisBungeeUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import java.sql.SQLException
@@ -44,9 +43,9 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     discordUserManager.tokens.remove(this.token) // Remove token
                     discordUserManager.insertUser(this.player.uuid, this.token.discordID)
                     val registrationCompleted = discordBot.messages.getString(DCMessage.REGISTRATION_COMPLETED)
-                    if (Methods.isJsonValid(registrationCompleted)) {
-                        val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(registrationCompleted)
-                        Utils.editMessage(this.token.message, jsonEmbedBuilder.build())
+                    if (Utils.isJsonValid(registrationCompleted)) {
+                        val jsonMessageEmbed = JsonMessageEmbed.fromJson(registrationCompleted)
+                        Utils.editMessage(this.token.message, jsonMessageEmbed.toMessageEmbed())
                     } else {
                         Utils.editMessage(this.token.message, registrationCompleted)
                     }

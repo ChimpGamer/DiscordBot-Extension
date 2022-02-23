@@ -23,10 +23,9 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
             if (players.isEmpty()) {
                 sb.append("There are currently no players online!")
             } else {
-                val premiumVanishHook = discordBot.networkManager.pluginHookManager.premiumVanishHook.orElse(null)
                 for (player in players) {
                     if (!player.isOnline) continue
-                    if (premiumVanishHook?.isEnabled == true && premiumVanishHook.isVanished(player.uuid)) continue
+                    if (player.vanished) continue
                     sb.append(player.name).append(" - ").append(player.server).append("\n")
                 }
             }
@@ -45,9 +44,8 @@ class PlayerListCommand(private val discordBot: DiscordBot) : Command() {
                 )
             }
             var sb = StringBuilder()
-            val premiumVanishHook = discordBot.networkManager.pluginHookManager.premiumVanishHook.orElse(null)
             for (player in discordBot.networkManager.cacheManager.cachedPlayers.players.values) {
-                if (premiumVanishHook?.isEnabled == true && premiumVanishHook.isVanished(player.uuid)) continue
+                if (player.vanished) continue
                 sb.append(player.name).append(" - ").append(player.server).append("\n")
             }
             if (sb.isNotEmpty()) {

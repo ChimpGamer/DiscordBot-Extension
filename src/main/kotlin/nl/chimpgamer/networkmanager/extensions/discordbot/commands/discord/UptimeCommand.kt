@@ -12,12 +12,9 @@ import java.lang.management.ManagementFactory
 
 class UptimeCommand(private val discordBot: DiscordBot) : Command() {
     override fun execute(event: CommandEvent) {
-        if (!event.isFromType(ChannelType.TEXT)) {
-            return
-        }
-        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_UPTIME_ENABLED)) {
-            return
-        }
+        if (!event.isFromType(ChannelType.TEXT)) return
+        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_UPTIME_ENABLED)) return
+
         val uptime = ManagementFactory.getRuntimeMXBean().startTime
         sendChannelMessage(event.textChannel,
                 TimeUtils.getTimeString(1, (System.currentTimeMillis() - uptime) / 1000))

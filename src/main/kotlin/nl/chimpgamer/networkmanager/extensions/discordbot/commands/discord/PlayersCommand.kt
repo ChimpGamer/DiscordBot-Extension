@@ -11,12 +11,9 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChanne
 
 class PlayersCommand(private val discordBot: DiscordBot) : Command() {
     override fun execute(event: CommandEvent) {
-        if (!event.isFromType(ChannelType.TEXT)) {
-            return
-        }
-        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYERS_ENABLED)) {
-            return
-        }
+        if (!event.isFromType(ChannelType.TEXT)) return
+        if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYERS_ENABLED)) return
+
         sendChannelMessage(event.textChannel,
                 discordBot.messages.getString(DCMessage.COMMAND_ONLINEPLAYERS_RESPONSE)
                         .replace("%mention%", event.author.asMention)

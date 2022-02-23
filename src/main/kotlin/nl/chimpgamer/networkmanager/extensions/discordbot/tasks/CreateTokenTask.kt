@@ -2,10 +2,9 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.tasks
 
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageChannel
-import nl.chimpgamer.networkmanager.common.utils.Methods
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
-import nl.chimpgamer.networkmanager.extensions.discordbot.utils.JsonEmbedBuilder
+import nl.chimpgamer.networkmanager.extensions.discordbot.modals.JsonMessageEmbed
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.generateToken
 
@@ -16,9 +15,9 @@ class CreateTokenTask(private val discordBot: DiscordBot, private val channel: M
         val msgStr = discordBot.messages.getString(DCMessage.REGISTRATION_TOKEN_RESPONSE)
                 .replace("%newline%", "\n")
                 .replace("%token%", token)
-        val message: Message? = if (Methods.isJsonValid(msgStr)) {
-            val jsonEmbedBuilder = JsonEmbedBuilder.fromJson(msgStr)
-            Utils.sendMessageComplete(this.channel, jsonEmbedBuilder.build())
+        val message: Message? = if (Utils.isJsonValid(msgStr)) {
+            val jsonMessageEmbed = JsonMessageEmbed.fromJson(msgStr)
+            Utils.sendMessageComplete(this.channel, jsonMessageEmbed.toMessageEmbed())
         } else {
             Utils.sendMessageComplete(this.channel, msgStr)
         }

@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.6.10"
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version "7.1.1"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.github.slimjar") version "1.3.0"
 }
 
@@ -20,7 +20,14 @@ repositories {
 
     maven("https://repo.codemc.org/repository/maven-public")
 
-    maven("https://repo.vshnv.tech/releases")
+    maven("https://repo.networkmanager.xyz/repository/maven-public/")
+
+    // Slimjar repository
+    // Doesn't work anymore
+    //maven("https://repo.vshnv.tech/releases")
+
+    // For slimjar
+    maven("https://repo.glaremasters.me/repository/public/")
 }
 
 dependencies {
@@ -29,7 +36,7 @@ dependencies {
     implementation("com.jagrosh:jda-utilities-command:3.0.4")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
     //implementation("nl.chimpgamer.networkmanager:api:2.9.0-SNAPSHOT")
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.10.6-SNAPSHOT") {
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.10.9-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
     slim("net.dv8tion:JDA:4.3.0_277") {
@@ -38,15 +45,15 @@ dependencies {
     compileOnly("com.github.Carleslc:Simple-YAML:1.7.2")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
 
-    compileOnly("cloud.commandframework:cloud-core:1.6.0")
-    compileOnly("cloud.commandframework:cloud-annotations:1.6.0")
+    compileOnly("cloud.commandframework:cloud-core:1.6.1")
+    compileOnly("cloud.commandframework:cloud-annotations:1.6.1")
 
     compileOnly("com.velocitypowered:velocity-api:3.1.0")
     //kapt("com.velocitypowered:velocity-api:3.1.0")
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.5.0"
+version = "1.6.0-SNAPSHOT"
 
 publishing {
     publications {
@@ -83,8 +90,8 @@ tasks {
 
         relocate("kotlin", "$libPackage.kotlin")
         relocate("org.simpleyaml", "$libPackage.simpleyaml")
-        relocate("org.eclipse.jetty", "$libPackage.jetty")
-        relocate("javax.servlet", "$libPackage.javax.servlet")
+        //relocate("org.eclipse.jetty", "$libPackage.jetty")
+        //relocate("javax.servlet", "$libPackage.javax.servlet")
         relocate("com.jagrosh.jdautilities", "$shadedPackage.com.jagrosh.jdautilities")
         relocate("cloud.commandframework", "$libPackage.cloud")
     }

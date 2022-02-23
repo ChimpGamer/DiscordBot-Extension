@@ -1,14 +1,24 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.utils
 
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
+import com.google.gson.stream.MalformedJsonException
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.exceptions.PermissionException
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
+import java.io.IOException
+import java.io.Reader
+import java.io.StringReader
 import java.math.BigInteger
 import java.security.SecureRandom
 
 object Utils {
     val UUID_REGEX = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")
+
+    fun ceilDiv(x: Long, y: Long): Long {
+        return -Math.floorDiv(-x, y)
+    }
 
     fun sendChannelMessage(channel: MessageChannel, message: String) {
         try {
@@ -78,5 +88,39 @@ object Utils {
 
     fun generateToken(): String {
         return BigInteger(64, SecureRandom()).toString(32)
+    }
+
+    fun isJsonValid(json: String): Boolean {
+        return try {
+            isJsonValid(StringReader(json))
+        } catch (ignored: IOException) {
+            false
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun isJsonValid(reader: Reader): Boolean {
+        return isJsonValid(JsonReader(reader))
+    }
+
+    @Throws(IOException::class, AssertionError::class)
+    private fun isJsonValid(jsonReader: JsonReader): Boolean {
+        return try {
+            var token: JsonToken?
+            while (jsonReader.peek().also { token = it } != JsonToken.END_DOCUMENT && token != null) {
+                when (token) {
+                    JsonToken.BEGIN_ARRAY -> jsonReader.beginArray()
+                    JsonToken.END_ARRAY -> jsonReader.endArray()
+                    JsonToken.BEGIN_OBJECT -> jsonReader.beginObject()
+                    JsonToken.END_OBJECT -> jsonReader.endObject()
+                    JsonToken.NAME -> jsonReader.nextName()
+                    JsonToken.STRING, JsonToken.NUMBER, JsonToken.BOOLEAN, JsonToken.NULL -> jsonReader.skipValue()
+                    else -> throw AssertionError(token)
+                }
+            }
+            true
+        } catch (ignored: MalformedJsonException) {
+            false
+        }
     }
 }
