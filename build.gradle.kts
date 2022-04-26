@@ -39,7 +39,7 @@ dependencies {
     compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.11.0-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
-    slim("net.dv8tion:JDA:4.3.0_277") {
+    slim("net.dv8tion:JDA:4.4.0_350") {
         exclude("club.minnced", "opus-java")
     }
     compileOnly("com.github.Carleslc:Simple-YAML:1.7.2")
