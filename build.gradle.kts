@@ -45,8 +45,8 @@ dependencies {
     compileOnly("com.github.Carleslc:Simple-YAML:1.7.2")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
 
-    compileOnly("cloud.commandframework:cloud-core:1.6.1")
-    compileOnly("cloud.commandframework:cloud-annotations:1.6.1")
+    compileOnly("cloud.commandframework:cloud-core:1.6.2")
+    compileOnly("cloud.commandframework:cloud-annotations:1.6.2")
 
     compileOnly("com.velocitypowered:velocity-api:3.1.0")
     //kapt("com.velocitypowered:velocity-api:3.1.0")
