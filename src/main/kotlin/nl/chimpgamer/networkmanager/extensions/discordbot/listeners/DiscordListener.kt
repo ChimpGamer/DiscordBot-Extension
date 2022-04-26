@@ -6,7 +6,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
+import nl.chimpgamer.networkmanager.api.utils.adventure.parse
+import nl.chimpgamer.networkmanager.api.utils.adventure.toComponent
 import nl.chimpgamer.networkmanager.api.values.Command
+import nl.chimpgamer.networkmanager.api.values.Message
 import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData
 import nl.chimpgamer.networkmanager.common.messaging.handlers.AdminChatMessageHandler
 import nl.chimpgamer.networkmanager.common.messaging.handlers.StaffChatMessageHandler
@@ -26,17 +29,16 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         val channel = event.textChannel
         val message = event.message
         val msg = message.contentStripped
+        val messageComponent = msg.toComponent()
         if (channel.guild == discordBot.guild) {
             if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL)) {
                 val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
                 val player = cachedPlayers.getPlayer(uuid) ?: return
                 if (cachedValues.getBoolean(Command.ADMINCHAT_ENABLED)) {
-                    val alert = discordBot.networkManager.getMessage(player.language, "lang_adminchat_message")
-                        .replace("%playername%", player.realName)
-                        .replace("%username%", player.userName)
-                        .replace("%nickname%", player.nicknameOrUserName)
-                        .replace("%server%", "Discord")
-                        .replace("%message%", msg)
+                    val alert = Placeholders.setPlaceholders(player, discordBot.networkManager.getMessage(player.language, Message.ADMINCHAT_MESSAGE))
+                        .parse(player)
+                        .replaceText { it.once().matchLiteral("%server%").replacement("Discord") }
+                        .replaceText { it.once().matchLiteral("%message%").replacement(messageComponent) }
                     val perm1 = "networkmanager.command.adminchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
@@ -56,12 +58,10 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                 val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
                 val player = cachedPlayers.getPlayer(uuid) ?: return
                 if (cachedValues.getBoolean(Command.STAFFCHAT_ENABLED)) {
-                    val alert = discordBot.networkManager.getMessage(player.language, "lang_staffchat_message")
-                        .replace("%playername%", player.realName)
-                        .replace("%username%", player.userName)
-                        .replace("%nickname%", player.nicknameOrUserName)
-                        .replace("%server%", "Discord")
-                        .replace("%message%", msg)
+                    val alert = Placeholders.setPlaceholders(player, discordBot.networkManager.getMessage(player.language, Message.STAFFCHAT_MESSAGE))
+                        .parse(player)
+                        .replaceText { it.once().matchLiteral("%server%").replacement("Discord") }
+                        .replaceText { it.once().matchLiteral("%message%").replacement(messageComponent) }
                     val perm1 = "networkmanager.command.staffchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
