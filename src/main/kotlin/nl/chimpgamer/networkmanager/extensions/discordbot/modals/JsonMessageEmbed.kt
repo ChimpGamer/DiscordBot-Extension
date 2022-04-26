@@ -9,15 +9,15 @@ import net.dv8tion.jda.api.entities.EmbedType
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.internal.entities.EntityBuilder
-import nl.chimpgamer.networkmanager.api.models.player.Player
 import java.awt.Color
-import java.time.*
+import java.time.OffsetDateTime
+import java.time.DateTimeException
+import java.time.ZoneOffset
+import java.time.Instant
+import java.time.LocalDateTime
 import java.time.temporal.TemporalAccessor
-import java.util.*
-import java.util.concurrent.Callable
-import java.util.function.BiFunction
+import java.util.LinkedList
 import java.util.function.Function
-import java.util.function.Supplier
 
 data class JsonMessageEmbed(
     val title: String? = null,
@@ -33,7 +33,21 @@ data class JsonMessageEmbed(
 
     fun toBuilder(): Builder = Builder(this)
 
-    fun toMessageEmbed(): MessageEmbed = EntityBuilder.createMessageEmbed(url, title, description, EmbedType.RICH, timestamp, color, thumbnail, null, null, null, footer, image, fields)
+    fun toMessageEmbed(): MessageEmbed = EntityBuilder.createMessageEmbed(
+        url,
+        title,
+        description,
+        EmbedType.RICH,
+        timestamp,
+        color,
+        thumbnail,
+        null,
+        null,
+        null,
+        footer,
+        image,
+        fields
+    )
 
     data class Builder(
         private var title: String? = null,
@@ -92,14 +106,17 @@ data class JsonMessageEmbed(
             fields.add(MessageEmbed.Field(name, value, inline))
         }
 
-        fun addBlankField(inline: Boolean) = apply { addField(EmbedBuilder.ZERO_WIDTH_SPACE, EmbedBuilder.ZERO_WIDTH_SPACE, inline) }
+        fun addBlankField(inline: Boolean) =
+            apply { addField(EmbedBuilder.ZERO_WIDTH_SPACE, EmbedBuilder.ZERO_WIDTH_SPACE, inline) }
 
         fun parsePlaceholdersToFields(placeholders: Map<String, String>) = apply {
             val fields: MutableList<MessageEmbed.Field> = LinkedList()
             for (field in this.fields) {
                 var name = field.name
                 var value = field.value
-                placeholders.forEach { (toReplace, replacement) -> name = name?.replace(toReplace, replacement); value = value?.replace(toReplace, replacement) }
+                placeholders.forEach { (toReplace, replacement) ->
+                    name = name?.replace(toReplace, replacement); value = value?.replace(toReplace, replacement)
+                }
 
                 fields.add(MessageEmbed.Field(name, value, field.isInline))
             }
