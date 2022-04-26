@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.6.21"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.github.slimjar") version "1.3.0"
