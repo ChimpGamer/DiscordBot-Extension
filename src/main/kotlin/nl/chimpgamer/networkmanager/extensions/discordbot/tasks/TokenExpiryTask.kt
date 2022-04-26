@@ -17,7 +17,7 @@ class TokenExpiryTask(private val discordBot: DiscordBot, private val token: Tok
                 .replace("%command_prefix%", discordBot.settings.getString(Setting.DISCORD_COMMAND_PREFIX))
         if (Utils.isJsonValid(msgStr)) {
             val jsonMessageEmbed = JsonMessageEmbed.fromJson(msgStr)
-            this.token.message.editMessage(jsonMessageEmbed.toMessageEmbed()).complete()
+            this.token.message.editMessageEmbeds(jsonMessageEmbed.toMessageEmbed()).complete()
         } else {
             this.token.message.editMessage(msgStr).complete()
         }

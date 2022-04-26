@@ -58,7 +58,7 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 if (unregisterNotification.isNotEmpty()) {
                     val jsonMessageEmbed = JsonMessageEmbed.fromJson(unregisterNotification)
                     member?.user?.openPrivateChannel()?.queue {
-                        it.sendMessage(jsonMessageEmbed.toMessageEmbed()).queue()
+                        it.sendMessageEmbeds(jsonMessageEmbed.toMessageEmbed()).queue()
                     }
                 }
 

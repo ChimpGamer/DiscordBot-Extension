@@ -31,7 +31,7 @@ object Utils {
     @JvmStatic
     fun sendChannelMessage(channel: MessageChannel, message: MessageEmbed) {
         try {
-            channel.sendMessage(message).queue()
+            channel.sendMessageEmbeds(message).queue()
         } catch (ex: PermissionException) {
             DiscordBot.instance.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
         }
@@ -48,7 +48,7 @@ object Utils {
 
     fun sendMessageComplete(channel: MessageChannel, message: MessageEmbed): Message? {
         try {
-            return channel.sendMessage(message).complete()
+            return channel.sendMessageEmbeds(message).complete()
         } catch (ex: PermissionException) {
             DiscordBot.instance.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
         }
@@ -60,7 +60,7 @@ object Utils {
     }
 
     fun editMessage(currentMessage: Message, newMessage: MessageEmbed) {
-        currentMessage.editMessage(newMessage).queue()
+        currentMessage.editMessageEmbeds(newMessage).queue()
     }
 
     @Throws(InsufficientPermissionException::class)
