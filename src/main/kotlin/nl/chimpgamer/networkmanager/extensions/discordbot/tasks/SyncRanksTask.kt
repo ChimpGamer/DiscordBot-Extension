@@ -19,7 +19,7 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
         val addRoles: MutableSet<Role> = HashSet()
         val removeRoles: MutableSet<Role> = HashSet()
 
-        val groups = PermissionPluginUtils.getGroupsName(discordBot.networkManager, player)
+        val groups = PermissionPluginUtils.getGroupsName(player)
         discordBot.networkManager.debug("Player has the following groups: ${groups.joinToString()}")
         for ((rankName, roleName) in discordBot.settings.getMap(Setting.DISCORD_SYNC_RANKS_MAP)) {
             val role = discordBot.discordManager.getRole(roleName)
