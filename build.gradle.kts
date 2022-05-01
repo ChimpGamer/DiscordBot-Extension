@@ -35,7 +35,7 @@ dependencies {
     compileOnly(kotlin("stdlib-jdk8"))
     implementation("com.jagrosh:jda-utilities-command:3.0.4")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
-    //implementation("nl.chimpgamer.networkmanager:api:2.9.0-SNAPSHOT")
+
     compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.11.0-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }

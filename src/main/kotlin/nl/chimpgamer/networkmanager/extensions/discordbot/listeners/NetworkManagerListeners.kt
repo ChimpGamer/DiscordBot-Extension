@@ -18,7 +18,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.modals.JsonMessageEmbe
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
@@ -205,6 +205,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         // TODO: Make setting to define this value
         val languageId = 1
 
+
         val parsed = s
             .replace("%id%", punishment.id.toString())
             .replace("%type%",
@@ -216,7 +217,6 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             .replace("%server%", punishment.server ?: "Global")
             .replace("%reason%", punishment.reason)
             .replace("%unbanreason%", punishment.unbanReason ?: "None")
-            .replace("%appeal-message%", networkManager.getMessage(languageId, Message.BAN_APPEAL_MESSAGE))
             .replace(
                 "%punisher%",
                 if (cachedPlayers.isConsole(punishment.punisher)) "Console" else punishment.punisherName ?: "Unknown"
@@ -230,13 +230,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
                     .format(Date(punishment.end))
             ).replace(
                 "%expires%",
-                if (punishment.end == -1L) networkManager.getMessage(
-                    languageId,
-                    Message.NEVER
-                ) else TimeUtils.getTimeString(
-                    languageId,
-                    Utils.ceilDiv(punishment.end - System.currentTimeMillis(), 1000)
-                )
+                if (punishment.end == -1L) networkManager.getMessage(languageId, Message.NEVER)
+                else TimeUtils.getTimeString(languageId, Utils.ceilDiv(punishment.end - System.currentTimeMillis(), 1000))
             )
 
         return parsed.stripColors()
