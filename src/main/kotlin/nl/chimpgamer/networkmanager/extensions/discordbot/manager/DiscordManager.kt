@@ -65,7 +65,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
     @Throws(LoginException::class, InterruptedException::class)
     private fun initJDA() {
         jda = JDABuilder.createDefault(discordBot.settings.getString(Setting.DISCORD_TOKEN))
-                .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
+                .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .addEventListeners(DiscordListener(discordBot))
                 .addEventListeners(commandClientBuilder.build())
