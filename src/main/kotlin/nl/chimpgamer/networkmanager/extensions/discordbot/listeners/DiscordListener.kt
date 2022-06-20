@@ -6,8 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
-import nl.chimpgamer.networkmanager.api.utils.adventure.parse
-import nl.chimpgamer.networkmanager.api.utils.adventure.toComponent
+import nl.chimpgamer.networkmanager.api.utils.formatColorCodes
 import nl.chimpgamer.networkmanager.api.values.Command
 import nl.chimpgamer.networkmanager.api.values.Message
 import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData
@@ -29,16 +28,11 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         val channel = event.textChannel
         val message = event.message
         val msg = message.contentStripped
-        val messageComponent = msg.toComponent()
         if (channel.guild == discordBot.guild) {
             if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL)) {
                 val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
                 val player = cachedPlayers.getPlayer(uuid) ?: return
                 if (cachedValues.getBoolean(Command.ADMINCHAT_ENABLED)) {
-                    val alert = Placeholders.setPlaceholders(player, discordBot.networkManager.getMessage(player.language, Message.ADMINCHAT_MESSAGE))
-                        .parse(player)
-                        .replaceText { it.once().matchLiteral("%server%").replacement("Discord") }
-                        .replaceText { it.once().matchLiteral("%message%").replacement(messageComponent) }
                     val perm1 = "networkmanager.command.adminchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
@@ -51,17 +45,13 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             discordBot.networkManager.messagingServiceManager.getHandler(AdminChatMessageHandler::class.java)
                         handler?.send(data)
                     } else {
-                        discordBot.networkManager.universalUtils.sendMessageToStaff(alert, "all", perm1, perm2)
+                        discordBot.networkManager.universalUtils.sendMessageToStaff(Message.ADMINCHAT_MESSAGE, perm1, perm2, replacements = mapOf("%playername%" to player.displayName.formatColorCodes(), "%server%" to "Discord", "%message%" to msg))
                     }
                 }
             } else if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL)) {
                 val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
                 val player = cachedPlayers.getPlayer(uuid) ?: return
                 if (cachedValues.getBoolean(Command.STAFFCHAT_ENABLED)) {
-                    val alert = Placeholders.setPlaceholders(player, discordBot.networkManager.getMessage(player.language, Message.STAFFCHAT_MESSAGE))
-                        .parse(player)
-                        .replaceText { it.once().matchLiteral("%server%").replacement("Discord") }
-                        .replaceText { it.once().matchLiteral("%message%").replacement(messageComponent) }
                     val perm1 = "networkmanager.command.staffchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
@@ -74,7 +64,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             discordBot.networkManager.messagingServiceManager.getHandler(StaffChatMessageHandler::class.java)
                         handler?.send(data)
                     } else {
-                        discordBot.networkManager.universalUtils.sendMessageToStaff(alert, "all", perm1, perm2)
+                        discordBot.networkManager.universalUtils.sendMessageToStaff(Message.STAFFCHAT_MESSAGE, perm1, perm2, replacements = mapOf("%playername%" to player.displayName.formatColorCodes(), "%server%" to "Discord", "%message%" to msg))
                     }
                 }
             }

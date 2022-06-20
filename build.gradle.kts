@@ -28,6 +28,16 @@ repositories {
 
     // For slimjar
     maven("https://repo.glaremasters.me/repository/public/")
+
+    // NetworkManager repositories
+    maven("https://repo.networkmanager.xyz/repository/maven-public/")
+    maven {
+        url = uri("https://repo.networkmanager.xyz/repository/maven-private/")
+        credentials {
+            username = project.property("NETWORKMANAGER_NEXUS_USERNAME").toString()
+            password = project.property("NETWORKMANAGER_NEXUS_PASSWORD").toString()
+        }
+    }
 }
 
 dependencies {
@@ -36,7 +46,7 @@ dependencies {
     implementation("com.jagrosh:jda-utilities-command:3.0.4")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
 
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.11.0-SNAPSHOT") {
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.0") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
     slim("net.dv8tion:JDA:4.4.0_350") {
@@ -53,7 +63,7 @@ dependencies {
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.6.1-SNAPSHOT"
+version = "1.6.3"
 
 publishing {
     publications {

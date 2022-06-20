@@ -139,7 +139,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
             val statusMessage = Placeholders.setPlaceholders(null, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
                 .replace("%players%", players.toString()))
 
-            println(statusMessage)
+            //println(statusMessage)
 
             setActivity(Activity.of(activityType, statusMessage))
         }

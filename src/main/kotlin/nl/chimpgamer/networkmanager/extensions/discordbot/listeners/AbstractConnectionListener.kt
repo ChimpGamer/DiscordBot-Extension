@@ -4,7 +4,7 @@ import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.SyncRanksTask
-import java.util.*
+import java.util.UUID
 
 abstract class AbstractConnectionListener(private val discordBot: DiscordBot) {
 
