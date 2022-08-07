@@ -159,6 +159,8 @@ class DiscordBot : NMExtension() {
     override val networkManager: NetworkManagerPluginProxyBase
         get() = super.networkManager as NetworkManagerPluginProxyBase
 
+    fun isDiscordManagerInitialized() = this::discordManager.isInitialized
+
     companion object {
         @JvmStatic
         lateinit var instance: DiscordBot

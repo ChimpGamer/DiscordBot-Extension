@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.10"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.github.slimjar") version "1.3.0"
@@ -31,6 +31,7 @@ repositories {
 
     // NetworkManager repositories
     maven("https://repo.networkmanager.xyz/repository/maven-public/")
+    mavenCentral()
     maven {
         url = uri("https://repo.networkmanager.xyz/repository/maven-private/")
         credentials {
@@ -52,18 +53,18 @@ dependencies {
     slim("net.dv8tion:JDA:4.4.0_350") {
         exclude("club.minnced", "opus-java")
     }
-    compileOnly("com.github.Carleslc:Simple-YAML:1.7.2")
+    compileOnly("com.github.Carleslc:Simple-YAML:1.8.1")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
 
-    compileOnly("cloud.commandframework:cloud-core:1.6.2")
-    compileOnly("cloud.commandframework:cloud-annotations:1.6.2")
+    compileOnly("cloud.commandframework:cloud-core:1.7.0")
+    compileOnly("cloud.commandframework:cloud-annotations:1.7.0")
 
     compileOnly("com.velocitypowered:velocity-api:3.1.0")
     //kapt("com.velocitypowered:velocity-api:3.1.0")
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.6.3"
+version = "1.6.4"
 
 publishing {
     publications {
