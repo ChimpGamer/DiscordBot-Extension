@@ -35,7 +35,7 @@ discord:
     staffchat: '%playername% said on %server%: %message%'
     adminchat: '%playername% said on %server%: %message%'
     chat: '%playername% said on %server%: %message%'
-    join: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the !register command when you want to register! Good luck!'
+    join: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the /register command when you want to register! Good luck!'
     playerlogin: '%playername% has logged in to the server.'
     firstplayerlogin: '%playername% has logged in to the server for the first time.'
 
@@ -71,7 +71,7 @@ discord:
       expired: |-
         {
           "title": "TOKEN HAS BEEN EXPIRED.",
-          "description": "You can request a new one with **%command_prefix%register**",
+          "description": "You can request a new one with **/register**",
           "color": 14684176
         }
     completed: |-
@@ -84,7 +84,7 @@ discord:
       notification: |-
         {
           "title": "Successfully unregistered your discord account!",
-          "description": "You can register your Account again with %command_prefix%register",
+          "description": "You can register your Account again with /register",
           "color": 3535678
         }
 

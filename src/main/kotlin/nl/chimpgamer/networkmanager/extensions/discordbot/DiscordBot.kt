@@ -49,6 +49,7 @@ class DiscordBot : NMExtension() {
                 .appending("DiscordBot")
                 .dependencyFileUrl(slimJarJsonUrl)
                 .downloadDirectoryPath(dependencyDirectory.toPath())
+                .logger { s, anies -> logger.log(Level.INFO, s, anies) }
                 .build()
             val endInstant = Instant.now()
             val timeTaken = Duration.between(startInstant, endInstant).toMillis()
@@ -158,6 +159,8 @@ class DiscordBot : NMExtension() {
 
     override val networkManager: NetworkManagerPluginProxyBase
         get() = super.networkManager as NetworkManagerPluginProxyBase
+
+    fun isDiscordManagerInitialized(): Boolean = this::discordManager.isInitialized
 
     companion object {
         @JvmStatic

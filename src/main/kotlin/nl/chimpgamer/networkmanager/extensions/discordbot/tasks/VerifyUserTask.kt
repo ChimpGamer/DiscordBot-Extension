@@ -45,9 +45,9 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     val registrationCompleted = discordBot.messages.getString(DCMessage.REGISTRATION_COMPLETED)
                     if (Utils.isJsonValid(registrationCompleted)) {
                         val jsonMessageEmbed = JsonMessageEmbed.fromJson(registrationCompleted)
-                        Utils.editMessage(this.token.message, jsonMessageEmbed.toMessageEmbed())
+                        token.interaction.editOriginalEmbeds(jsonMessageEmbed.toMessageEmbed()).queue()
                     } else {
-                        Utils.editMessage(this.token.message, registrationCompleted)
+                        token.interaction.editOriginal(registrationCompleted).queue()
                     }
                     this.player.sendMessage(
                         discordBot.messages.getString(MCMessage.REGISTER_COMPLETED)

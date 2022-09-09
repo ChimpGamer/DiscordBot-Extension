@@ -1,6 +1,5 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 
-import com.jagrosh.jdautilities.commons.utils.FinderUtil
 import nl.chimpgamer.networkmanager.api.event.PostOrders
 import nl.chimpgamer.networkmanager.api.event.events.*
 import nl.chimpgamer.networkmanager.api.event.events.player.AsyncPlayerLoginEvent
@@ -270,8 +269,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             .replace("%server%", currentServer)
             .replace(
                 "%message%", event.message
-                    .replace(FinderUtil.USER_MENTION.toRegex(), "")
-                    .replace(FinderUtil.ROLE_MENTION.toRegex(), "")
+                    .replace(Utils.USER_MENTION_REGEX, "")
+                    .replace(Utils.ROLE_MENTION_REGEX, "")
             )
         message = Placeholders.setPlaceholders(player, message)
 

@@ -1,26 +1,26 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.manager
 
-import com.jagrosh.jdautilities.command.CommandClientBuilder
-import com.jagrosh.jdautilities.commons.utils.FinderUtil
+import dev.minn.jda.ktx.events.listener
+import dev.minn.jda.ktx.jdabuilder.light
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-import nl.chimpgamer.networkmanager.extensions.discordbot.commands.discord.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
+import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordCommandsListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordListener
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import javax.security.auth.login.LoginException
 
 class DiscordManager(private val discordBot: DiscordBot) {
-    private val commandClientBuilder = CommandClientBuilder()
     private lateinit var jda: JDA
     lateinit var guild: Guild
     var verifiedRole: Role? = null
@@ -28,8 +28,8 @@ class DiscordManager(private val discordBot: DiscordBot) {
     fun init(): Boolean {
         var success = false
         try {
-            initCommandBuilder()
             initJDA()
+            initializeActivity()
         } catch (ex: LoginException) {
             ex.printStackTrace()
         } catch (ex: InterruptedException) {
@@ -64,43 +64,39 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     @Throws(LoginException::class, InterruptedException::class)
     private fun initJDA() {
-        jda = JDABuilder.createDefault(discordBot.settings.getString(Setting.DISCORD_TOKEN))
-                .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_VOICE_STATES)
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .addEventListeners(DiscordListener(discordBot))
-                .addEventListeners(commandClientBuilder.build())
-                .setAutoReconnect(true)
-                .setMaxReconnectDelay(180)
-                .build()
-                .awaitReady()
+        jda = light(
+            discordBot.settings.getString(Setting.DISCORD_TOKEN),
+            intents = listOf(
+                GatewayIntent.GUILD_MEMBERS,
+                GatewayIntent.GUILD_PRESENCES,
+                GatewayIntent.GUILD_VOICE_STATES
+            )
+        ) {
+            setMemberCachePolicy(MemberCachePolicy.ALL)
+            addEventListeners(DiscordListener(discordBot))
+            addEventListeners(DiscordCommandsListener(discordBot))
+            setAutoReconnect(true)
+            setMaxReconnectDelay(180)
+        }.awaitReady()
+
+        jda.listener<ReadyEvent> { discordBot.logger.info("Bot is ready!") }
     }
 
-    private fun initCommandBuilder() {
-        commandClientBuilder
-                .setPrefix(discordBot.settings.getString(Setting.DISCORD_COMMAND_PREFIX))
-                .setOwnerId(discordBot.settings.getString(Setting.DISCORD_OWNER_ID))
-                .useHelpBuilder(false)
-                .addCommands(
-                        PlayerListCommand(discordBot),
-                        PlayersCommand(discordBot),
-                        RegisterCommand(discordBot),
-                        PlaytimeCommand(discordBot),
-                        UptimeCommand(discordBot)
-                )
+    private fun initializeActivity() {
         if (discordBot.settings.getBoolean(Setting.DISCORD_STATUS_ENABLED)) {
             val activityType = try {
                 Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).uppercase())
             } catch (ex: IllegalArgumentException) {
-                discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using DEFAULT.")
-                Activity.ActivityType.DEFAULT
+                discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using PLAYING.")
+                Activity.ActivityType.PLAYING
             }
-            val statusMessage = Placeholders.setPlaceholders(null, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
-                .replace("%players%", discordBot.networkManager.onlinePlayersCount.toString()))
+            val statusMessage = Placeholders.setPlaceholders(
+                null, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
+                    .replace("%players%", discordBot.networkManager.onlinePlayersCount.toString())
+            )
 
-            commandClientBuilder
-                    .setActivity(Activity.of(activityType, statusMessage))
-        } else {
-            commandClientBuilder.setActivity(null)
+
+            setActivity(Activity.of(activityType, statusMessage))
         }
     }
 
@@ -133,11 +129,13 @@ class DiscordManager(private val discordBot: DiscordBot) {
             val activityType = try {
                 Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).uppercase())
             } catch (ex: IllegalArgumentException) {
-                discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using DEFAULT.")
-                Activity.ActivityType.DEFAULT
+                discordBot.logger.warning("StatusType '${discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE)}' is invalid. Using PLAYING.")
+                Activity.ActivityType.PLAYING
             }
-            val statusMessage = Placeholders.setPlaceholders(null, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
-                .replace("%players%", players.toString()))
+            val statusMessage = Placeholders.setPlaceholders(
+                null, discordBot.settings.getString(Setting.DISCORD_STATUS_MESSAGE)
+                    .replace("%players%", players.toString())
+            )
 
             //println(statusMessage)
 
@@ -180,7 +178,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
     }
 
     fun getRole(query: String): Role? {
-        return if (FinderUtil.DISCORD_ID.matcher(query).matches()) {
+        return if (Utils.DISCORD_ID_REGEX.matches(query)) {
             guild.getRoleById(query)
         } else {
             val roles = guild.getRolesByName(query, true)

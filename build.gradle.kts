@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.10"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.github.slimjar") version "1.3.0"
@@ -7,63 +7,74 @@ plugins {
 
 repositories {
     mavenLocal()
-    jcenter()
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
+    mavenCentral()
 
-    maven("https://m2.dv8tion.net/releases")
+    //maven("https://oss.sonatype.org/content/repositories/snapshots")
 
-    maven("https://jitpack.io")
+    maven("https://jitpack.io/")
 
     maven("https://repo.md-5.net/content/repositories/snapshots/")
 
     maven("https://nexus.velocitypowered.com/repository/maven-public/")
 
-    maven("https://repo.codemc.org/repository/maven-public")
-
-    maven("https://repo.networkmanager.xyz/repository/maven-public/")
-
-    // Slimjar repository
-    // Doesn't work anymore
-    //maven("https://repo.vshnv.tech/releases")
+    //maven("https://repo.codemc.org/repository/maven-public")
 
     // For slimjar
     maven("https://repo.glaremasters.me/repository/public/")
 
     // NetworkManager repositories
-    maven("https://repo.networkmanager.xyz/repository/maven-public/")
-    maven {
+    //maven("https://repo.networkmanager.xyz/repository/maven-public/")
+    /*maven {
         url = uri("https://repo.networkmanager.xyz/repository/maven-private/")
         credentials {
             username = project.property("NETWORKMANAGER_NEXUS_USERNAME").toString()
             password = project.property("NETWORKMANAGER_NEXUS_PASSWORD").toString()
         }
-    }
+    }*/
 }
 
 dependencies {
-    compileOnly("io.github.slimjar:slimjar:1.2.6")
+    compileOnly("io.github.slimjar:slimjar:1.2.7")
     compileOnly(kotlin("stdlib-jdk8"))
-    implementation("com.jagrosh:jda-utilities-command:3.0.4")
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
 
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.1-SNAPSHOT") {
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.2-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
-    slim("net.dv8tion:JDA:4.4.0_350") {
+
+    /*slim("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") {
+        exclude("org.jetbrains.kotlin")
+        exclude("org.jetbrains")
+    }*/
+
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
+
+    implementation("net.dv8tion:JDA:5.0.0-alpha.18") {
         exclude("club.minnced", "opus-java")
+        /*exclude("org.jetbrains.kotlin")
+        exclude("org.jetbrains")
+        exclude("com.google.code.findbugs")
+        exclude("org.slf4j")*/
     }
-    compileOnly("com.github.Carleslc:Simple-YAML:1.7.2")
+    implementation("com.github.minndevelopment:jda-ktx:0.9.4-alpha.18") {
+        /*exclude("org.jetbrains.kotlin")
+        exclude("org.jetbrains.kotlinx")
+        exclude("org.jetbrains")*/
+    }
+
+    compileOnly("com.github.Carleslc:Simple-YAML:1.8.1")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
 
-    compileOnly("cloud.commandframework:cloud-core:1.6.2")
-    compileOnly("cloud.commandframework:cloud-annotations:1.6.2")
+    compileOnly("cloud.commandframework:cloud-core:1.7.1")
+    compileOnly("cloud.commandframework:cloud-annotations:1.7.1")
 
     compileOnly("com.velocitypowered:velocity-api:3.1.0")
     //kapt("com.velocitypowered:velocity-api:3.1.0")
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.6.3"
+version = "1.7.0-SNAPSHOT"
 
 publishing {
     publications {
@@ -88,10 +99,9 @@ tasks {
     shadowJar {
         archiveFileName.set("${project.name}-v${project.version}.jar")
 
-        dependencies {
+        /*dependencies {
             include(dependency("nl.chimpgamer.networkmanager.extensions:.*"))
-            include(dependency("com.jagrosh:.*"))
-        }
+        }*/
 
         val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
         val libPackage = "nl.chimpgamer.networkmanager.lib"
@@ -102,14 +112,13 @@ tasks {
         relocate("org.simpleyaml", "$libPackage.simpleyaml")
         //relocate("org.eclipse.jetty", "$libPackage.jetty")
         //relocate("javax.servlet", "$libPackage.javax.servlet")
-        relocate("com.jagrosh.jdautilities", "$shadedPackage.com.jagrosh.jdautilities")
         relocate("cloud.commandframework", "$libPackage.cloud")
+        relocate("com.fasterxml.jackson", "nl.chimpgamer.networkmanager.lib.jackson")
+        relocate("net.dv8tion.jda", "nl.chimpgamer.networkmanager.lib.jda")
     }
 
     slimJar {
         shade = false
-
-        relocate("net.dv8tion.jda", "nl.chimpgamer.networkmanager.lib.jda")
     }
 
     build {

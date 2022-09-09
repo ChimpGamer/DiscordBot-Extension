@@ -1,6 +1,6 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.manager
 
-import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.interactions.InteractionHook
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.api.models.Token
@@ -133,8 +133,8 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         discordBot.scheduler.runAsync(vut, false)
     }
 
-    fun insertToken(inputToken: String, uuid: String, message: Message) {
-        val token = NMToken(inputToken, uuid, message)
+    fun insertToken(inputToken: String, uuid: String, interaction: InteractionHook) {
+        val token = NMToken(inputToken, uuid, interaction)
         tokens.add(token)
         discordBot.scheduler.runDelayed(TokenExpiryTask(discordBot, token), 60L)
     }

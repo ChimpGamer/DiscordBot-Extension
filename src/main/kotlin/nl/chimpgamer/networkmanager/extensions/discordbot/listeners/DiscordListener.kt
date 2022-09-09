@@ -3,9 +3,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.api.utils.formatColorCodes
 import nl.chimpgamer.networkmanager.api.values.Command
 import nl.chimpgamer.networkmanager.api.values.Message
@@ -13,7 +11,6 @@ import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData
 import nl.chimpgamer.networkmanager.common.messaging.handlers.AdminChatMessageHandler
 import nl.chimpgamer.networkmanager.common.messaging.handlers.StaffChatMessageHandler
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.GuildJoinCheckTask
 
@@ -25,7 +22,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         val cachedPlayers = discordBot.networkManager.cacheManager.cachedPlayers
         val cachedValues = discordBot.networkManager.cacheManager.cachedValues
         val user = event.author
-        val channel = event.textChannel
+        val channel = event.channel.asTextChannel()
         val message = event.message
         val msg = message.contentStripped
         if (channel.guild == discordBot.guild) {
@@ -45,7 +42,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             discordBot.networkManager.messagingServiceManager.getHandler(AdminChatMessageHandler::class.java)
                         handler?.send(data)
                     } else {
-                        discordBot.networkManager.universalUtils.sendMessageToStaff(Message.ADMINCHAT_MESSAGE, perm1, perm2, replacements = mapOf("%playername%" to player.displayName.formatColorCodes(), "%server%" to "Discord", "%message%" to msg))
+                        discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(Message.ADMINCHAT_MESSAGE, perm1, perm2, replacements = mapOf("%playername%" to player.displayName.formatColorCodes(), "%server%" to "Discord", "%message%" to msg))
                     }
                 }
             } else if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL)) {
@@ -64,10 +61,12 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             discordBot.networkManager.messagingServiceManager.getHandler(StaffChatMessageHandler::class.java)
                         handler?.send(data)
                     } else {
-                        discordBot.networkManager.universalUtils.sendMessageToStaff(Message.STAFFCHAT_MESSAGE, perm1, perm2, replacements = mapOf("%playername%" to player.displayName.formatColorCodes(), "%server%" to "Discord", "%message%" to msg))
+                        discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(Message.STAFFCHAT_MESSAGE, perm1, perm2, replacements = mapOf("%playername%" to player.displayName.formatColorCodes(), "%server%" to "Discord", "%message%" to msg))
                     }
                 }
             }
+
+
         }
     }
 
@@ -78,7 +77,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         }
     }
 
-    override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+    /*override fun onGenericMessage(event: GenericMessageEvent) {
         if (event.author.isBot) return
         val member = event.member ?: return
         val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
@@ -109,5 +108,5 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                 target.sendMessage(message)
             }
         }
-    }
+    }*/
 }
