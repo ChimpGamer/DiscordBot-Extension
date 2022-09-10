@@ -61,6 +61,12 @@ discord:
 
   registration:
     not-in-server: 'You cannot register yourself if you haven''t joined our discord server!'
+    in-process: |-
+      {
+        "title": "Already in process!",
+        "description": "You already in the process of registering!",
+        "color": 14684176
+      }
     token:
       response: |-
         {

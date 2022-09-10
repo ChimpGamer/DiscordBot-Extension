@@ -17,6 +17,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Command
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.modals.JsonMessageEmbed
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.CreateTokenTask
+import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import java.lang.management.ManagementFactory
 import java.sql.SQLException
 import java.util.UUID
@@ -32,28 +33,45 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
     }
 
     private fun handleCommands(jda: JDA) {
-        jda.updateCommands {
-            slash("register", "Register your discord account with your minecraft account on our server")
+        val commandSettings = discordBot.commandSettings
+        val registerCommandName = commandSettings.getString(CommandSetting.DISCORD_REGISTER_COMMAND)
+        val registerCommandDescription = commandSettings.getString(CommandSetting.DISCORD_REGISTER_DESCRIPTION)
 
-            slash("playerlist", "List the players that are currently online on the minecraft server") {
+        val playerListCommandName = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_COMMAND)
+        val playerListCommandDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_DESCRIPTION)
+
+        val playersCommandName = commandSettings.getString(CommandSetting.DISCORD_PLAYERS_COMMAND)
+        val playersCommandDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYERS_DESCRIPTION)
+
+        val playtimeCommandName = commandSettings.getString(CommandSetting.DISCORD_PLAYTIME_COMMAND)
+        val playtimeCommandDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYTIME_DESCRIPTION)
+
+        val uptimeCommandName = commandSettings.getString(CommandSetting.DISCORD_UPTIME_COMMAND)
+        val uptimeCommandDescription = commandSettings.getString(CommandSetting.DISCORD_UPTIME_DESCRIPTION)
+
+
+        jda.updateCommands {
+            slash(registerCommandName, registerCommandDescription)
+
+            slash(playerListCommandName, playerListCommandDescription) {
                 restrict(guild = true, Permission.MESSAGE_SEND)
                 option<String>("servername", "Name of a server on the minecraft server")
             }
 
-            slash("players", "Shows the amount of players that are currently online on the minecraft server") {
+            slash(playersCommandName, playersCommandDescription) {
                 restrict(guild = true, Permission.MESSAGE_SEND)
             }
 
-            slash("playtime", "Shows your current playtime") {
+            slash(playtimeCommandName, playtimeCommandDescription) {
                 restrict(guild = true, Permission.MESSAGE_SEND)
             }
 
-            slash("uptime", "Shows the current uptime of the network.") {
+            slash(uptimeCommandName, uptimeCommandDescription) {
                 restrict(guild = true, Permission.MESSAGE_SEND)
             }
         }.queue()
 
-        jda.onCommand("register") { event ->
+        jda.onCommand(registerCommandName) { event ->
             val discordUserManager = discordBot.discordUserManager
             try {
                 checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
@@ -63,19 +81,37 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     return@onCommand
                 }
 
-                if (!discordUserManager.containsDiscordID(member.id) && !discordBot.discordUserManager.checkUserByDiscordId(
-                        member.id
-                    )
-                ) {
-                    val createTokenTask = CreateTokenTask(discordBot, event)
-                    discordBot.scheduler.runAsync(createTokenTask, false)
+                if (discordUserManager.containsDiscordID(member.id)) {
+                    val registrationInProcessMessage = discordBot.messages.getString(DCMessage.REGISTRATION_IN_PROCESS)
+                    if (Utils.isJsonValid(registrationInProcessMessage)) {
+                        val embed = JsonMessageEmbed.fromJson(registrationInProcessMessage).toMessageEmbed()
+                        event.replyEmbeds(embed).setEphemeral(true).queue()
+                    } else {
+                        event.reply(registrationInProcessMessage).setEphemeral(true).queue()
+                    }
+                    return@onCommand
                 }
+
+                if (discordUserManager.checkUserByDiscordId(member.id)) {
+                    val registrationCompletedMessage = discordBot.messages.getString(DCMessage.REGISTRATION_COMPLETED)
+                    if (Utils.isJsonValid(registrationCompletedMessage)) {
+                        val embed = JsonMessageEmbed.fromJson(registrationCompletedMessage).toMessageEmbed()
+                        event.replyEmbeds(embed).setEphemeral(true).queue()
+                    } else {
+                        event.reply(registrationCompletedMessage).setEphemeral(true).queue()
+                    }
+                    //event.reply("You have already registered your account to a minecraft account.").setEphemeral(true).queue()
+                    return@onCommand
+                }
+
+                val createTokenTask = CreateTokenTask(discordBot, event)
+                discordBot.scheduler.runAsync(createTokenTask, false)
             } catch (ex: SQLException) {
                 ex.printStackTrace()
             }
         }
 
-        jda.onCommand("playerlist") { event ->
+        jda.onCommand(playerListCommandName) { event ->
             if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYERLIST_ENABLED)) return@onCommand
 
             if (event.options.isEmpty()) {
@@ -114,7 +150,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             }
         }
 
-        jda.onCommand("players") { event ->
+        jda.onCommand(playersCommandName) { event ->
             if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYERS_ENABLED)) return@onCommand
 
             event.reply(
@@ -124,7 +160,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             ).queue()
         }
 
-        jda.onCommand("playtime") { event ->
+        jda.onCommand(playtimeCommandName) { event ->
             if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYTIME_ENABLED)) return@onCommand
 
             val uuid = discordBot.discordUserManager.getUuidByDiscordId(event.user.id)
@@ -166,7 +202,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             }
         }
 
-        jda.onCommand("uptime") { event ->
+        jda.onCommand(uptimeCommandName) { event ->
             if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_UPTIME_ENABLED)) return@onCommand
 
             val uptime = ManagementFactory.getRuntimeMXBean().startTime
