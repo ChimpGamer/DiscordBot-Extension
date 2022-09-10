@@ -58,7 +58,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             val discordUserManager = discordBot.discordUserManager
             try {
                 checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
-                val member = event.member
+                val member = event.member ?: discordBot.guild.getMember(event.user)
                 if (member == null) {
                     event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_NOT_IN_SERVER)).setEphemeral(true).queue()
                     return@onCommand
