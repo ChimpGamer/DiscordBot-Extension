@@ -27,14 +27,13 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
         if (event !is GuildReadyEvent && event !is GuildJoinEvent) return
         val jda = event.jda
 
+        println("Updating Discord Slash Commands")
         handleCommands(jda)
     }
 
     private fun handleCommands(jda: JDA) {
         jda.updateCommands {
-            slash("register", "Register your discord account with your minecraft account on our server") {
-                restrict(guild = false, Permission.MESSAGE_SEND)
-            }
+            slash("register", "Register your discord account with your minecraft account on our server")
 
             slash("playerlist", "List the players that are currently online on the minecraft server") {
                 restrict(guild = true, Permission.MESSAGE_SEND)
@@ -52,7 +51,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             slash("uptime", "Shows the current uptime of the network.") {
                 restrict(guild = true, Permission.MESSAGE_SEND)
             }
-        }
+        }.queue()
 
         jda.onCommand("register") { event ->
             val discordUserManager = discordBot.discordUserManager
