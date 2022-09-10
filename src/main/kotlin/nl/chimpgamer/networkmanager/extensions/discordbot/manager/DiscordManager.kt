@@ -73,8 +73,10 @@ class DiscordManager(private val discordBot: DiscordBot) {
             )
         ) {
             setMemberCachePolicy(MemberCachePolicy.ALL)
-            addEventListeners(DiscordListener(discordBot))
-            addEventListeners(DiscordCommandsListener(discordBot))
+            addEventListeners(
+                DiscordListener(discordBot),
+                DiscordCommandsListener(discordBot)
+            )
             setAutoReconnect(true)
             setMaxReconnectDelay(180)
         }.awaitReady()
