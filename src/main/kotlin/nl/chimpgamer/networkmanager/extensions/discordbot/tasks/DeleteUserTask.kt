@@ -54,7 +54,6 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 }
 
                 val unregisterNotification = discordBot.messages.getString(DCMessage.REGISTRATION_UNREGISTER_NOTIFICATION)
-                        .replace("%command_prefix%", discordBot.settings.getString(Setting.DISCORD_COMMAND_PREFIX))
                 if (unregisterNotification.isNotEmpty()) {
                     val jsonMessageEmbed = JsonMessageEmbed.fromJson(unregisterNotification)
                     member?.user?.openPrivateChannel()?.queue {
