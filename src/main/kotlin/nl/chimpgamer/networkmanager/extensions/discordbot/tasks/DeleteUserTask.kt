@@ -27,29 +27,29 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 val member = discordBot.guild.getMemberById(discordId)
                 this.discordBot.eventBus.post(PlayerUnregisteredEvent(player, member))
 
+                val removeRoles: MutableSet<Role> = HashSet()
                 if (discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED)) {
                     val verifiedRole = discordBot.discordManager.verifiedRole
                     if (verifiedRole != null && member != null) {
-                        discordBot.guild.removeRoleFromMember(member, verifiedRole).queue()
+                        removeRoles.add(verifiedRole)
                     }
                 }
 
                 if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
-                    val removeRoles: MutableSet<Role> = HashSet()
                     for ((_, roleName) in discordBot.settings.getMap(Setting.DISCORD_SYNC_RANKS_MAP)) {
                         val role = discordBot.discordManager.getRole(roleName) ?: continue
                         removeRoles.add(role)
                     }
+                }
 
-                    if (removeRoles.isEmpty()) return
-                    try {
-                        member?.let { discordBot.guild.modifyMemberRoles(it, null, removeRoles).queue() }
-                    } catch (ex: PermissionException) {
-                        if (ex.permission == Permission.UNKNOWN) {
-                            discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because ${ex.message}")
-                        } else {
-                            discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because the bot does not have the required permission ${ex.permission.name}")
-                        }
+                if (removeRoles.isEmpty()) return
+                try {
+                    member?.let { discordBot.guild.modifyMemberRoles(it, null, removeRoles).queue() }
+                } catch (ex: PermissionException) {
+                    if (ex.permission === Permission.UNKNOWN) {
+                        discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because ${ex.message}")
+                    } else {
+                        discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because the bot does not have the required permission ${ex.permission.name}")
                     }
                 }
 
