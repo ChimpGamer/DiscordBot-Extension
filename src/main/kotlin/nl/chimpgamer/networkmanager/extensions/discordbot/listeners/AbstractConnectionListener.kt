@@ -22,7 +22,8 @@ abstract class AbstractConnectionListener(private val discordBot: DiscordBot) {
             discordBot.discordManager.setNickName(member, format)
         }
         if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
-            discordBot.scheduler.runSync(SyncRanksTask(discordBot, player))
+            // Was sync before. Trying to run it async now.
+            discordBot.scheduler.runAsync(SyncRanksTask(discordBot, player), false)
         }
     }
 }
