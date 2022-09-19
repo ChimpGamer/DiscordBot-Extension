@@ -62,7 +62,7 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 }
 
                 if (discordBot.settings.getBoolean(Setting.DISCORD_UNREGISTER_KICK_ENABLED)) {
-                    member?.kick(discordBot.settings.getString(Setting.DISCORD_UNREGISTER_KICK_REASON))
+                    member?.kick()?.reason(discordBot.settings.getString(Setting.DISCORD_UNREGISTER_KICK_REASON))?.queue()
                 }
 
                 val executeCommands = discordBot.settings.getStringList(Setting.DISCORD_UNREGISTER_EXECUTE_COMMANDS)
