@@ -50,14 +50,14 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.13.4")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
 
-    implementation("net.dv8tion:JDA:5.0.0-alpha.18") {
+    implementation("net.dv8tion:JDA:5.0.0-alpha.19") {
         exclude("club.minnced", "opus-java")
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains")
         exclude("com.google.code.findbugs")
         exclude("org.slf4j")*/
     }
-    implementation("com.github.minndevelopment:jda-ktx:0.9.4-alpha.18") {
+    implementation("com.github.minndevelopment:jda-ktx:0.9.5-alpha.19") {
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains.kotlinx")
         exclude("org.jetbrains")*/
