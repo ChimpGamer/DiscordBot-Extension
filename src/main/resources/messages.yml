@@ -83,7 +83,7 @@ discord:
     completed: |-
       {
         "title": "Registration completed!",
-        "description": "You can chat now and have your ingame rank.",
+        "description": "You can chat now and have your in-game rank.",
         "color": 3535678
       }
     unregistered:

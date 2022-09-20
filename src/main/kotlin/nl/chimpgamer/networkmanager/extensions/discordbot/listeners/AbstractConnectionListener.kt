@@ -18,7 +18,10 @@ abstract class AbstractConnectionListener(private val discordBot: DiscordBot) {
         checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
         val member = discordBot.guild.getMemberById(discordId) ?: return
         if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)) {
-            val format = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
+            val format = Placeholders.setPlaceholders(
+                player,
+                discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT)
+            )
             discordBot.discordManager.setNickName(member, format)
         }
         if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
