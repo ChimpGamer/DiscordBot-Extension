@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.7.21"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.github.slimjar") version "1.3.0"
@@ -15,7 +15,7 @@ repositories {
 
     maven("https://repo.md-5.net/content/repositories/snapshots/")
 
-    maven("https://nexus.velocitypowered.com/repository/maven-public/")
+    //maven("https://nexus.velocitypowered.com/repository/maven-public/")
 
     //maven("https://repo.codemc.org/repository/maven-public")
 
@@ -38,7 +38,7 @@ dependencies {
     compileOnly(kotlin("stdlib-jdk8"))
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
 
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.2-SNAPSHOT") {
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.6-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
 
@@ -47,29 +47,31 @@ dependencies {
         exclude("org.jetbrains")
     }*/
 
-    implementation("com.fasterxml.jackson.core:jackson-core:2.13.4")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.14.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
 
-    implementation("net.dv8tion:JDA:5.0.0-alpha.19") {
+    implementation("net.dv8tion:JDA:5.0.0-alpha.22") {
         exclude("club.minnced", "opus-java")
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains")
         exclude("com.google.code.findbugs")
         exclude("org.slf4j")*/
     }
-    implementation("com.github.minndevelopment:jda-ktx:0.9.5-alpha.19") {
+    implementation("com.github.minndevelopment:jda-ktx:0.9.6-alpha.22") {
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains.kotlinx")
         exclude("org.jetbrains")*/
     }
 
-    compileOnly("com.github.Carleslc:Simple-YAML:1.8.1")
+    compileOnly("com.gitlab.ruany", "LiteBansAPI", "0.3.5")
+
+    compileOnly("com.github.Carleslc:Simple-YAML:1.8.2")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
 
     compileOnly("cloud.commandframework:cloud-core:1.7.1")
     compileOnly("cloud.commandframework:cloud-annotations:1.7.1")
 
-    compileOnly("com.velocitypowered:velocity-api:3.1.0")
+    //compileOnly("com.velocitypowered:velocity-api:3.1.0")
     //kapt("com.velocitypowered:velocity-api:3.1.0")
 }
 
@@ -110,8 +112,6 @@ tasks {
 
         relocate("kotlin", "$libPackage.kotlin")
         relocate("org.simpleyaml", "$libPackage.simpleyaml")
-        //relocate("org.eclipse.jetty", "$libPackage.jetty")
-        //relocate("javax.servlet", "$libPackage.javax.servlet")
         relocate("cloud.commandframework", "$libPackage.cloud")
         relocate("com.fasterxml.jackson", "nl.chimpgamer.networkmanager.lib.jackson")
         relocate("net.dv8tion.jda", "nl.chimpgamer.networkmanager.lib.jda")
