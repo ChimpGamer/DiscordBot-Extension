@@ -30,6 +30,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             staffChatChannel,
             discordBot.messages.getString(DCMessage.EVENT_STAFFCHAT)
                 .replace("%playername%", event.sender.name)
+                .replace("%displayname%", event.sender.displayName)
                 .replace("%server%", event.sender.server!!)
                 .replace("%message%", event.message)
         )
@@ -44,6 +45,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             adminChatChannel,
             discordBot.messages.getString(DCMessage.EVENT_ADMINCHAT)
                 .replace("%playername%", event.sender.name)
+                .replace("%displayname%", event.sender.displayName)
                 .replace("%server%", event.sender.server!!)
                 .replace("%message%", event.message)
         )
@@ -266,6 +268,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val globalChatTextChannel = discordBot.guild.getTextChannelById(globalId)
         var message = discordBot.messages.getString(DCMessage.EVENT_CHAT)
             .replace("%playername%", player.name)
+            .replace("%displayname%", player.displayName)
             .replace("%server%", currentServer)
             .replace(
                 "%message%", event.message
