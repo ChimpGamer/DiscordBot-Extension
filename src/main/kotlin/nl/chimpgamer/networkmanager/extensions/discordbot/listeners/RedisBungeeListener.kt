@@ -1,4 +1,4 @@
-package nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee
+package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent

@@ -14,10 +14,12 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.modals.JsonMessageEmbed
+import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.SyncRanksTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils.sendChannelMessage
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
 class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
@@ -158,6 +160,23 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
     private fun onAsyncPlayerLogin(event: AsyncPlayerLoginEvent) {
         val player = event.player ?: return
+        val discordId = discordBot.discordUserManager.getDiscordIdByUuid(player.uuid)
+        if (discordId != null) {
+            checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
+            val member = discordBot.guild.getMemberById(discordId)
+            if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)) {
+                val format = Placeholders.setPlaceholders(
+                    player,
+                    discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT)
+                )
+                discordBot.discordManager.setNickName(member, format)
+            }
+            if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
+                // Delay the task 1.5 seconds to make sure that permissions are loaded
+                discordBot.scheduler.runDelayed(SyncRanksTask(discordBot, player), 1500L, TimeUnit.MILLISECONDS)
+            }
+        }
+
         if (event.hasLoggedInBefore) {
             val channel =
                 discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_LOGIN_CHANNEL))
@@ -166,16 +185,15 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
                 channel,
                 Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_PLAYERLOGIN))
             )
-            return
+        } else {
+            val channel =
+                discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_FIRST_LOGIN_CHANNEL))
+                    ?: return
+            sendChannelMessage(
+                channel,
+                Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_FIRST_PLAYERLOGIN))
+            )
         }
-
-        val channel =
-            discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_FIRST_LOGIN_CHANNEL))
-                ?: return
-        sendChannelMessage(
-            channel,
-            Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_FIRST_PLAYERLOGIN))
-        )
     }
 
     private fun insertServerPlaceholders(s: String?, server: Server): String {
@@ -232,7 +250,10 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             ).replace(
                 "%expires%",
                 if (punishment.end == -1L) networkManager.getMessage(languageId, Message.NEVER)
-                else TimeUtils.getTimeString(languageId, Utils.ceilDiv(punishment.end - System.currentTimeMillis(), 1000))
+                else TimeUtils.getTimeString(
+                    languageId,
+                    Utils.ceilDiv(punishment.end - System.currentTimeMillis(), 1000)
+                )
             )
 
         return parsed.stripColors()
