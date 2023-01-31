@@ -26,8 +26,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         val cachedValues = discordBot.networkManager.cacheManager.cachedValues
         val user = event.author
         val channel = event.channel.asTextChannel()
-        val message = event.message
-        val msg = message.contentStripped
+        val message = event.message.contentStripped
         if (channel.guild == discordBot.guild) {
 
             if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL)) {
@@ -37,7 +36,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                     val perm1 = "networkmanager.command.adminchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
-                        val data = PlayerMessageData(player.uuid, msg)
+                        val data = PlayerMessageData(player.uuid, message)
                         data.permissions.apply {
                             add(perm1)
                             add(perm2)
@@ -46,7 +45,18 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             discordBot.networkManager.messagingServiceManager.getHandler(AdminChatMessageHandler::class.java)
                         handler?.send(data)
                     } else {
-                        discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(Message.ADMINCHAT_MESSAGE, perm1, perm2, replacements = mapOf("%playername%" to player.displayName.formatColorCodes(), "%server%" to "Discord", "%message%" to msg))
+                        val replacements = mapOf(
+                            "%playername%" to player.displayName.formatColorCodes(),
+                            "%server%" to "Discord",
+                            "%message%" to message
+                        )
+
+                        discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(
+                            Message.ADMINCHAT_MESSAGE,
+                            perm1,
+                            perm2,
+                            replacements = replacements
+                        )
                     }
                 }
             } else if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL)) {
@@ -56,7 +66,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                     val perm1 = "networkmanager.command.staffchat"
                     val perm2 = "networkmanager.admin"
                     if (discordBot.networkManager.isRedisBungee) {
-                        val data = PlayerMessageData(player.uuid, msg)
+                        val data = PlayerMessageData(player.uuid, message)
                         data.permissions.apply {
                             add(perm1)
                             add(perm2)
@@ -65,12 +75,23 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                             discordBot.networkManager.messagingServiceManager.getHandler(StaffChatMessageHandler::class.java)
                         handler?.send(data)
                     } else {
-                        discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(Message.STAFFCHAT_MESSAGE, perm1, perm2, replacements = mapOf("%playername%" to player.displayName.formatColorCodes(), "%server%" to "Discord", "%message%" to msg))
+                        val replacements = mapOf(
+                            "%playername%" to player.displayName.formatColorCodes(),
+                            "%server%" to "Discord",
+                            "%message%" to message
+                        )
+
+                        discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(
+                            Message.STAFFCHAT_MESSAGE,
+                            perm1,
+                            perm2,
+                            replacements = replacements
+                        )
                     }
                 }
             } else {
                 val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
-                val chatChannel = chatEventChannels.entries.firstOrNull { it.value == event.channel.id } ?: return
+                val chatChannel = chatEventChannels.entries.firstOrNull { it.value == channel.id } ?: return
                 val serverName = chatChannel.key
                 val eventChatMessageFormat = discordBot.messages.getString(MCMessage.EVENT_CHAT)
                 if (eventChatMessageFormat.isEmpty()) return
@@ -83,8 +104,8 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                     player, eventChatMessageFormat
                         .replace("%mention%", member.asMention)
                         .replace("%discordname%", member.effectiveName)
-                        .replace("%textchannel%", event.channel.name)
-                        .replace("%message%", message.contentStripped)
+                        .replace("%textchannel%", channel.name)
+                        .replace("%message%", message)
                 )
 
                 if (serverName.equals("all", ignoreCase = true)) {
