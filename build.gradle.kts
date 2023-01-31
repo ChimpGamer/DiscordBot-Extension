@@ -1,8 +1,8 @@
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.8.0"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.github.slimjar") version "1.3.0"
+    //id("io.github.slimjar") version "1.3.0"
 }
 
 repositories {
@@ -34,11 +34,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.github.slimjar:slimjar:1.2.7")
+    //compileOnly("io.github.slimjar:slimjar:1.2.7")
     compileOnly(kotlin("stdlib-jdk8"))
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
 
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.6-SNAPSHOT") {
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.10-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
 
@@ -47,17 +47,17 @@ dependencies {
         exclude("org.jetbrains")
     }*/
 
-    implementation("com.fasterxml.jackson.core:jackson-core:2.14.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
 
-    implementation("net.dv8tion:JDA:5.0.0-alpha.22") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.3") {
         exclude("club.minnced", "opus-java")
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains")
         exclude("com.google.code.findbugs")
         exclude("org.slf4j")*/
     }
-    implementation("com.github.minndevelopment:jda-ktx:0.9.6-alpha.22") {
+    implementation("com.github.minndevelopment:jda-ktx:0.10.0-beta.1") {
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains.kotlinx")
         exclude("org.jetbrains")*/
@@ -65,11 +65,11 @@ dependencies {
 
     compileOnly("com.gitlab.ruany", "LiteBansAPI", "0.3.5")
 
-    compileOnly("com.github.Carleslc:Simple-YAML:1.8.2")
+    compileOnly("com.github.Carleslc:Simple-YAML:1.8.3")
     compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
 
-    compileOnly("cloud.commandframework:cloud-core:1.7.1")
-    compileOnly("cloud.commandframework:cloud-annotations:1.7.1")
+    compileOnly("cloud.commandframework:cloud-core:1.8.0")
+    compileOnly("cloud.commandframework:cloud-annotations:1.8.0")
 
     //compileOnly("com.velocitypowered:velocity-api:3.1.0")
     //kapt("com.velocitypowered:velocity-api:3.1.0")
@@ -107,7 +107,7 @@ tasks {
 
         val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
         val libPackage = "nl.chimpgamer.networkmanager.lib"
-        relocate("io.github.slimjar", "$shadedPackage.slimjar")
+        //relocate("io.github.slimjar", "$shadedPackage.slimjar")
         relocate("net.kyori", "$shadedPackage.kyori")
 
         relocate("kotlin", "$libPackage.kotlin")
@@ -117,9 +117,9 @@ tasks {
         relocate("net.dv8tion.jda", "nl.chimpgamer.networkmanager.lib.jda")
     }
 
-    slimJar {
+    /*slimJar {
         shade = false
-    }
+    }*/
 
     build {
         dependsOn(shadowJar)

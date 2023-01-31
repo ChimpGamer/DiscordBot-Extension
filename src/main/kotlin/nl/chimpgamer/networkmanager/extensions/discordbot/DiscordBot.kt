@@ -1,6 +1,5 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot
 
-import io.github.slimjar.app.builder.ApplicationBuilder
 import net.dv8tion.jda.api.entities.Guild
 import nl.chimpgamer.networkmanager.api.extensions.NMExtension
 import nl.chimpgamer.networkmanager.common_proxy.plugin.NetworkManagerPluginProxyBase
@@ -18,10 +17,6 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.ActivityUpdateTa
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.TokenExpiryTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DiscordPlaceholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.MySQL
-import java.io.File
-import java.time.Duration
-import java.time.Instant
-import java.util.logging.Level
 
 class DiscordBot : NMExtension() {
 
@@ -39,7 +34,7 @@ class DiscordBot : NMExtension() {
     private var liteBansListener: LiteBansListener? = null
 
     public override fun onEnable() { // Extension startup logic
-        val dependencyDirectory = File(networkManagerPlugin.dataFolder, "libraries")
+        /*val dependencyDirectory = File(networkManagerPlugin.dataFolder, "libraries")
         logger.log(Level.INFO, "Loading Libraries...")
         logger.log(Level.INFO, "Note: This might take a few minutes on first run. Kindly ensure internet connectivity.")
         val startInstant = Instant.now()
@@ -63,7 +58,7 @@ class DiscordBot : NMExtension() {
             exception.printStackTrace()
             disable()
             return
-        }
+        }*/
 
         instance = this
         if (networkManager.platformType.isProxy.not()) {
