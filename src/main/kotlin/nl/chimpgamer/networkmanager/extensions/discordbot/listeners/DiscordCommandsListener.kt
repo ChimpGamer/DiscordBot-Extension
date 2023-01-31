@@ -39,6 +39,8 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
         val playerListCommandName = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_COMMAND)
         val playerListCommandDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_DESCRIPTION)
+        val playerListCommandOptionServerName = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_OPTIONS_SERVERNAME_NAME)
+        val playerListCommandOptionServerNameDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_OPTIONS_SERVERNAME_DESCRIPTION)
 
         val playersCommandName = commandSettings.getString(CommandSetting.DISCORD_PLAYERS_COMMAND)
         val playersCommandDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYERS_DESCRIPTION)
@@ -55,7 +57,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
             slash(playerListCommandName, playerListCommandDescription) {
                 restrict(guild = true, Permission.MESSAGE_SEND)
-                option<String>("servername", "Name of a server on the minecraft server")
+                option<String>(playerListCommandOptionServerName, playerListCommandOptionServerNameDescription)
             }
 
             slash(playersCommandName, playersCommandDescription) {
