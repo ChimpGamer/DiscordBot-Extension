@@ -68,7 +68,9 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 val executeCommands = discordBot.settings.getStringList(Setting.DISCORD_UNREGISTER_EXECUTE_COMMANDS)
                 if (executeCommands.isNotEmpty()) {
                     executeCommands.forEach { command ->
-                        discordBot.networkManager.executeConsoleCommand(command.replace("%playername%", player.name))
+                        discordBot.networkManager.executeConsoleCommand(command
+                            .replace("%playeruuid%", player.uuid.toString())
+                            .replace("%playername%", player.name))
                     }
                 }
 
