@@ -30,6 +30,8 @@ enum class CommandSetting(val path: String, val defaultValue: Any) {
     DISCORD_PLAYERLIST_ENABLED("commands.discord.playerlist.enabled", true),
     DISCORD_PLAYERLIST_COMMAND("commands.discord.playerlist.command", "playerlist"),
     DISCORD_PLAYERLIST_DESCRIPTION("commands.discord.playerlist.description", "List the players that are currently online on the minecraft server"),
+    DISCORD_PLAYERLIST_OPTIONS_SERVERNAME_NAME("commands.discord.playerlist.options.servername.name", "servername"),
+    DISCORD_PLAYERLIST_OPTIONS_SERVERNAME_DESCRIPTION("commands.discord.playerlist.options.servername.description", "Name of a server on the minecraft server"),
 
     DISCORD_PLAYERS_ENABLED("commands.discord.players.enabled", true),
     DISCORD_PLAYERS_COMMAND("commands.discord.players.command", "players"),
