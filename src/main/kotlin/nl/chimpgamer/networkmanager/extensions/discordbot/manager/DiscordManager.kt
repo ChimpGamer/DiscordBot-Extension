@@ -70,7 +70,8 @@ class DiscordManager(private val discordBot: DiscordBot) {
                 GatewayIntent.GUILD_MEMBERS,
                 GatewayIntent.GUILD_PRESENCES,
                 GatewayIntent.GUILD_VOICE_STATES,
-                GatewayIntent.GUILD_MESSAGES
+                GatewayIntent.GUILD_MESSAGES,
+                GatewayIntent.MESSAGE_CONTENT
             )
         ) {
             setMemberCachePolicy(MemberCachePolicy.ALL)
