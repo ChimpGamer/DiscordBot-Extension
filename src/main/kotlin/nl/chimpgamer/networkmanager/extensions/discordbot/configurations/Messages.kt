@@ -30,6 +30,7 @@ enum class DCMessage(val path: String) {
     COMMAND_PLAYTIME_RESPONSE("discord.command.playtime.response"),
 
     REGISTRATION_NOT_IN_SERVER("discord.registration.not-in-server"),
+    REGISTRATION_MEMBERSHIP_SCREENING_REQUIREMENTS_NOT_MET("discord.registration.membership-screening-requirements-not-met"),
     REGISTRATION_TOKEN_RESPONSE("discord.registration.token.response"),
     REGISTRATION_TOKEN_EXPIRED("discord.registration.token.expired"),
     REGISTRATION_IN_PROCESS("discord.registration.in-process"),

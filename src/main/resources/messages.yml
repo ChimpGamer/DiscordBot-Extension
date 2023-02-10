@@ -61,6 +61,7 @@ discord:
 
   registration:
     not-in-server: 'You cannot register yourself if you haven''t joined our discord server!'
+    membership-screening-requirements-not-met: 'You cannot register yourself if you haven''t agreed our server rules! Please accept our server rules in the discord server before registering!'
     in-process: |-
       {
         "title": "Already in process!",

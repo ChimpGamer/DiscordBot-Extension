@@ -82,6 +82,10 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_NOT_IN_SERVER)).setEphemeral(true).queue()
                     return@onCommand
                 }
+                if (member.isPending) {
+                    event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_MEMBERSHIP_SCREENING_REQUIREMENTS_NOT_MET)).setEphemeral(true).queue()
+                    return@onCommand
+                }
 
                 if (discordUserManager.containsDiscordID(member.id)) {
                     val registrationInProcessMessage = discordBot.messages.getString(DCMessage.REGISTRATION_IN_PROCESS)
