@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.8.10"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2"
     //id("io.github.slimjar") version "1.3.0"
@@ -38,7 +38,7 @@ dependencies {
     compileOnly(kotlin("stdlib-jdk8"))
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
 
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.10-SNAPSHOT") {
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.11") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
 
