@@ -18,6 +18,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordCommandsListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
+import java.util.function.Consumer
 import javax.security.auth.login.LoginException
 
 class DiscordManager(private val discordBot: DiscordBot) {
@@ -41,9 +42,11 @@ class DiscordManager(private val discordBot: DiscordBot) {
             guilds.isEmpty() -> {
                 discordBot.logger.warning("The Bot is not a member of a guild!")
             }
+
             guilds.size > 1 -> {
                 discordBot.logger.warning("The Bot is a member of too many guilds!")
             }
+
             else -> {
                 guild = guilds[0]
                 success = true
@@ -159,7 +162,9 @@ class DiscordManager(private val discordBot: DiscordBot) {
         }
         discordBot.logger.info("Setting nickname for " + member.effectiveName)
         try {
-            member.guild.modifyNickname(member, finalNickname).queue()
+            member.guild.modifyNickname(member, finalNickname)
+                .queue({ return@queue discordBot.logger.info("Successfully changed nickname of ${member.user.name} to $nickName") })
+            { discordBot.logger.info("Failed to change nickname of ${member.effectiveName} to $nickName"); return@queue discordBot.logger.info(it.localizedMessage) }
         } catch (ex: PermissionException) {
             if (ex.permission === Permission.UNKNOWN) {
                 discordBot.logger.warning("Could not set the nickname for " + member.effectiveName + " because " + ex.message)
@@ -171,7 +176,28 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     fun addRoleToMember(member: Member, role: Role) {
         try {
-            member.guild.addRoleToMember(member, role).queue()
+            member.guild.addRoleToMember(member, role)
+                .queue({ return@queue discordBot.logger.info("Successfully assigned ${role.name} role to ${member.effectiveName}") })
+                { discordBot.logger.info("Failed to assign ${role.name} role to ${member.effectiveName}"); return@queue discordBot.logger.info(it.localizedMessage) }
+        } catch (ex: PermissionException) {
+            if (ex.permission === Permission.UNKNOWN) {
+                discordBot.logger.warning("Could not set the role for " + member.effectiveName + " because " + ex.message)
+            } else {
+                discordBot.logger.warning("Could not set the role for " + member.effectiveName + " because the bot does not have the required permission " + ex.permission.getName())
+            }
+        }
+    }
+
+    fun setNickNameAndAddRole(member: Member, nickName: String, role: Role) {
+        var finalNickname = nickName
+        if (nickName.length > 32) {
+            discordBot.logger.info("The new nickname of ${member.user.name} exceeds the maximum limit of 32 characters.")
+            finalNickname = finalNickname.substring(0, 32)
+        }
+        discordBot.logger.info("Setting nickname and role for " + member.user.name)
+
+        try {
+            member.guild.modifyNickname(member, finalNickname).and(member.guild.addRoleToMember(member, role)).queue()
         } catch (ex: PermissionException) {
             if (ex.permission === Permission.UNKNOWN) {
                 discordBot.logger.warning("Could not set the role for " + member.effectiveName + " because " + ex.message)

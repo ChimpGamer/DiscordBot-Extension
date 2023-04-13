@@ -35,7 +35,8 @@ discord:
     staffchat: '%playername% said on %server%: %message%'
     adminchat: '%playername% said on %server%: %message%'
     chat: '%playername% said on %server%: %message%'
-    join: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the /register command when you want to register! Good luck!'
+    join: ''
+    agreed-membership-screening-requirements: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the /register command when you want to register! Good luck!'
     playerlogin: '%playername% has logged in to the server.'
     firstplayerlogin: '%playername% has logged in to the server for the first time.'
 

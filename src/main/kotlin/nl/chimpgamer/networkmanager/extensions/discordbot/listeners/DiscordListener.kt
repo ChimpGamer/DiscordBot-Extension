@@ -2,9 +2,10 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.listeners
 
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import nl.chimpgamer.networkmanager.api.utils.Placeholders
+import nl.chimpgamer.networkmanager.api.utils.adventure.parse
 import nl.chimpgamer.networkmanager.api.utils.formatColorCodes
 import nl.chimpgamer.networkmanager.api.values.Command
 import nl.chimpgamer.networkmanager.api.values.Message
@@ -12,6 +13,7 @@ import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData
 import nl.chimpgamer.networkmanager.common.messaging.handlers.AdminChatMessageHandler
 import nl.chimpgamer.networkmanager.common.messaging.handlers.StaffChatMessageHandler
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
+import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.GuildJoinCheckTask
@@ -100,22 +102,21 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                 val playerUUID = discordBot.discordUserManager.getUuidByDiscordId(member.id) ?: return
                 val player = cachedPlayers.getIfLoaded(playerUUID) ?: return
 
-                val chatMessage = Placeholders.setPlaceholders(
-                    player, eventChatMessageFormat
-                        .replace("%mention%", member.asMention)
-                        .replace("%discordname%", member.effectiveName)
-                        .replace("%textchannel%", channel.name)
-                        .replace("%message%", message)
-                )
+                val chatMessageComponent = eventChatMessageFormat.parse(player, mapOf(
+                    "mention" to member.asMention,
+                    "discordname" to member.effectiveName,
+                    "textchannel" to channel.name,
+                    "message" to message
+                ))
 
                 if (serverName.equals("all", ignoreCase = true)) {
                     cachedPlayers.players.values.forEach { target ->
-                        target.sendMessage(chatMessage)
+                        target.sendMessage(chatMessageComponent)
                     }
                 } else {
                     discordBot.networkManager.getPlayersOnServer(serverName).keys.forEach { targetPlayerUUID ->
                         val target = cachedPlayers.getIfLoaded(targetPlayerUUID) ?: return@forEach
-                        target.sendMessage(chatMessage)
+                        target.sendMessage(chatMessageComponent)
                     }
                 }
             }
@@ -126,6 +127,19 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         val member = event.member
         if (event.guild == discordBot.guild && !member.user.isBot) {
             discordBot.scheduler.runAsync(GuildJoinCheckTask(discordBot, member), false)
+        }
+    }
+
+    override fun onGuildMemberUpdatePending(event: GuildMemberUpdatePendingEvent) {
+        val member = event.member
+        if (event.guild == discordBot.guild && !member.user.isBot) {
+            if (!event.oldPending && event.newPending) {
+                val message = discordBot.messages.getString(DCMessage.EVENT_AGREED_MEMBERSHIP_SCREENING_REQUIREMENTS)
+                if (message.isEmpty()) {
+                    return
+                }
+                member.user.openPrivateChannel().queue { it.sendMessage(message.replace("%mention%", member.user.asTag)).queue() }
+            }
         }
     }
 }

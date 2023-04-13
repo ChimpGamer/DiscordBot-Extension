@@ -21,7 +21,8 @@ enum class DCMessage(val path: String) {
     EVENT_STAFFCHAT("discord.event.staffchat"),
     EVENT_ADMINCHAT("discord.event.adminchat"),
     EVENT_CHAT("discord.event.chat"),
-    EVENT_WELCOME("discord.event.join"),
+    EVENT_JOIN("discord.event.join"),
+    EVENT_AGREED_MEMBERSHIP_SCREENING_REQUIREMENTS("discord.event.agreed-membership-screening-requirements"),
     EVENT_PLAYERLOGIN("discord.event.playerlogin"),
     EVENT_FIRST_PLAYERLOGIN("discord.event.firstplayerlogin"),
 

@@ -57,17 +57,23 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     if (this.discordBot.networkManager.isRedisBungee) {
                         RedisBungeeUtils.sendRedisBungeeMessage(discordBot, "load " + player.uuid)
                     }
-                    if (discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED)) {
-                        val verifiedRole: Role? = this.discordBot.discordManager.verifiedRole
-                        if (verifiedRole != null) {
-                            this.discordBot.logger.info("Assigning the ${verifiedRole.name} role to ${member.effectiveName}")
-                            discordBot.discordManager.addRoleToMember(member, verifiedRole)
+
+                    val syncUsername = discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)
+                    val addVerifiedRole = discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED) && discordBot.discordManager.verifiedRole != null
+
+                    if (syncUsername && addVerifiedRole) {
+                        val nickname = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
+                        discordBot.discordManager.setNickNameAndAddRole(member, nickname, discordBot.discordManager.verifiedRole!!)
+                    } else {
+                        if (syncUsername) {
+                            val nickname = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
+                            discordBot.discordManager.setNickName(member, nickname)
+                        }
+                        if (addVerifiedRole) {
+                            discordBot.discordManager.verifiedRole?.let { discordBot.discordManager.addRoleToMember(member, it) }
                         }
                     }
-                    if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)) {
-                        val format = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
-                        discordBot.discordManager.setNickName(member, format)
-                    }
+
                     if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
                         discordBot.scheduler.runDelayed(SyncRanksTask(discordBot, player), 1)
                     }

@@ -13,6 +13,7 @@ import java.util.HashSet
 class SyncRanksTask(private val discordBot: DiscordBot, private val player: Player): Runnable {
 
     override fun run() {
+        if (!player.isOnline) return
         val discordId = discordBot.discordUserManager.getDiscordIdByUuid(player.uuid) ?: return
         val member = discordBot.guild.getMemberById(discordId) ?: return
         discordBot.logger.info("Syncing roles for " + member.effectiveName)

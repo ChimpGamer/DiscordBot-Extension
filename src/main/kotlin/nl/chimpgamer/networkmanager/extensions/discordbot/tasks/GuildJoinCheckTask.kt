@@ -19,22 +19,28 @@ class GuildJoinCheckTask(private val discordBot: DiscordBot, private val member:
                     ps.executeQuery().use { rs ->
                         if (rs.next()) {
                             val player = cachedPlayers.getPlayer(UUID.fromString(rs.getString("UUID"))) ?: return
-                            if (discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED)) {
-                                val verifiedRole = discordBot.discordManager.verifiedRole
-                                if (verifiedRole != null) {
-                                    discordBot.logger.info("Assigning the ${verifiedRole.name} role to ${member.effectiveName}")
-                                    discordBot.discordManager.addRoleToMember(member, verifiedRole)
+
+                            val syncUsername = discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)
+                            val addVerifiedRole = discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED) && discordBot.discordManager.verifiedRole != null
+
+                            if (syncUsername && addVerifiedRole) {
+                                val nickname = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
+                                discordBot.discordManager.setNickNameAndAddRole(member, nickname, discordBot.discordManager.verifiedRole!!)
+                            } else {
+                                if (syncUsername) {
+                                    val nickname = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
+                                    discordBot.discordManager.setNickName(member, nickname)
+                                }
+                                if (addVerifiedRole) {
+                                    discordBot.discordManager.verifiedRole?.let { discordBot.discordManager.addRoleToMember(member, it) }
                                 }
                             }
-                            if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)) {
-                                val format = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
-                                discordBot.discordManager.setNickName(member, format)
-                            }
+
                             if (discordBot.settings.getBoolean(Setting.DISCORD_SYNC_RANKS_ENABLED)) {
                                 discordBot.scheduler.runSync(SyncRanksTask(discordBot, player))
                             }
                         } else {
-                            val welcomeMessage = discordBot.messages.getString(DCMessage.EVENT_WELCOME)
+                            val welcomeMessage = discordBot.messages.getString(DCMessage.EVENT_JOIN)
                             if (welcomeMessage.isEmpty()) {
                                 return
                             }
