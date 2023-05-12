@@ -26,7 +26,7 @@ minecraft:
       success:  '<dark_red>» <gray>Successfully reloaded <red>JDA'
       failed: '<dark_red>» <gray>Failed to reload <red>JDA! <gray>See console for more information.'
   event:
-    chat: '%discordname% said in %textchannel%: %message%'
+    chat: '<discordname> said in <textchannel>: <message>'
 
 discord:
   event:
