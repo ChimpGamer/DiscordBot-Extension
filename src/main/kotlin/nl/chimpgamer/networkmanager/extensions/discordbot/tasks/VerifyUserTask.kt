@@ -1,7 +1,6 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.tasks
 
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Role
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
@@ -20,24 +19,18 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
 
     override fun run() {
         if (token.created + 300000 < System.currentTimeMillis()) { // Token Expired
-            player.sendMessage(
-                discordBot.messages.getString(MCMessage.REGISTER_TOKEN_EXPIRED)
-                    .replace("%playername%", this.player.name)
-            )
+            player.sendRichMessage(discordBot.messages.getString(MCMessage.REGISTER_TOKEN_EXPIRED))
         } else {
             try {
                 checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
                 val discordUserManager = this.discordBot.discordUserManager
                 val member: Member? = this.discordBot.guild.getMemberById(this.token.discordID)
                 if (member == null) {
-                    this.player.sendMessage(discordBot.messages.getString(MCMessage.REGISTER_NOT_IN_SERVER))
+                    player.sendRichMessage(discordBot.messages.getString(MCMessage.REGISTER_NOT_IN_SERVER))
                     return
                 }
                 if (discordUserManager.existsInDatabase(this.player.uuid.toString())) { // User is already registered...
-                    this.player.sendMessage(
-                        discordBot.messages.getString(MCMessage.REGISTER_ACCOUNT_ALREADY_LINKED)
-                            .replace("%playername%", this.player.name)
-                    )
+                    player.sendRichMessage(discordBot.messages.getString(MCMessage.REGISTER_ACCOUNT_ALREADY_LINKED))
                 } else {
                     // User is not registered yet...
                     discordUserManager.tokens.remove(this.token) // Remove token
@@ -49,10 +42,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     } else {
                         token.interaction.editOriginal(registrationCompleted).queue()
                     }
-                    this.player.sendMessage(
-                        discordBot.messages.getString(MCMessage.REGISTER_COMPLETED)
-                            .replace("%playername%", this.player.name)
-                    )
+                    player.sendRichMessage(discordBot.messages.getString(MCMessage.REGISTER_COMPLETED))
                     this.discordBot.eventBus.post(PlayerRegisteredEvent(this.player, member))
                     if (this.discordBot.networkManager.isRedisBungee) {
                         RedisBungeeUtils.sendRedisBungeeMessage(discordBot, "load " + player.uuid)
@@ -88,10 +78,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     }
                 }
             } catch (ex: SQLException) {
-                this.player.sendMessage(
-                    discordBot.messages.getString(MCMessage.REGISTER_ERROR)
-                        .replace("%playername%", this.player.name)
-                )
+                player.sendRichMessage(discordBot.messages.getString(MCMessage.REGISTER_ERROR))
                 ex.printStackTrace()
             }
         }

@@ -3,4 +3,4 @@ authors: [ChimpGamer]
 version: ${version}
 description: Discord bot for NetworkManager
 main: nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
-api-version: 2.12.0
+api-version: 2.13.6

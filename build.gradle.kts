@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "1.8.21"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2"
     //id("io.github.slimjar") version "1.3.0"
@@ -38,7 +38,7 @@ dependencies {
     compileOnly(kotlin("stdlib-jdk8"))
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
 
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.12.11") {
+    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.13.6") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
 
@@ -50,7 +50,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.8") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.9") {
         exclude("club.minnced", "opus-java")
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains")
@@ -107,7 +107,7 @@ tasks {
 
         val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
         val libPackage = "nl.chimpgamer.networkmanager.lib"
-        //relocate("io.github.slimjar", "$shadedPackage.slimjar")
+        relocate("io.github.slimjar", "$shadedPackage.slimjar")
         relocate("net.kyori", "$shadedPackage.kyori")
 
         relocate("kotlin", "$libPackage.kotlin")
@@ -119,6 +119,7 @@ tasks {
 
     /*slimJar {
         shade = false
+        relocate("net.dv8tion.jda", "nl.chimpgamer.networkmanager.lib.jda")
     }*/
 
     build {

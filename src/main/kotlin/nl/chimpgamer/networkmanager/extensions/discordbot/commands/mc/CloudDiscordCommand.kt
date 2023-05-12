@@ -12,7 +12,7 @@ class CloudDiscordCommand(private val discordBot: DiscordBot) {
         return discordBot.networkManager.cloudCommandManager.commandManager.commandBuilder(name, *aliases)
             .senderType(Player::class.java)
             .handler { context ->
-                context.sender.sendMessage(discordBot.messages.getString(MCMessage.DISCORD_RESPONSE))
+                context.sender.sendRichMessage(discordBot.messages.getString(MCMessage.DISCORD_RESPONSE))
             }
     }
 }

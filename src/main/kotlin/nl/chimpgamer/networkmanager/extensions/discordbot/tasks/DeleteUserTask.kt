@@ -75,10 +75,10 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 }
 
                 if (player.isOnline) {
-                    player.sendMessage(discordBot.messages.getString(MCMessage.UNREGISTER_SUCCESS))
+                    player.sendRichMessage(discordBot.messages.getString(MCMessage.UNREGISTER_SUCCESS))
                 }
             } else {
-                player.sendMessage(discordBot.messages.getString(MCMessage.UNREGISTER_NOT_REGISTERED))
+                player.sendRichMessage(discordBot.messages.getString(MCMessage.UNREGISTER_NOT_REGISTERED))
             }
         } catch (ex: SQLException) {
             ex.printStackTrace()

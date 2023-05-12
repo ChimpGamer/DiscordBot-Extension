@@ -12,14 +12,14 @@ class CloudNetworkManagerBotCommand(private val discordBot: DiscordBot) {
     @CommandPermission("networkmanagerbot.command.reload")
     fun networkManagerBotCommandReloadConfig(player: Player) {
         discordBot.settings.reload()
-        player.sendMessage(discordBot.messages.getString(MCMessage.RELOAD_CONFIG))
+        player.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_CONFIG))
     }
 
     @CommandMethod("networkmanagerbot|nmbot reload messages")
     @CommandPermission("networkmanagerbot.command.reload")
     fun networkManagerBotCommandReloadMessages(player: Player) {
         discordBot.messages.reload()
-        player.sendMessage(discordBot.messages.getString(MCMessage.RELOAD_MESSAGES))
+        player.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_MESSAGES))
     }
 
     @CommandMethod("networkmanagerbot|nmbot reload jda")
@@ -27,9 +27,9 @@ class CloudNetworkManagerBotCommand(private val discordBot: DiscordBot) {
     fun networkManagerBotCommandReloadJDA(player: Player) {
         val success = discordBot.discordManager.restartJDA()
         if (success) {
-            player.sendMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_SUCCESS))
+            player.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_SUCCESS))
         } else {
-            player.sendMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_FAILED))
+            player.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_FAILED))
         }
     }
 }
