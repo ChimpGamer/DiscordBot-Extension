@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEv
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import nl.chimpgamer.networkmanager.api.utils.adventure.parse
-import nl.chimpgamer.networkmanager.api.utils.formatColorCodes
 import nl.chimpgamer.networkmanager.api.values.Command
 import nl.chimpgamer.networkmanager.api.values.Message
 import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData
@@ -48,9 +47,10 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                         handler?.send(data)
                     } else {
                         val replacements = mapOf(
-                            "%playername%" to player.displayName.formatColorCodes(),
-                            "%server%" to "Discord",
-                            "%message%" to message
+                            "playername" to player.name,
+                            "displayname" to player.name,
+                            "server" to "Discord",
+                            "message" to message
                         )
 
                         discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(
@@ -78,9 +78,10 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                         handler?.send(data)
                     } else {
                         val replacements = mapOf(
-                            "%playername%" to player.displayName.formatColorCodes(),
-                            "%server%" to "Discord",
-                            "%message%" to message
+                            "playername" to player.name,
+                            "displayname" to player.name,
+                            "server" to "Discord",
+                            "message" to message
                         )
 
                         discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(
