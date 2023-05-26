@@ -10,7 +10,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Message
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Settings
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.LiteBansListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.NetworkManagerListeners
-import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.RedisBungeeListener
+import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.redisbungee.RedisBungeeHandler
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.ActivityUpdateTask
@@ -90,7 +90,7 @@ class DiscordBot : NMExtension() {
         registerListeners()
         activityUpdateTask.start()
         if (networkManager.isRedisBungee) {
-            networkManager.registerListener(RedisBungeeListener(this))
+            RedisBungeeHandler(this)
         }
         networkManager.placeholderManager.registerPlaceholder(DiscordPlaceholders(this))
 

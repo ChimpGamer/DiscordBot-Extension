@@ -15,6 +15,8 @@ repositories {
 
     maven("https://repo.md-5.net/content/repositories/snapshots/")
 
+    maven("https://repo.papermc.io/repository/maven-public/")
+
     //maven("https://nexus.velocitypowered.com/repository/maven-public/")
 
     //maven("https://repo.codemc.org/repository/maven-public")
@@ -37,8 +39,9 @@ dependencies {
     //compileOnly("io.github.slimjar:slimjar:1.2.7")
     compileOnly(kotlin("stdlib-jdk8"))
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
+    compileOnly("com.velocitypowered:velocity-api:3.1.1")
 
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.13.6") {
+    compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.13.7-SNAPSHOT") {
         exclude("org.bstats:bstats-bungeecord:1.7")
     }
 
@@ -66,7 +69,10 @@ dependencies {
     compileOnly("com.gitlab.ruany", "LiteBansAPI", "0.3.5")
 
     compileOnly("com.github.Carleslc:Simple-YAML:1.8.3")
-    compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
+    //compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
+    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.0")
+    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Bungee:0.11.0")
+    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Velocity:0.11.0")
 
     compileOnly("cloud.commandframework:cloud-core:1.8.3")
     compileOnly("cloud.commandframework:cloud-annotations:1.8.3")
