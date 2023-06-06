@@ -53,7 +53,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.9") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.10") {
         exclude("club.minnced", "opus-java")
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains")
@@ -68,11 +68,11 @@ dependencies {
 
     compileOnly("com.gitlab.ruany", "LiteBansAPI", "0.3.5")
 
-    compileOnly("com.github.Carleslc:Simple-YAML:1.8.3")
+    compileOnly("com.github.Carleslc:Simple-YAML:1.8.4")
     //compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
-    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.0")
-    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Bungee:0.11.0")
-    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Velocity:0.11.0")
+    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.2")
+    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Bungee:0.11.2")
+    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Velocity:0.11.2")
 
     compileOnly("cloud.commandframework:cloud-core:1.8.3")
     compileOnly("cloud.commandframework:cloud-annotations:1.8.3")
