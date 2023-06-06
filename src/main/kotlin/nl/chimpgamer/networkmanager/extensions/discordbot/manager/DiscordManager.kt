@@ -18,7 +18,6 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordCommandsListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.DiscordListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
-import java.util.function.Consumer
 import javax.security.auth.login.LoginException
 
 class DiscordManager(private val discordBot: DiscordBot) {
