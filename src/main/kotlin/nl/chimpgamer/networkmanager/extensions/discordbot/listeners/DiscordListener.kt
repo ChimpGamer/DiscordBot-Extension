@@ -139,7 +139,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                 if (message.isEmpty()) {
                     return
                 }
-                member.user.openPrivateChannel().queue { it.sendMessage(message.replace("%mention%", member.user.asTag)).queue() }
+                member.user.openPrivateChannel().queue { it.sendMessage(message.replace("%mention%", member.user.asMention)).queue() }
             }
         }
     }

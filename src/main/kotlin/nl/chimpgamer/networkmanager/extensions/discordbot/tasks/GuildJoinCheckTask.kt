@@ -44,7 +44,7 @@ class GuildJoinCheckTask(private val discordBot: DiscordBot, private val member:
                             if (welcomeMessage.isEmpty()) {
                                 return
                             }
-                            member.user.openPrivateChannel().queue { it.sendMessage(welcomeMessage.replace("%mention%", member.user.asTag)).queue() }
+                            member.user.openPrivateChannel().queue { it.sendMessage(welcomeMessage.replace("%mention%", member.user.asMention)).queue() }
                         }
                     }
                 }
