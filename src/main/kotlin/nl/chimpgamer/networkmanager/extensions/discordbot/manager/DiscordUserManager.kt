@@ -22,16 +22,17 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         discordBot.scheduler.runAsync({
             try {
                 discordBot.mySQL.connection.use { connection ->
-                    connection.prepareStatement("SELECT `UUID`, `DiscordID`, `registered` FROM nm_discordusers;").use { ps ->
-                        ps.executeQuery().use { rs ->
-                            while (rs.next()) {
-                                val uuid = UUID.fromString(rs.getString("UUID"))
-                                val discordId = rs.getString("DiscordID")
-                                val registered = rs.getLong("registered")
-                                discordUsers[uuid] = DiscordUser(uuid, discordId, registered)
+                    connection.prepareStatement("SELECT `UUID`, `DiscordID`, `registered` FROM nm_discordusers;")
+                        .use { ps ->
+                            ps.executeQuery().use { rs ->
+                                while (rs.next()) {
+                                    val uuid = UUID.fromString(rs.getString("UUID"))
+                                    val discordId = rs.getString("DiscordID")
+                                    val registered = rs.getLong("registered")
+                                    discordUsers[uuid] = DiscordUser(uuid, discordId, registered)
+                                }
                             }
                         }
-                    }
                 }
             } catch (ex: SQLException) {
                 ex.printStackTrace()
@@ -43,16 +44,17 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         discordBot.scheduler.runAsync({
             try {
                 discordBot.mySQL.connection.use { connection ->
-                    connection.prepareStatement("SELECT `DiscordID`, `registered` FROM nm_discordusers WHERE `UUID`=?;").use { ps ->
-                        ps.setString(1, uuid.toString())
-                        ps.executeQuery().use { rs ->
-                            while (rs.next()) {
-                                val discordId = rs.getString("DiscordID")
-                                val registered = rs.getLong("registered")
-                                discordUsers[uuid] = DiscordUser(uuid, discordId, registered)
+                    connection.prepareStatement("SELECT `DiscordID`, `registered` FROM nm_discordusers WHERE `UUID`=?;")
+                        .use { ps ->
+                            ps.setString(1, uuid.toString())
+                            ps.executeQuery().use { rs ->
+                                while (rs.next()) {
+                                    val discordId = rs.getString("DiscordID")
+                                    val registered = rs.getLong("registered")
+                                    discordUsers[uuid] = DiscordUser(uuid, discordId, registered)
+                                }
                             }
                         }
-                    }
                 }
             } catch (ex: SQLException) {
                 ex.printStackTrace()
@@ -69,12 +71,13 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     fun insertUser(uuid: UUID, discordID: String) {
         val now = System.currentTimeMillis()
         discordBot.mySQL.connection.use { connection ->
-            connection.prepareStatement("INSERT INTO nm_discordusers (UUID, DiscordID, registered) VALUES (?, ?, ?);").use { ps ->
-                ps.setString(1, uuid.toString())
-                ps.setString(2, discordID)
-                ps.setLong(3, now)
-                ps.executeUpdate()
-            }
+            connection.prepareStatement("INSERT INTO nm_discordusers (UUID, DiscordID, registered) VALUES (?, ?, ?);")
+                .use { ps ->
+                    ps.setString(1, uuid.toString())
+                    ps.setString(2, discordID)
+                    ps.setLong(3, now)
+                    ps.executeUpdate()
+                }
         }
         discordUsers[uuid] = DiscordUser(uuid, discordID, now)
     }
@@ -93,10 +96,11 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
     fun existsInDatabase(id: String): Boolean {
         val isUUID = Utils.UUID_REGEX.containsMatchIn(id)
         discordBot.mySQL.connection.use { connection ->
-            connection.prepareStatement("SELECT 1 FROM nm_discordusers WHERE " + if (isUUID) "UUID=?" else "DiscordID=?" + ";").use { ps ->
-                ps.setString(1, id)
-                return ps.executeQuery().next()
-            }
+            connection.prepareStatement("SELECT 1 FROM nm_discordusers WHERE " + if (isUUID) "UUID=?" else "DiscordID=?" + ";")
+                .use { ps ->
+                    ps.setString(1, id)
+                    return ps.executeQuery().next()
+                }
         }
     }
 
@@ -123,9 +127,7 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         return discordUsers.filterValues { it.discordId == id }.map { it.key }.firstOrNull()
     }
 
-    private fun getToken(token: String): Token? {
-        return tokens.firstOrNull { it.token.equals(token, ignoreCase = true) }
-    }
+    private fun getToken(token: String): Token? = tokens.find { it.token.equals(token, ignoreCase = true) }
 
     fun verifyUser(player: Player, inputToken: String) {
         val token = getToken(inputToken) ?: return
@@ -139,7 +141,5 @@ class DiscordUserManager(private val discordBot: DiscordBot) {
         discordBot.scheduler.runDelayed(TokenExpiryTask(discordBot, token), 60L)
     }
 
-    fun containsDiscordID(discordID: String): Boolean {
-        return tokens.any { it.discordID == discordID }
-    }
+    fun containsDiscordID(discordID: String): Boolean = tokens.any { it.discordID == discordID }
 }

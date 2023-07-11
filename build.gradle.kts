@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm") version "1.8.22"
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2"
     //id("io.github.slimjar") version "1.3.0"
@@ -41,9 +41,7 @@ dependencies {
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
 
-    compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.13.7-SNAPSHOT") {
-        exclude("org.bstats:bstats-bungeecord:1.7")
-    }
+    compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.14.0-SNAPSHOT")
 
     /*slim("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") {
         exclude("org.jetbrains.kotlin")
@@ -53,7 +51,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.10") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.11") {
         exclude("club.minnced", "opus-java")
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains")
@@ -82,7 +80,7 @@ dependencies {
 }
 
 group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.7.0-SNAPSHOT"
+version = "1.7.1-SNAPSHOT"
 
 publishing {
     publications {

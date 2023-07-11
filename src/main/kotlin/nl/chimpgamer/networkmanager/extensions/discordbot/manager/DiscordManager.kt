@@ -21,7 +21,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.utils.Utils
 import javax.security.auth.login.LoginException
 
 class DiscordManager(private val discordBot: DiscordBot) {
-    private lateinit var jda: JDA
+    lateinit var jda: JDA
     lateinit var guild: Guild
     var verifiedRole: Role? = null
 
@@ -41,7 +41,6 @@ class DiscordManager(private val discordBot: DiscordBot) {
             guilds.isEmpty() -> {
                 discordBot.logger.warning("The Bot is not a member of a guild!")
             }
-
             guilds.size > 1 -> {
                 discordBot.logger.warning("The Bot is a member of too many guilds!")
             }

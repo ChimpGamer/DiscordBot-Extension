@@ -171,7 +171,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
             val uuid = discordBot.discordUserManager.getUuidByDiscordId(event.user.id)
             if (uuid == null) {
-                discordBot.logger.warning("${event.user.name} tried to use the playtime command but is not registed!")
+                discordBot.logger.warning("${event.user.name} tried to use the playtime command but is not registered!")
                 return@onCommand
             }
             if (discordBot.networkManager.isPlayerOnline(uuid, true)) {
@@ -187,6 +187,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
                 event.replyEmbeds(jsonMessageEmbed.toMessageEmbed()).queue()
             } else {
+                event.deferReply().queue()
                 discordBot.scheduler.runAsync({
                     val result = getOfflinePlayerPlaytime(uuid)
                     val userName = result.first

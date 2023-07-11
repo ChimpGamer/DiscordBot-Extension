@@ -8,6 +8,7 @@ import nl.chimpgamer.networkmanager.api.models.punishments.Punishment
 import nl.chimpgamer.networkmanager.api.models.servers.Server
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
+import nl.chimpgamer.networkmanager.api.utils.adventure.toLegacy
 import nl.chimpgamer.networkmanager.api.utils.stripColors
 import nl.chimpgamer.networkmanager.api.values.Message
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
@@ -32,7 +33,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             staffChatChannel,
             discordBot.messages.getString(DCMessage.EVENT_STAFFCHAT)
                 .replace("%playername%", event.sender.name)
-                .replace("%displayname%", event.sender.displayName)
+                .replace("%displayname%", event.sender.displayName.toLegacy().stripColors())
                 .replace("%server%", event.sender.server!!)
                 .replace("%message%", event.message)
         )
@@ -47,7 +48,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             adminChatChannel,
             discordBot.messages.getString(DCMessage.EVENT_ADMINCHAT)
                 .replace("%playername%", event.sender.name)
-                .replace("%displayname%", event.sender.displayName)
+                .replace("%displayname%", event.sender.displayName.toLegacy().stripColors())
                 .replace("%server%", event.sender.server!!)
                 .replace("%message%", event.message)
         )
@@ -289,7 +290,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val globalChatTextChannel = discordBot.guild.getTextChannelById(globalId)
         var message = discordBot.messages.getString(DCMessage.EVENT_CHAT)
             .replace("%playername%", player.name)
-            .replace("%displayname%", player.displayName)
+            .replace("%displayname%", player.displayName.toLegacy().stripColors())
             .replace("%server%", currentServer)
             .replace(
                 "%message%", event.message
