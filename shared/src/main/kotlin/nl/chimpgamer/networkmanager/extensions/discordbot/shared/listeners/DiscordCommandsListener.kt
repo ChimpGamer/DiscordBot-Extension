@@ -6,18 +6,20 @@ import dev.minn.jda.ktx.interactions.commands.option
 import dev.minn.jda.ktx.interactions.commands.restrict
 import dev.minn.jda.ktx.interactions.commands.slash
 import dev.minn.jda.ktx.interactions.commands.updateCommands
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
+import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.CommandSetting
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.modals.JsonMessageEmbed
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks.CreateTokenTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
+import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.parsePlaceholdersToFields
 import java.lang.management.ManagementFactory
 import java.sql.SQLException
 import java.util.UUID
@@ -90,8 +92,10 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 if (discordUserManager.containsDiscordID(member.id)) {
                     val registrationInProcessMessage = discordBot.messages.getString(DCMessage.REGISTRATION_IN_PROCESS)
                     if (Utils.isJsonValid(registrationInProcessMessage)) {
-                        val embed = JsonMessageEmbed.fromJson(registrationInProcessMessage).toMessageEmbed()
-                        event.replyEmbeds(embed).setEphemeral(true).queue()
+
+                        val data = DataObject.fromJson(registrationInProcessMessage)
+                        val embedBuilder = EmbedBuilder.fromData(data)
+                        event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue()
                     } else {
                         event.reply(registrationInProcessMessage).setEphemeral(true).queue()
                     }
@@ -101,8 +105,9 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 if (discordUserManager.checkUserByDiscordId(member.id)) {
                     val registrationCompletedMessage = discordBot.messages.getString(DCMessage.REGISTRATION_COMPLETED)
                     if (Utils.isJsonValid(registrationCompletedMessage)) {
-                        val embed = JsonMessageEmbed.fromJson(registrationCompletedMessage).toMessageEmbed()
-                        event.replyEmbeds(embed).setEphemeral(true).queue()
+                        val data = DataObject.fromJson(registrationCompletedMessage)
+                        val embedBuilder = EmbedBuilder.fromData(data)
+                        event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue()
                     } else {
                         event.reply(registrationCompletedMessage).setEphemeral(true).queue()
                     }
@@ -176,16 +181,22 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             }
             if (discordBot.networkManager.isPlayerOnline(uuid, true)) {
                 val player = discordBot.networkManager.getPlayer(uuid) ?: return@onCommand
-                var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
-                jsonMessageEmbed = jsonMessageEmbed.toBuilder()
-                    .title(jsonMessageEmbed.title?.replace("%playername%", player.name))
-                    .parsePlaceholdersToFields(mapOf(
-                        "%playername%" to player.name,
-                        "%playtime%" to TimeUtils.getTimeString(player.language, player.playtime / 1000),
-                        "%liveplaytime%" to TimeUtils.getTimeString(player.language, player.livePlaytime / 1000)
-                    )).build()
 
-                event.replyEmbeds(jsonMessageEmbed.toMessageEmbed()).queue()
+                val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
+                val embedBuilder = EmbedBuilder.fromData(data).apply {
+                    val title = data.getString("title", null)?.apply {
+                        replace("%playername%", player.name)
+                    }
+                    setTitle(title)
+                    parsePlaceholdersToFields { text ->
+                        val formattedPlaytime = TimeUtils.getTimeString(1, player.playtime / 1000)
+                        text.replace("%playername%", player.name)
+                            .replace("%playtime%", formattedPlaytime)
+                            .replace("%liveplaytime%", formattedPlaytime)
+                    }
+                }
+
+                event.replyEmbeds(embedBuilder.build()).queue()
             } else {
                 event.deferReply().queue()
                 discordBot.scheduler.runAsync({
@@ -195,16 +206,22 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     if (userName.isEmpty() || playtime == 0L) {
                         return@runAsync
                     }
-                    var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
-                    jsonMessageEmbed = jsonMessageEmbed.toBuilder()
-                        .title(jsonMessageEmbed.title?.replace("%playername%", userName))
-                        .parsePlaceholdersToFields(mapOf(
-                            "%playername%" to userName,
-                            "%playtime%" to TimeUtils.getTimeString(1, playtime / 1000),
-                            "%liveplaytime%" to TimeUtils.getTimeString(1, playtime / 1000)
-                        )).build()
 
-                    event.replyEmbeds(jsonMessageEmbed.toMessageEmbed()).queue()
+                    val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
+                    val embedBuilder = EmbedBuilder.fromData(data).apply {
+                        val title = data.getString("title", null)?.apply {
+                            replace("%playername%", userName)
+                        }
+                        setTitle(title)
+                        parsePlaceholdersToFields { text ->
+                            val formattedPlaytime = TimeUtils.getTimeString(1, playtime / 1000)
+                            text.replace("%playername%", userName)
+                                .replace("%playtime%", formattedPlaytime)
+                                .replace("%liveplaytime%", formattedPlaytime)
+                        }
+                    }
+
+                    event.replyEmbeds(embedBuilder.build()).queue()
                 }, false)
             }
         }

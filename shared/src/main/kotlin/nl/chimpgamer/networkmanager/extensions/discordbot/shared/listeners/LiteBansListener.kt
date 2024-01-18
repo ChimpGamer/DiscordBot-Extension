@@ -2,14 +2,16 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners
 
 import litebans.api.Entry
 import litebans.api.Events
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
 import nl.chimpgamer.networkmanager.api.utils.stripColors
 import nl.chimpgamer.networkmanager.api.values.Message
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Setting
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.modals.JsonMessageEmbed
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
+import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.parsePlaceholdersToFields
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.UUID
@@ -45,14 +47,20 @@ class LiteBansListener(private val discordBot: DiscordBot) {
             discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_PUNISHMENT_CHANNEL))
                 ?: return
 
-        var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(dcMessage))
-        jsonMessageEmbed = jsonMessageEmbed.toBuilder()
-            .title(insertPlaceholders(jsonMessageEmbed.title, entry))
-            .description(insertPlaceholders(jsonMessageEmbed.description, entry))
-            .parsePlaceholdersToFields { text -> insertPlaceholders(text, entry) }
-            .build()
+        val data = DataObject.fromJson(discordBot.messages.getString(dcMessage))
+        val embedBuilder = EmbedBuilder.fromData(data).apply {
+            val title = data.getString("title", null)?.apply {
+                insertPlaceholders(this, entry)
+            }
+            val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.apply {
+                insertPlaceholders(this, entry)
+            }
+            setTitle(title)
+            setDescription(description)
+            parsePlaceholdersToFields { text -> insertPlaceholders(text, entry) }
+        }
 
-        Utils.sendChannelMessage(punishmentsChannel, jsonMessageEmbed.toMessageEmbed())
+        Utils.sendChannelMessage(punishmentsChannel, embedBuilder.build())
     }
 
     private fun insertPlaceholders(s: String?, entry: Entry): String {

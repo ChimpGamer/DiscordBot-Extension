@@ -2,6 +2,8 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.shared.commands.mc
 
 import cloud.commandframework.Command
 import cloud.commandframework.arguments.standard.StringArgument
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.api.models.sender.Sender
 import nl.chimpgamer.networkmanager.api.utils.Cooldown
@@ -13,8 +15,8 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Setting
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.modals.JsonMessageEmbed
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
+import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.parsePlaceholdersToFields
 
 class CloudBugCommand(private val discordBot: DiscordBot) {
 
@@ -28,7 +30,16 @@ class CloudBugCommand(private val discordBot: DiscordBot) {
                 val message = context[messageArgument]
 
                 if (Cooldown.isInCooldown(player.uuid, name)) {
-                    player.sendMessage(discordBot.messages.getString(MCMessage.BUG_COOLDOWN).parse(mapOf("cooldown" to TimeUtils.getTimeString(player.language, Cooldown.getTimeLeft(player.uuid, name).toLong()))))
+                    player.sendMessage(
+                        discordBot.messages.getString(MCMessage.BUG_COOLDOWN).parse(
+                            mapOf(
+                                "cooldown" to TimeUtils.getTimeString(
+                                    player.language,
+                                    Cooldown.getTimeLeft(player.uuid, name).toLong()
+                                )
+                            )
+                        )
+                    )
                     return@handler
                 }
 
@@ -39,17 +50,28 @@ class CloudBugCommand(private val discordBot: DiscordBot) {
                     return@handler
                 }
 
-                var jsonMessageEmbed = JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.BUGREPORT_ALERT))
-                jsonMessageEmbed = jsonMessageEmbed.toBuilder()
-                    .title(jsonMessageEmbed.title?.replace("%playername%", player.name))
-                    .parsePlaceholdersToFields { text -> Placeholders.setPlaceholders(player, text
-                        .replace("%bug%", message)
-                        .replace("%server%", player.server ?: "null")) }
-                    .build()
+                val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.BUGREPORT_ALERT))
+                val embedBuilder = EmbedBuilder.fromData(data).apply {
+                    val title = data.getString("title", null)?.apply {
+                        replace("%bug%", message).replace("%server%", player.server ?: "null")
+                    }
+                    setTitle(title)
+                    parsePlaceholdersToFields { text ->
+                        Placeholders.setPlaceholders(
+                            player, text
+                                .replace("%bug%", message)
+                                .replace("%server%", player.server ?: "null")
+                        )
+                    }
+                }
 
-                Utils.sendChannelMessage(bugReportChannel, jsonMessageEmbed.toMessageEmbed())
+                Utils.sendChannelMessage(bugReportChannel, embedBuilder.build())
                 player.sendRichMessage(discordBot.messages.getString(MCMessage.BUG_SUCCESS))
-                Cooldown(player.uuid, name, discordBot.commandSettings.getInt(CommandSetting.MINECRAFT_BUG_COOLDOWN)).start()
+                Cooldown(
+                    player.uuid,
+                    name,
+                    discordBot.commandSettings.getInt(CommandSetting.MINECRAFT_BUG_COOLDOWN)
+                ).start()
             }
     }
 }

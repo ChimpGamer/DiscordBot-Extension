@@ -2,6 +2,8 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.shared.commands.mc
 
 import cloud.commandframework.Command
 import cloud.commandframework.arguments.standard.StringArgument
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.api.models.sender.Sender
 import nl.chimpgamer.networkmanager.api.utils.Cooldown
@@ -13,8 +15,8 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Setting
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.modals.JsonMessageEmbed
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
+import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.parsePlaceholdersToFields
 
 class CloudSuggestionCommand(private val discordBot: DiscordBot) {
 
@@ -48,20 +50,22 @@ class CloudSuggestionCommand(private val discordBot: DiscordBot) {
                     return@handler
                 }
 
-                var jsonMessageEmbed =
-                    JsonMessageEmbed.fromJson(discordBot.messages.getString(DCMessage.SUGGESTION_ALERT))
-                jsonMessageEmbed = jsonMessageEmbed.toBuilder()
-                    .title(jsonMessageEmbed.title?.replace("%playername%", player.name))
-                    .parsePlaceholdersToFields { text ->
+                val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.SUGGESTION_ALERT))
+                val embedBuilder = EmbedBuilder.fromData(data).apply {
+                    val title = data.getString("title", null)?.apply {
+                        replace("%playername%", player.name)
+                    }
+                    setTitle(title)
+                    parsePlaceholdersToFields { text ->
                         Placeholders.setPlaceholders(
                             player, text
                                 .replace("%suggestion%", message)
                                 .replace("%server%", player.server ?: "null")
                         )
                     }
-                    .build()
+                }
 
-                Utils.sendChannelMessage(suggestionsChannel, jsonMessageEmbed.toMessageEmbed())
+                Utils.sendChannelMessage(suggestionsChannel, embedBuilder.build())
                 player.sendRichMessage(discordBot.messages.getString(MCMessage.SUGGESTION_SUCCESS))
                 Cooldown(
                     player.uuid,

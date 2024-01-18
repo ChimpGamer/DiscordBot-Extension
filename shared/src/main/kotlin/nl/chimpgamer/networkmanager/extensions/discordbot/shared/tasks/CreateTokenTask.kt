@@ -1,9 +1,10 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks
 
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.modals.JsonMessageEmbed
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
 
 class CreateTokenTask(
@@ -18,8 +19,9 @@ class CreateTokenTask(
             .replace("%token%", token)
 
         if (Utils.isJsonValid(msgStr)) {
-            val jsonMessageEmbed = JsonMessageEmbed.fromJson(msgStr)
-            commandInteractionEvent.replyEmbeds(jsonMessageEmbed.toMessageEmbed()).setEphemeral(true)
+            val data = DataObject.fromJson(msgStr)
+            val embedBuilder = EmbedBuilder.fromData(data)
+            commandInteractionEvent.replyEmbeds(embedBuilder.build()).setEphemeral(true)
                 .queue({ success ->
                     discordBot.discordUserManager.insertToken(token, commandInteractionEvent.user.id,
                     success)

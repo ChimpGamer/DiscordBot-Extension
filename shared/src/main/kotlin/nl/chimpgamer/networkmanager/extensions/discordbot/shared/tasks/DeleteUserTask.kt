@@ -1,15 +1,16 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks
 
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.api.events.PlayerUnregisteredEvent
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.MCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Setting
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.modals.JsonMessageEmbed
 import java.sql.SQLException
 
 class DeleteUserTask(private val discordBot: DiscordBot, private val player: Player) : Runnable {
@@ -56,9 +57,10 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
 
                 val unregisterNotification = discordBot.messages.getString(DCMessage.REGISTRATION_UNREGISTER_NOTIFICATION)
                 if (unregisterNotification.isNotEmpty()) {
-                    val jsonMessageEmbed = JsonMessageEmbed.fromJson(unregisterNotification)
+                    val data = DataObject.fromJson(unregisterNotification)
+                    val embedBuilder = EmbedBuilder.fromData(data)
                     member?.user?.openPrivateChannel()?.queue {
-                        it.sendMessageEmbeds(jsonMessageEmbed.toMessageEmbed()).queue()
+                        it.sendMessageEmbeds(embedBuilder.build()).queue()
                     }
                 }
 

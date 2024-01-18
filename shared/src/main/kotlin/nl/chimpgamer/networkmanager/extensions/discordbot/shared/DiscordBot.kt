@@ -16,6 +16,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks.ActivityU
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks.TokenExpiryTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.DiscordPlaceholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.MySQL
+import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
 import java.io.File
 
 class DiscordBot(val platform: Platform) {
@@ -57,6 +58,7 @@ class DiscordBot(val platform: Platform) {
             platform.disable()
             return
         }
+        Utils.initialize(this)
 
         // Initialize configuration files
         settings.init()

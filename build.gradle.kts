@@ -1,11 +1,12 @@
 plugins {
-    kotlin("jvm") version "1.9.21"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    kotlin("jvm") version "1.9.22"
+    //`maven-publish`
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "2.1.2-SNAPSHOT"
+    version = "1.8.0"
 
     repositories {
         mavenCentral()
@@ -21,16 +22,19 @@ subprojects {
     repositories {
         mavenLocal()
 
-        maven("https://jitpack.io")
+        maven("https://jitpack.io") // For RedisBungee
 
-        maven("https://repo.codemc.org/repository/maven-public")
-
-        maven("https://repo.networkmanager.xyz/repository/maven-public/") // NetworkManager repository
+        //maven("https://repo.networkmanager.xyz/repository/maven-public/") // NetworkManager repository
     }
 
     dependencies {
         compileOnly(kotlin("stdlib-jdk8"))
-        compileOnly("com.github.Carleslc:Simple-YAML:1.8.4")
+
+
+        compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.2")
+
+        /*implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
+        implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")*/
     }
 
     tasks {
@@ -46,17 +50,16 @@ subprojects {
         }
 
         shadowJar {
-            archiveFileName.set("SimpleChat-${project.name}-v${project.version}.jar")
-
-            /*dependencies {
-                include(dependency("net.kyori:.*"))
-            }*/
+            archiveFileName.set("DiscordBot-${project.name}-v${project.version}.jar")
 
             val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
             val libPackage = "nl.chimpgamer.networkmanager.lib"
-            //relocate("net.kyori", "$shadedPackage.kyori")
+
             relocate("kotlin", "$libPackage.kotlin")
-            relocate("org.simpleyaml", "$libPackage.simpleyaml")
+            relocate("org.simpleyaml", "nl.chimpgamer.networkmanager.lib.simpleyaml")
+            relocate("cloud.commandframework", "$libPackage.cloud")
+            relocate("com.fasterxml.jackson", "$shadedPackage.jackson")
+            relocate("net.dv8tion.jda", "$shadedPackage.jda")
         }
 
         build {
@@ -66,6 +69,13 @@ subprojects {
 }
 
 tasks {
+    compileKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
     jar {
         enabled = false
     }

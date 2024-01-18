@@ -3,6 +3,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.MalformedJsonException
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.Role
@@ -15,6 +16,8 @@ import java.io.Reader
 import java.io.StringReader
 import java.math.BigInteger
 import java.security.SecureRandom
+import java.util.*
+import java.util.function.Function
 
 object Utils {
     val UUID_REGEX = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")
@@ -110,4 +113,25 @@ object Utils {
             false
         }
     }
+}
+
+internal fun EmbedBuilder.parsePlaceholdersToFields(handler: Function<String, String>) = apply {
+    val fields: MutableList<MessageEmbed.Field> = LinkedList()
+    for (field in this.fields) {
+        var name = field.name
+        var value = field.value
+
+        if (name != null) {
+            name = handler.apply(name)
+        }
+
+        if (value != null) {
+            value = handler.apply(value)
+        }
+
+        fields.add(MessageEmbed.Field(name, value, field.isInline))
+    }
+
+    clearFields()
+    fields.forEach(::addField)
 }
