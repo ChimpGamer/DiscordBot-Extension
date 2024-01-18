@@ -72,8 +72,8 @@ dependencies {
     compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Bungee:0.11.2")
     compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Velocity:0.11.2")
 
-    compileOnly("cloud.commandframework:cloud-core:1.8.3")
-    compileOnly("cloud.commandframework:cloud-annotations:1.8.3")
+    compileOnly("cloud.commandframework:cloud-core:1.8.4")
+    compileOnly("cloud.commandframework:cloud-annotations:1.8.4")
 
     //compileOnly("com.velocitypowered:velocity-api:3.1.0")
     //kapt("com.velocitypowered:velocity-api:3.1.0")
