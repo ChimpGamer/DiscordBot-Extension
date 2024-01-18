@@ -290,14 +290,12 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val globalChatTextChannel = discordBot.guild.getTextChannelById(globalId)
         var message = discordBot.messages.getString(DCMessage.EVENT_CHAT)
             .replace("%playername%", player.name)
-            .replace("%displayname%", player.displayName.toLegacy().stripColors())
-            .replace("%server%", currentServer)
             .replace(
                 "%message%", event.message
                     .replace(Utils.USER_MENTION_REGEX, "")
                     .replace(Utils.ROLE_MENTION_REGEX, "")
             )
-        message = Placeholders.setPlaceholders(player, message)
+        message = Placeholders.setPlaceholders(player, message).stripColors()
 
         globalChatTextChannel?.sendMessage(message)?.queue()
         val serverId = chatEventChannels[currentServer] ?: "000000000000000000"
