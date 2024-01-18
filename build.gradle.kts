@@ -58,7 +58,7 @@ dependencies {
         exclude("com.google.code.findbugs")
         exclude("org.slf4j")*/
     }
-    implementation("com.github.minndevelopment:jda-ktx:0.10.0-beta.1") {
+    implementation("club.minnced:jda-ktx:0.11.0-beta.19") {
         /*exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains.kotlinx")
         exclude("org.jetbrains")*/
