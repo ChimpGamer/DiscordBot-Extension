@@ -41,7 +41,7 @@ dependencies {
     compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
 
-    compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.14.0")
+    compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.14.5")
 
     /*slim("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4") {
         exclude("org.jetbrains.kotlin")
