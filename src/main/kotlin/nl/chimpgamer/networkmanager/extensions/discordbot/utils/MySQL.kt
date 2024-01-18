@@ -29,12 +29,7 @@ class MySQL(private val discordBot: DiscordBot) {
     @Throws(SQLException::class)
     private fun create() {
         val nmDiscordUsers = "CREATE TABLE IF NOT EXISTS nm_discordusers(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, UUID VARCHAR(36), DiscordID VARCHAR(64), registered LONG) ENGINE=InnoDB DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;"
-        createTable(nmDiscordUsers)
-    }
-
-    @Throws(SQLException::class)
-    private fun createTable(sql: String) {
-        nmStorage.connection.use { connection -> connection.prepareStatement(sql).use { ps -> ps.executeUpdate() } }
+        nmStorage.createTable(nmDiscordUsers)
     }
 
     @get:Throws(SQLException::class)

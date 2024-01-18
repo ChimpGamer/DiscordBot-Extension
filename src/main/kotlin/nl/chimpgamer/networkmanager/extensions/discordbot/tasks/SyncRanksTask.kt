@@ -13,6 +13,7 @@ import java.util.HashSet
 class SyncRanksTask(private val discordBot: DiscordBot, private val player: Player): Runnable {
 
     override fun run() {
+        if (!player.isOnline) return
         val discordId = discordBot.discordUserManager.getDiscordIdByUuid(player.uuid) ?: return
         val member = discordBot.guild.getMemberById(discordId) ?: return
         discordBot.logger.info("Syncing roles for " + member.effectiveName)
@@ -27,20 +28,26 @@ class SyncRanksTask(private val discordBot: DiscordBot, private val player: Play
                 discordBot.logger.warning("Could not find role $roleName to sync.")
                 continue
             }
+            if (role.isPublicRole) {
+                continue
+            }
+
             if (groups.any { it.equals(rankName, ignoreCase = true) }) {
                 addRoles.add(role)
             } else {
                 removeRoles.add(role)
             }
         }
+        // Remove roles from removeRoles that are already in addRoles
+        removeRoles.removeAll(addRoles)
+
         // remove roles that the user already has from roles to add
         addRoles.removeAll(member.roles.toSet())
+
         // remove roles that the user doesn't already have from roles to remove
         removeRoles.removeIf { role -> !member.roles.contains(role) }
         discordBot.networkManager.debug("AddRoles: $addRoles")
         discordBot.networkManager.debug("RemoveRoles: $removeRoles")
-        /*println("AddRoles: $addRoles")
-        println("RemoveRoles: $removeRoles")*/
         if (addRoles.isEmpty() && removeRoles.isEmpty()) {
             return
         }

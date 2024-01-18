@@ -1,29 +1,22 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot
 
-import io.github.slimjar.app.builder.ApplicationBuilder
 import net.dv8tion.jda.api.entities.Guild
 import nl.chimpgamer.networkmanager.api.extensions.NMExtension
-import nl.chimpgamer.networkmanager.api.utils.PlatformType
 import nl.chimpgamer.networkmanager.common_proxy.plugin.NetworkManagerPluginProxyBase
 import nl.chimpgamer.networkmanager.extensions.discordbot.commands.mc.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSetting
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.CommandSettings
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Messages
 import nl.chimpgamer.networkmanager.extensions.discordbot.configurations.Settings
+import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.LiteBansListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.NetworkManagerListeners
-import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.BungeeCordJoinLeaveListener
-import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.bungee.RedisBungeeListener
-import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.velocity.VelocityJoinLeaveListener
+import nl.chimpgamer.networkmanager.extensions.discordbot.listeners.redisbungee.RedisBungeeHandler
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.manager.DiscordUserManager
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.ActivityUpdateTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.tasks.TokenExpiryTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.DiscordPlaceholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.utils.MySQL
-import java.io.File
-import java.time.Duration
-import java.time.Instant
-import java.util.logging.Level
 
 class DiscordBot : NMExtension() {
 
@@ -38,8 +31,10 @@ class DiscordBot : NMExtension() {
 
     private val activityUpdateTask = ActivityUpdateTask(this)
 
+    private var liteBansListener: LiteBansListener? = null
+
     public override fun onEnable() { // Extension startup logic
-        val dependencyDirectory = File(networkManagerPlugin.dataFolder, "libraries")
+        /*val dependencyDirectory = File(networkManagerPlugin.dataFolder, "libraries")
         logger.log(Level.INFO, "Loading Libraries...")
         logger.log(Level.INFO, "Note: This might take a few minutes on first run. Kindly ensure internet connectivity.")
         val startInstant = Instant.now()
@@ -49,6 +44,7 @@ class DiscordBot : NMExtension() {
                 .appending("DiscordBot")
                 .dependencyFileUrl(slimJarJsonUrl)
                 .downloadDirectoryPath(dependencyDirectory.toPath())
+                .logger { s, anies -> logger.log(Level.INFO, s, anies) }
                 .build()
             val endInstant = Instant.now()
             val timeTaken = Duration.between(startInstant, endInstant).toMillis()
@@ -62,7 +58,7 @@ class DiscordBot : NMExtension() {
             exception.printStackTrace()
             disable()
             return
-        }
+        }*/
 
         instance = this
         if (networkManager.platformType.isProxy.not()) {
@@ -94,14 +90,21 @@ class DiscordBot : NMExtension() {
         registerListeners()
         activityUpdateTask.start()
         if (networkManager.isRedisBungee) {
-            networkManager.registerListener(RedisBungeeListener(this))
+            RedisBungeeHandler(this)
         }
         networkManager.placeholderManager.registerPlaceholder(DiscordPlaceholders(this))
+
+        if (networkManager.isPluginEnabled("LiteBans")) {
+            liteBansListener = LiteBansListener(this)
+            liteBansListener?.registerListeners()
+            logger.info("Successfully hooked into LiteBans!")
+        }
     }
 
     public override fun onDisable() { // Extension shutdown logic
         expireTokens()
         activityUpdateTask.stop()
+        liteBansListener?.unregisterListeners()
 
         this.discordManager.shutdownJDA()
     }
@@ -114,15 +117,6 @@ class DiscordBot : NMExtension() {
 
     private fun registerListeners() {
         NetworkManagerListeners(this)
-        if (networkManager.platformType === PlatformType.BUNGEECORD) {
-            networkManager.registerListeners(
-                BungeeCordJoinLeaveListener(this)
-            )
-        } else if (networkManager.platformType === PlatformType.VELOCITY) {
-            networkManager.registerListeners(
-                VelocityJoinLeaveListener(this)
-            )
-        }
     }
 
     private fun registerCommands() {
@@ -159,7 +153,7 @@ class DiscordBot : NMExtension() {
     override val networkManager: NetworkManagerPluginProxyBase
         get() = super.networkManager as NetworkManagerPluginProxyBase
 
-    fun isDiscordManagerInitialized() = this::discordManager.isInitialized
+    fun isDiscordManagerInitialized(): Boolean = this::discordManager.isInitialized
 
     companion object {
         @JvmStatic

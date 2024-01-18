@@ -1,41 +1,40 @@
 minecraft:
   register:
-    help: '&4» &c/register [token]'
+    help: '<dark_red>» <red>/register [token]'
     token:
-      invalid: '&c&l(!) &6Invalid token, try again. Does it keep happening? Please contact a server Administrator!'
-      expired: '&c&l(!) &6Sorry but this token is already expired. Please ask the Discord bot for a new one!'
+      invalid: '<red><bold>(!)</bold> <gold>Invalid token, try again. Does it keep happening? Please contact a server Administrator!'
+      expired: '<red><bold>(!)</bold> <gold>Sorry but this token is already expired. Please ask the Discord bot for a new one!'
     verify:
-      account-already-linked: '&c&l(!) &6This Minecraft account is already paired with a Discord account.'
-      completed: '&a&l(!) &6Thanks for registering. You can talk in the discord server now!'
-      not-in-server: '&c&l(!) &6You cannot verify yourself if you haven''t joined our discord server!'
-      error: '&c&l(!) &6Something went wrong, try again. Does it keep happening? Please contact a server Administrator!'
+      account-already-linked: '<red><bold>(!)</bold> <gold>This Minecraft account is already paired with a Discord account.'
+      completed: '<green><bold>(!)</bold> <gold>Thanks for registering. You can talk in the discord server now!'
+      not-in-server: '<red><bold>(!)</bold> <gold>You cannot verify yourself if you haven''t joined our discord server!'
+      error: '<red><bold>(!)</bold> <gold>Something went wrong, try again. Does it keep happening? Please contact a server Administrator!'
   unregister:
-    success: '&a&l(!) &6Successfully unregistered your discord account!'
-    not-registered: '&c&l(!) &6You cannot unlink your account because aren''t registered!'
+    success: '<green><bold>(!)</bold> <gold>Successfully unregistered your discord account!'
+    not-registered: '<red><bold>(!)</bold> <gold>You cannot unlink your account because aren''t registered!'
   bug:
-    help: '&4» &c/bug [bug]'
-    success: '&a&l(!) &6Successfully notified the staff about the bug you encountered!'
-    cooldown: '&7You have to wait &c%cooldown% &7before you can send a new bug report.'
+    success: '<green><bold>(!)</bold> <gold>Successfully notified the staff about the bug you encountered!'
+    cooldown: '<gray>You have to wait <red><cooldown> <gray>before you can send a new bug report.'
   suggestion:
-    help: '&4» &c/suggestion [suggestion]'
-    success: '&a&l(!) &6Successfully notified the staff about your suggestion!'
-    cooldown: '&7You have to wait &c%cooldown% &7before you can send a new suggestion.'
-  discord-response: '&7Join us on Discord at &6http://yourdiscordinvitelink.gg'
+    success: '<green><bold>(!)</bold> <gold>Successfully notified the staff about your suggestion!'
+    cooldown: '<gray>You have to wait <red><cooldown> <gray>before you can send a new suggestion.'
+  discord-response: "<gray>Click <gold><click:open_url:'http://yourdiscordinvitelink.gg'>here</click> <gray>to join our discord server!"
   reload:
-    config: '&4» &7Reloaded &cConfig'
-    messages: '&4» &7Reloaded &cMessagesConfig'
+    config: '<dark_red>» <gray>Reloaded <red>Config'
+    messages: '<dark_red>» <gray>Reloaded <red>MessagesConfig'
     jda:
-      success:  '&4» &7Successfully reloaded &cJDA'
-      failed: '&4» &7Failed to reload &cJDA! &7See console for more information.'
+      success:  '<dark_red>» <gray>Successfully reloaded <red>JDA'
+      failed: '<dark_red>» <gray>Failed to reload <red>JDA! <gray>See console for more information.'
   event:
-    chat: '%discordname% said in %textchannel%: %message%'
+    chat: '<discordname> said in <textchannel>: <message>'
 
 discord:
   event:
     staffchat: '%playername% said on %server%: %message%'
     adminchat: '%playername% said on %server%: %message%'
     chat: '%playername% said on %server%: %message%'
-    join: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the !register command when you want to register! Good luck!'
+    join: ''
+    agreed-membership-screening-requirements: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the /register command when you want to register! Good luck!'
     playerlogin: '%playername% has logged in to the server.'
     firstplayerlogin: '%playername% has logged in to the server for the first time.'
 
@@ -61,6 +60,13 @@ discord:
 
   registration:
     not-in-server: 'You cannot register yourself if you haven''t joined our discord server!'
+    membership-screening-requirements-not-met: 'You cannot register yourself if you haven''t agreed our server rules! Please accept our server rules in the discord server before registering!'
+    in-process: |-
+      {
+        "title": "Already in process!",
+        "description": "You already in the process of registering!",
+        "color": 14684176
+      }
     token:
       response: |-
         {
@@ -71,20 +77,20 @@ discord:
       expired: |-
         {
           "title": "TOKEN HAS BEEN EXPIRED.",
-          "description": "You can request a new one with **%command_prefix%register**",
+          "description": "You can request a new one with **/register**",
           "color": 14684176
         }
     completed: |-
       {
         "title": "Registration completed!",
-        "description": "You can chat now and have your ingame rank.",
+        "description": "You can chat now and have your in-game rank.",
         "color": 3535678
       }
     unregistered:
       notification: |-
         {
           "title": "Successfully unregistered your discord account!",
-          "description": "You can register your Account again with %command_prefix%register",
+          "description": "You can register your Account again with /register",
           "color": 3535678
         }
 

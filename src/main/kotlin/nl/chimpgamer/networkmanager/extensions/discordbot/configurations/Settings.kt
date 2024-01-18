@@ -67,8 +67,6 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
 
 enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_TOKEN("bot.discord.token", "YourBotTokenHere"),
-    DISCORD_OWNER_ID("bot.discord.ownerId", "000000000000000000"),
-    DISCORD_COMMAND_PREFIX("bot.discord.command_prefix", "!"),
     DISCORD_STATUS_ENABLED("bot.discord.status.enabled", true),
     DISCORD_STATUS_TYPE("bot.discord.status.type", "watching"),
     DISCORD_STATUS_MESSAGE("bot.discord.status.message", "%players% players on your server"),

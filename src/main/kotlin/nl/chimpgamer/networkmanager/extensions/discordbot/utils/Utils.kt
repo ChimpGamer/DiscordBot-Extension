@@ -3,7 +3,10 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.utils
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.MalformedJsonException
-import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.exceptions.PermissionException
 import nl.chimpgamer.networkmanager.extensions.discordbot.DiscordBot
@@ -15,6 +18,9 @@ import java.security.SecureRandom
 
 object Utils {
     val UUID_REGEX = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")
+    val DISCORD_ID_REGEX = Regex("\\d{17,20}")
+    val USER_MENTION_REGEX = Regex("<@!?(\\d{17,20})>")
+    val ROLE_MENTION_REGEX = Regex("<@&(\\d{17,20})>")
 
     fun ceilDiv(x: Long, y: Long): Long {
         return -Math.floorDiv(-x, y)
@@ -35,32 +41,6 @@ object Utils {
         } catch (ex: PermissionException) {
             DiscordBot.instance.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
         }
-    }
-
-    fun sendMessageComplete(channel: MessageChannel, message: String): Message? {
-        try {
-            return channel.sendMessage(message).complete()
-        } catch (ex: PermissionException) {
-            DiscordBot.instance.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
-        }
-        return null
-    }
-
-    fun sendMessageComplete(channel: MessageChannel, message: MessageEmbed): Message? {
-        try {
-            return channel.sendMessageEmbeds(message).complete()
-        } catch (ex: PermissionException) {
-            DiscordBot.instance.logger.warning("Could not send message to the " + channel.name + " because " + ex.message)
-        }
-        return null
-    }
-
-    fun editMessage(currentMessage: Message, newMessage: String) {
-        currentMessage.editMessage(newMessage).queue()
-    }
-
-    fun editMessage(currentMessage: Message, newMessage: MessageEmbed) {
-        currentMessage.editMessageEmbeds(newMessage).queue()
     }
 
     @Throws(InsufficientPermissionException::class)

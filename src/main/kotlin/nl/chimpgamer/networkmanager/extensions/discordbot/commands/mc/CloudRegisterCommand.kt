@@ -18,8 +18,7 @@ class CloudRegisterCommand(private val discordBot: DiscordBot) {
                 val sender = context.sender as Player
                 val token = context[tokenArgument]
                 if (token.length != 13) { // Invalid token
-                    sender.sendMessage(discordBot.messages.getString(MCMessage.REGISTER_INVALID_TOKEN)
-                        .replace("%playername%", sender.name))
+                    sender.sendRichMessage(discordBot.messages.getString(MCMessage.REGISTER_INVALID_TOKEN))
                 } else { // Verify user with token
                     discordBot.discordUserManager.verifyUser(sender, token)
                     discordBot.networkManager.debug("Verifying " + sender.realName + " with token: $token")

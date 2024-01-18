@@ -21,7 +21,8 @@ enum class DCMessage(val path: String) {
     EVENT_STAFFCHAT("discord.event.staffchat"),
     EVENT_ADMINCHAT("discord.event.adminchat"),
     EVENT_CHAT("discord.event.chat"),
-    EVENT_WELCOME("discord.event.join"),
+    EVENT_JOIN("discord.event.join"),
+    EVENT_AGREED_MEMBERSHIP_SCREENING_REQUIREMENTS("discord.event.agreed-membership-screening-requirements"),
     EVENT_PLAYERLOGIN("discord.event.playerlogin"),
     EVENT_FIRST_PLAYERLOGIN("discord.event.firstplayerlogin"),
 
@@ -30,8 +31,10 @@ enum class DCMessage(val path: String) {
     COMMAND_PLAYTIME_RESPONSE("discord.command.playtime.response"),
 
     REGISTRATION_NOT_IN_SERVER("discord.registration.not-in-server"),
+    REGISTRATION_MEMBERSHIP_SCREENING_REQUIREMENTS_NOT_MET("discord.registration.membership-screening-requirements-not-met"),
     REGISTRATION_TOKEN_RESPONSE("discord.registration.token.response"),
     REGISTRATION_TOKEN_EXPIRED("discord.registration.token.expired"),
+    REGISTRATION_IN_PROCESS("discord.registration.in-process"),
     REGISTRATION_COMPLETED("discord.registration.completed"),
     REGISTRATION_UNREGISTER_NOTIFICATION("discord.registration.unregistered.notification"),
 
@@ -57,10 +60,8 @@ enum class MCMessage(val path: String) {
     REGISTER_ERROR("minecraft.register.verify.error"),
     UNREGISTER_SUCCESS("minecraft.unregister.success"),
     UNREGISTER_NOT_REGISTERED("minecraft.unregister.not-registered"),
-    BUG_HELP("minecraft.bug.help"),
     BUG_SUCCESS("minecraft.bug.success"),
     BUG_COOLDOWN("minecraft.bug.cooldown"),
-    SUGGESTION_HELP("minecraft.suggestion.help"),
     SUGGESTION_SUCCESS("minecraft.suggestion.success"),
     SUGGESTION_COOLDOWN("minecraft.suggestion.cooldown"),
     DISCORD_RESPONSE("minecraft.discord-response"),
