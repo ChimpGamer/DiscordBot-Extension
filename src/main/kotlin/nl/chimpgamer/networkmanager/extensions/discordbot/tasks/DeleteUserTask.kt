@@ -42,14 +42,15 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                     }
                 }
 
-                if (removeRoles.isEmpty()) return
-                try {
-                    member?.let { discordBot.guild.modifyMemberRoles(it, null, removeRoles).queue() }
-                } catch (ex: PermissionException) {
-                    if (ex.permission === Permission.UNKNOWN) {
-                        discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because ${ex.message}")
-                    } else {
-                        discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because the bot does not have the required permission ${ex.permission.name}")
+                if (removeRoles.isNotEmpty()) {
+                    try {
+                        member?.let { discordBot.guild.modifyMemberRoles(it, null, removeRoles).queue() }
+                    } catch (ex: PermissionException) {
+                        if (ex.permission === Permission.UNKNOWN) {
+                            discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because ${ex.message}")
+                        } else {
+                            discordBot.logger.warning("Could not set the role for ${member?.effectiveName} because the bot does not have the required permission ${ex.permission.name}")
+                        }
                     }
                 }
 
