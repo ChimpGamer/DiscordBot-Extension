@@ -12,9 +12,9 @@ dependencies {
 
     compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.2")
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.19") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.20") {
         exclude("club.minnced", "opus-java")
     }
 
-    implementation("club.minnced:jda-ktx:0.11.0-beta.19")
+    implementation("club.minnced:jda-ktx:0.11.0-beta.20")
 }
