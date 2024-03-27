@@ -25,6 +25,7 @@ enum class DCMessage(val path: String) {
     EVENT_AGREED_MEMBERSHIP_SCREENING_REQUIREMENTS("discord.event.agreed-membership-screening-requirements"),
     EVENT_PLAYERLOGIN("discord.event.playerlogin"),
     EVENT_FIRST_PLAYERLOGIN("discord.event.firstplayerlogin"),
+    EVENT_DISCONNECT("discord.event.disconnect"),
 
     COMMAND_ONLINEPLAYERS_RESPONSE("discord.command.onlineplayers.response"),
     COMMAND_PLAYERLIST_INVALID_SERVER("discord.command.playerlist.invalid-server"),

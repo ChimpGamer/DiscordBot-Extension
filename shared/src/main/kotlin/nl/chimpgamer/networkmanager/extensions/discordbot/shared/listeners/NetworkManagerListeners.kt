@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.event.PostOrders
 import nl.chimpgamer.networkmanager.api.event.events.*
 import nl.chimpgamer.networkmanager.api.event.events.player.AsyncPlayerLoginEvent
+import nl.chimpgamer.networkmanager.api.event.events.player.PlayerDisconnectEvent
 import nl.chimpgamer.networkmanager.api.event.events.ticket.TicketCreateEvent
 import nl.chimpgamer.networkmanager.api.models.punishments.Punishment
 import nl.chimpgamer.networkmanager.api.models.servers.Server
@@ -163,7 +164,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_TICKETS_CHANNEL))
                 ?: return
 
-        val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.HELPOP_ALERT))
+        val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.TICKET_CREATE_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
             val title = data.getString("title", null)?.apply {
                 insertTicketPlaceholders(this, event)
@@ -184,7 +185,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_CHATLOG_CHANNEL))
                 ?: return
 
-        val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.HELPOP_ALERT))
+        val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.CHATLOG_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
             val title = data.getString("title", null)?.apply {
                 insertChatLogPlaceholders(this, event)
@@ -236,6 +237,14 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
                 Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_FIRST_PLAYERLOGIN))
             )
         }
+    }
+
+    private fun onDisconnect(event: PlayerDisconnectEvent) {
+        val player = event.player
+        val channel =
+            discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_DISCONNECT_CHANNEL))
+                ?: return
+        sendChannelMessage(channel, Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_DISCONNECT)))
     }
 
     private fun insertServerPlaceholders(s: String?, server: Server): String {
@@ -356,6 +365,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             subscribe(TicketCreateEvent::class.java, ::onTicketCreate)
             subscribe(ChatLogCreatedEvent::class.java, ::onChatLogCreated)
             subscribe(AsyncPlayerLoginEvent::class.java, ::onAsyncPlayerLogin)
+            subscribe(PlayerDisconnectEvent::class.java, ::onDisconnect)
             subscribe(PlayerChatEvent::class.java, ::onPlayerChat, PostOrders.LAST)
         }
     }

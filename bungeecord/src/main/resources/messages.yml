@@ -37,6 +37,7 @@ discord:
     agreed-membership-screening-requirements: 'Hey %mention%, welcome on our discord server. To continue you''ll have to register yourself. Send me the /register command when you want to register! Good luck!'
     playerlogin: '%playername% has logged in to the server.'
     firstplayerlogin: '%playername% has logged in to the server for the first time.'
+    disconnect: '%playername% disconnected from the server.'
 
   command:
     onlineplayers:
