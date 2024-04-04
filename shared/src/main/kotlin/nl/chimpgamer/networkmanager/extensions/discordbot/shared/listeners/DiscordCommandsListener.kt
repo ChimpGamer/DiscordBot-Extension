@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
+import nl.chimpgamer.networkmanager.common.utils.ExpiringMap
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.CommandSetting
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
@@ -27,8 +28,10 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.parsePlac
 import java.lang.management.ManagementFactory
 import java.sql.SQLException
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEventListener {
+    private val playtimeCache = ExpiringMap<UUID, Pair<String, Long>>(1L, TimeUnit.MINUTES)
 
     override suspend fun onEvent(event: GenericEvent) {
         if (event !is GuildReadyEvent && event !is GuildJoinEvent) return
@@ -200,7 +203,13 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 event.hook.sendMessageEmbeds(embedBuilder.build()).await()
             } else {
                 event.deferReply().queue()
-                val result = getOfflinePlayerPlaytime(uuid)
+                val result = if (playtimeCache.contains(uuid)) {
+                    playtimeCache[uuid]!!
+                } else {
+                    val playtimeData = getOfflinePlayerPlaytime(uuid)
+                    playtimeCache[uuid] = playtimeData
+                    playtimeData
+                }
                 val userName = result.first
                 val playtime = result.second
                 if (userName.isEmpty() || playtime == 0L) {
