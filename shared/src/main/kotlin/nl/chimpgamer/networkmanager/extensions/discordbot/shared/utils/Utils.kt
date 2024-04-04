@@ -43,7 +43,6 @@ object Utils {
         }
     }
 
-    @JvmStatic
     fun sendChannelMessage(channel: MessageChannel, message: MessageEmbed) {
         try {
             channel.sendMessageEmbeds(message).queue()
@@ -55,11 +54,13 @@ object Utils {
     @Throws(InsufficientPermissionException::class)
     fun modifyRolesOfMember(member: Member, rolesToAdd: MutableSet<Role>, rolesToRemove: MutableSet<Role>) {
         val rolesToAddFiltered = rolesToAdd
+            .asSequence()
             .filter { role: Role -> !role.isManaged }
             .filter { role: Role -> role.guild.publicRole.id != role.id }
             .filter { role: Role -> !member.roles.contains(role) }
             .toMutableSet()
         val rolesToRemoveFiltered = rolesToRemove
+            .asSequence()
             .filter { role: Role -> !role.isManaged }
             .filter { role: Role -> role.guild.publicRole.id != role.id }
             .filter { role: Role -> member.roles.contains(role) }
@@ -85,10 +86,12 @@ object Utils {
             isJsonValid(StringReader(json))
         } catch (ignored: IOException) {
             false
+        } catch (ignored: AssertionError) {
+            false
         }
     }
 
-    @Throws(IOException::class)
+    @Throws(IOException::class, AssertionError::class)
     private fun isJsonValid(reader: Reader): Boolean {
         return isJsonValid(JsonReader(reader))
     }
