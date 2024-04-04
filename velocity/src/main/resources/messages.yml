@@ -38,6 +38,7 @@ discord:
     playerlogin: '%playername% has logged in to the server.'
     firstplayerlogin: '%playername% has logged in to the server for the first time.'
     disconnect: '%playername% disconnected from the server.'
+    server-switch: '%playername% switched from %previous-server% to %server%.'
 
   command:
     onlineplayers:

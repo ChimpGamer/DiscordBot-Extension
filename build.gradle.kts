@@ -1,12 +1,12 @@
 plugins {
-    kotlin("jvm") version "1.9.22"
+    kotlin("jvm") version "1.9.23"
     //`maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "1.8.0"
+    version = "1.8.2-SNAPSHOT"
 
     repositories {
         mavenCentral()

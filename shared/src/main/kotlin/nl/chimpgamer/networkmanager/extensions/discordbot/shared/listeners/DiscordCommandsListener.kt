@@ -1,11 +1,15 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners
 
+import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.events.CoroutineEventListener
 import dev.minn.jda.ktx.events.onCommand
 import dev.minn.jda.ktx.interactions.commands.option
 import dev.minn.jda.ktx.interactions.commands.restrict
 import dev.minn.jda.ktx.interactions.commands.slash
 import dev.minn.jda.ktx.interactions.commands.updateCommands
+import dev.minn.jda.ktx.messages.reply_
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
@@ -34,7 +38,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
         handleCommands(jda)
     }
 
-    private fun handleCommands(jda: JDA) {
+    private suspend fun handleCommands(jda: JDA) {
         val commandSettings = discordBot.commandSettings
         val registerCommandName = commandSettings.getString(CommandSetting.DISCORD_REGISTER_COMMAND)
         val registerCommandDescription = commandSettings.getString(CommandSetting.DISCORD_REGISTER_DESCRIPTION)
@@ -52,7 +56,6 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
         val uptimeCommandName = commandSettings.getString(CommandSetting.DISCORD_UPTIME_COMMAND)
         val uptimeCommandDescription = commandSettings.getString(CommandSetting.DISCORD_UPTIME_DESCRIPTION)
-
 
         jda.updateCommands {
             slash(registerCommandName, registerCommandDescription)
@@ -73,7 +76,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             slash(uptimeCommandName, uptimeCommandDescription) {
                 restrict(guild = true, Permission.MESSAGE_SEND)
             }
-        }.queue()
+        }.await()
 
         jda.onCommand(registerCommandName) { event ->
             val discordUserManager = discordBot.discordUserManager
@@ -81,11 +84,11 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 checkNotNull(discordBot.guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
                 val member = event.member ?: discordBot.guild.getMember(event.user)
                 if (member == null) {
-                    event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_NOT_IN_SERVER)).setEphemeral(true).queue()
+                    event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_NOT_IN_SERVER)).setEphemeral(true).await()
                     return@onCommand
                 }
                 if (member.isPending) {
-                    event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_MEMBERSHIP_SCREENING_REQUIREMENTS_NOT_MET)).setEphemeral(true).queue()
+                    event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_MEMBERSHIP_SCREENING_REQUIREMENTS_NOT_MET)).setEphemeral(true).await()
                     return@onCommand
                 }
 
@@ -95,9 +98,9 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
                         val data = DataObject.fromJson(registrationInProcessMessage)
                         val embedBuilder = EmbedBuilder.fromData(data)
-                        event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue()
+                        event.replyEmbeds(embedBuilder.build()).setEphemeral(true).await()
                     } else {
-                        event.reply(registrationInProcessMessage).setEphemeral(true).queue()
+                        event.reply(registrationInProcessMessage).setEphemeral(true).await()
                     }
                     return@onCommand
                 }
@@ -107,11 +110,10 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     if (Utils.isJsonValid(registrationCompletedMessage)) {
                         val data = DataObject.fromJson(registrationCompletedMessage)
                         val embedBuilder = EmbedBuilder.fromData(data)
-                        event.replyEmbeds(embedBuilder.build()).setEphemeral(true).queue()
+                        event.replyEmbeds(embedBuilder.build()).setEphemeral(true).await()
                     } else {
-                        event.reply(registrationCompletedMessage).setEphemeral(true).queue()
+                        event.reply(registrationCompletedMessage).setEphemeral(true).await()
                     }
-                    //event.reply("You have already registered your account to a minecraft account.").setEphemeral(true).queue()
                     return@onCommand
                 }
 
@@ -138,13 +140,13 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     }
                 }
                 val playerList = sb.toString().trim()
-                event.reply(playerList).queue()
+                event.reply(playerList).await()
             } else {
                 val serverName = event.getOption("servername")?.asString
                 if (serverName == null || !discordBot.networkManager.getAllServerNames().contains(serverName)) {
                     event.reply(discordBot.messages.getString(DCMessage.COMMAND_PLAYERLIST_INVALID_SERVER)
                         .replace("%mention%", event.user.asMention)
-                        .replace("%server%", serverName.toString())).queue()
+                        .replace("%server%", serverName.toString())).await()
                     return@onCommand
                 }
 
@@ -157,7 +159,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     sb = StringBuilder(sb.toString().substring(0, sb.toString().length - 2))
                 }
                 val playerList = sb.toString().trim()
-                event.reply(playerList).queue()
+                event.reply(playerList).await()
             }
         }
 
@@ -168,7 +170,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 discordBot.messages.getString(DCMessage.COMMAND_ONLINEPLAYERS_RESPONSE)
                     .replace("%mention%", event.user.asMention)
                     .replace("%players%", discordBot.networkManager.onlinePlayersCount.toString())
-            ).queue()
+            ).await()
         }
 
         jda.onCommand(playtimeCommandName) { event ->
@@ -177,6 +179,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             val uuid = discordBot.discordUserManager.getUuidByDiscordId(event.user.id)
             if (uuid == null) {
                 discordBot.platform.warn("${event.user.name} tried to use the playtime command but is not registered!")
+                event.reply_("You need to link your account before you can use this command!").setEphemeral(true).await()
                 return@onCommand
             }
             if (discordBot.networkManager.isPlayerOnline(uuid, true)) {
@@ -184,9 +187,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
                 val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
                 val embedBuilder = EmbedBuilder.fromData(data).apply {
-                    val title = data.getString("title", null)?.apply {
-                        replace("%playername%", player.name)
-                    }
+                    val title = data.getString("title", null)?.replace("%playername%", player.name)
                     setTitle(title)
                     parsePlaceholdersToFields { text ->
                         val formattedPlaytime = TimeUtils.getTimeString(1, player.playtime / 1000)
@@ -196,33 +197,30 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     }
                 }
 
-                event.replyEmbeds(embedBuilder.build()).queue()
+                event.hook.sendMessageEmbeds(embedBuilder.build()).await()
             } else {
                 event.deferReply().queue()
-                discordBot.scheduler.runAsync({
-                    val result = getOfflinePlayerPlaytime(uuid)
-                    val userName = result.first
-                    val playtime = result.second
-                    if (userName.isEmpty() || playtime == 0L) {
-                        return@runAsync
-                    }
+                val result = getOfflinePlayerPlaytime(uuid)
+                val userName = result.first
+                val playtime = result.second
+                if (userName.isEmpty() || playtime == 0L) {
+                    event.reply_("Something went wrong trying to get your playtime data.").setEphemeral(true).await()
+                    return@onCommand
+                }
 
-                    val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
-                    val embedBuilder = EmbedBuilder.fromData(data).apply {
-                        val title = data.getString("title", null)?.apply {
-                            replace("%playername%", userName)
-                        }
-                        setTitle(title)
-                        parsePlaceholdersToFields { text ->
-                            val formattedPlaytime = TimeUtils.getTimeString(1, playtime / 1000)
-                            text.replace("%playername%", userName)
-                                .replace("%playtime%", formattedPlaytime)
-                                .replace("%liveplaytime%", formattedPlaytime)
-                        }
+                val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
+                val embedBuilder = EmbedBuilder.fromData(data).apply {
+                    val title = data.getString("title", null)?.replace("%playername%", userName)
+                    setTitle(title)
+                    parsePlaceholdersToFields { text ->
+                        val formattedPlaytime = TimeUtils.getTimeString(1, playtime / 1000)
+                        text.replace("%playername%", userName)
+                            .replace("%playtime%", formattedPlaytime)
+                            .replace("%liveplaytime%", formattedPlaytime)
                     }
+                }
 
-                    event.replyEmbeds(embedBuilder.build()).queue()
-                }, false)
+                event.hook.sendMessageEmbeds(embedBuilder.build()).await()
             }
         }
 
@@ -230,28 +228,30 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_UPTIME_ENABLED)) return@onCommand
 
             val uptime = ManagementFactory.getRuntimeMXBean().startTime
-            event.reply(TimeUtils.getTimeString(1, (System.currentTimeMillis() - uptime) / 1000)).queue()
+            event.reply(TimeUtils.getTimeString(1, (System.currentTimeMillis() - uptime) / 1000)).await()
         }
     }
 
-    private fun getOfflinePlayerPlaytime(uuid: UUID): Pair<String, Long> {
-        var pair = Pair("", 0L)
-        try {
-            discordBot.mySQL.connection.use { connection ->
-                connection.prepareStatement("SELECT `username`, `playtime` FROM nm_players WHERE `uuid`=?;").use { ps ->
-                    ps.setString(1, uuid.toString())
-                    ps.executeQuery().use { rs ->
-                        if (rs.next()) {
-                            val username = rs.getString("username")
-                            val playtime = rs.getLong("playtime")
-                            pair = Pair(username, playtime)
+    private suspend fun getOfflinePlayerPlaytime(uuid: UUID): Pair<String, Long> {
+        return withContext(Dispatchers.IO) {
+            var pair = Pair("", 0L)
+            try {
+                discordBot.mySQL.connection.use { connection ->
+                    connection.prepareStatement("SELECT `username`, `playtime` FROM nm_players WHERE `uuid`=?;").use { ps ->
+                        ps.setString(1, uuid.toString())
+                        ps.executeQuery().use { rs ->
+                            if (rs.next()) {
+                                val username = rs.getString("username")
+                                val playtime = rs.getLong("playtime")
+                                pair = Pair(username, playtime)
+                            }
                         }
                     }
                 }
+            } catch (ex: SQLException) {
+                ex.printStackTrace()
             }
-        } catch (ex: SQLException) {
-            ex.printStackTrace()
+            pair
         }
-        return pair
     }
 }

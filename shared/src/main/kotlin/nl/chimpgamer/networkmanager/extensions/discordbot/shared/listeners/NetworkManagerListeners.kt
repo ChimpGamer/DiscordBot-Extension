@@ -6,6 +6,7 @@ import nl.chimpgamer.networkmanager.api.event.PostOrders
 import nl.chimpgamer.networkmanager.api.event.events.*
 import nl.chimpgamer.networkmanager.api.event.events.player.AsyncPlayerLoginEvent
 import nl.chimpgamer.networkmanager.api.event.events.player.PlayerDisconnectEvent
+import nl.chimpgamer.networkmanager.api.event.events.player.ServerConnectedEvent
 import nl.chimpgamer.networkmanager.api.event.events.ticket.TicketCreateEvent
 import nl.chimpgamer.networkmanager.api.models.punishments.Punishment
 import nl.chimpgamer.networkmanager.api.models.servers.Server
@@ -69,12 +70,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
             val data = DataObject.fromJson(discordBot.messages.getString(dcMessage))
             val embedBuilder = EmbedBuilder.fromData(data).apply {
-                val title = data.getString("title", null)?.apply {
-                    insertServerPlaceholders(this, server)
-                }
-                val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.apply {
-                    insertServerPlaceholders(this, server)
-                }
+                val title = insertServerPlaceholders(data.getString("title", null), server)
+                val description = insertServerPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, server)
                 setTitle(title)
                 setDescription(description)
                 parsePlaceholdersToFields { text -> insertServerPlaceholders(text, server) }
@@ -95,12 +92,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             if (event.punishment.isActive) {
                 val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.REPORT_ALERT))
                 val embedBuilder = EmbedBuilder.fromData(data).apply {
-                    val title = data.getString("title", null)?.apply {
-                        insertPunishmentPlaceholders(this, event)
-                    }
-                    val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.apply {
-                        insertPunishmentPlaceholders(this, event)
-                    }
+                    val title = insertPunishmentPlaceholders(data.getString("title", null), event)
+                    val description = insertPunishmentPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
                     setTitle(title)
                     setDescription(description)
                     parsePlaceholdersToFields { text -> insertPunishmentPlaceholders(text, event) }
@@ -117,12 +110,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
             val data = DataObject.fromJson(discordBot.messages.getString(dcMessage))
             val embedBuilder = EmbedBuilder.fromData(data).apply {
-                val title = data.getString("title", null)?.apply {
-                    insertPunishmentPlaceholders(this, event)
-                }
-                val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.apply {
-                    insertPunishmentPlaceholders(this, event)
-                }
+                val title = insertPunishmentPlaceholders(data.getString("title", null), event)
+                val description = insertPunishmentPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
                 setTitle(title)
                 setDescription(description)
                 parsePlaceholdersToFields { text -> insertPunishmentPlaceholders(text, event) }
@@ -142,12 +131,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.HELPOP_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
-            val title = data.getString("title", null)?.apply {
-                insertHelpOPPlaceholders(this, event)
-            }
-            val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.apply {
-                insertHelpOPPlaceholders(this, event)
-            }
+            val title = insertHelpOPPlaceholders(data.getString("title", null), event)
+            val description = insertHelpOPPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
             setTitle(title)
             setDescription(description)
             parsePlaceholdersToFields { text -> insertHelpOPPlaceholders(text, event) }
@@ -166,12 +151,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.TICKET_CREATE_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
-            val title = data.getString("title", null)?.apply {
-                insertTicketPlaceholders(this, event)
-            }
-            val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.apply {
-                insertTicketPlaceholders(this, event)
-            }
+            val title = insertTicketPlaceholders(data.getString("title", null), event)
+            val description = insertTicketPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
             setTitle(title)
             setDescription(description)
             parsePlaceholdersToFields { text -> insertTicketPlaceholders(text, event) }
@@ -187,12 +168,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.CHATLOG_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
-            val title = data.getString("title", null)?.apply {
-                insertChatLogPlaceholders(this, event)
-            }
-            val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.apply {
-                insertChatLogPlaceholders(this, event)
-            }
+            val title = insertChatLogPlaceholders(data.getString("title", null), event)
+            val description = insertChatLogPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
             setTitle(title)
             setDescription(description)
             parsePlaceholdersToFields { text -> insertChatLogPlaceholders(text, event) }
@@ -245,6 +222,22 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_DISCONNECT_CHANNEL))
                 ?: return
         sendChannelMessage(channel, Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_DISCONNECT)))
+    }
+
+    private fun onServerConnected(event: ServerConnectedEvent) {
+        val player = event.player
+        val server = event.server
+        val previousServer = event.previousServer ?: return
+
+        val channel =
+            discordBot.guild.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_DISCONNECT_CHANNEL))
+                ?: return
+
+        val message = Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_SERVER_SWITCH)
+            .replace("%previous-server%", previousServer.serverName)
+            .replace("%server%", server.serverName)
+        )
+        sendChannelMessage(channel, message)
     }
 
     private fun insertServerPlaceholders(s: String?, server: Server): String {
@@ -366,6 +359,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             subscribe(ChatLogCreatedEvent::class.java, ::onChatLogCreated)
             subscribe(AsyncPlayerLoginEvent::class.java, ::onAsyncPlayerLogin)
             subscribe(PlayerDisconnectEvent::class.java, ::onDisconnect)
+            subscribe(ServerConnectedEvent::class.java, ::onServerConnected)
             subscribe(PlayerChatEvent::class.java, ::onPlayerChat, PostOrders.LAST)
         }
     }

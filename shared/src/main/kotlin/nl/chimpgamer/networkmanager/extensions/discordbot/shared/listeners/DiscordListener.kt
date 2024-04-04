@@ -1,10 +1,12 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners
 
+import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.events.CoroutineEventListener
 import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.kyori.adventure.text.Component
 import nl.chimpgamer.networkmanager.api.utils.adventure.parse
 import nl.chimpgamer.networkmanager.api.values.Command
@@ -18,9 +20,17 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks.GuildJoinCheckTask
 
-class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
+class DiscordListener(private val discordBot: DiscordBot) : CoroutineEventListener {
 
-    override fun onMessageReceived(event: MessageReceivedEvent) {
+    override suspend fun onEvent(event: GenericEvent) {
+        when (event) {
+            is MessageReceivedEvent -> onMessageReceived(event)
+            is GuildMemberJoinEvent -> onGuildMemberJoin(event)
+            is GuildMemberUpdatePendingEvent -> onGuildMemberUpdatePending(event)
+        }
+    }
+
+    private fun onMessageReceived(event: MessageReceivedEvent) {
         if (!event.isFromType(ChannelType.TEXT) || event.author.isBot) return
 
         val discordUserManager = discordBot.discordUserManager
@@ -125,14 +135,14 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
         }
     }
 
-    override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
+    private fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
         val member = event.member
         if (event.guild == discordBot.guild && !member.user.isBot) {
             discordBot.scheduler.runAsync(GuildJoinCheckTask(discordBot, member), false)
         }
     }
 
-    override fun onGuildMemberUpdatePending(event: GuildMemberUpdatePendingEvent) {
+    private suspend fun onGuildMemberUpdatePending(event: GuildMemberUpdatePendingEvent) {
         val member = event.member
         if (event.guild == discordBot.guild && !member.user.isBot) {
             if (!event.oldPending && event.newPending) {
@@ -140,7 +150,7 @@ class DiscordListener(private val discordBot: DiscordBot) : ListenerAdapter() {
                 if (message.isEmpty()) {
                     return
                 }
-                member.user.openPrivateChannel().queue { it.sendMessage(message.replace("%mention%", member.user.asMention)).queue() }
+                member.user.openPrivateChannel().await().sendMessage(message.replace("%mention%", member.user.asMention)).await()
             }
         }
     }

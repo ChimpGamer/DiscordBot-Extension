@@ -52,9 +52,7 @@ class CloudSuggestionCommand(private val discordBot: DiscordBot) {
 
                 val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.SUGGESTION_ALERT))
                 val embedBuilder = EmbedBuilder.fromData(data).apply {
-                    val title = data.getString("title", null)?.apply {
-                        replace("%playername%", player.name)
-                    }
+                    val title = data.getString("title", null)?.replace("%playername%", player.name)
                     setTitle(title)
                     parsePlaceholdersToFields { text ->
                         Placeholders.setPlaceholders(

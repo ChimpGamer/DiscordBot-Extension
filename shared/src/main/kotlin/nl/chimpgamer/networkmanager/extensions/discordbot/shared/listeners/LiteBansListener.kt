@@ -49,12 +49,8 @@ class LiteBansListener(private val discordBot: DiscordBot) {
 
         val data = DataObject.fromJson(discordBot.messages.getString(dcMessage))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
-            val title = data.getString("title", null)?.apply {
-                insertPlaceholders(this, entry)
-            }
-            val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.apply {
-                insertPlaceholders(this, entry)
-            }
+            val title = insertPlaceholders(data.getString("title", null), entry)
+            val description = insertPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, entry)
             setTitle(title)
             setDescription(description)
             parsePlaceholdersToFields { text -> insertPlaceholders(text, entry) }

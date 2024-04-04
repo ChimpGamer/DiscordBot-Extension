@@ -26,6 +26,7 @@ enum class DCMessage(val path: String) {
     EVENT_PLAYERLOGIN("discord.event.playerlogin"),
     EVENT_FIRST_PLAYERLOGIN("discord.event.firstplayerlogin"),
     EVENT_DISCONNECT("discord.event.disconnect"),
+    EVENT_SERVER_SWITCH("discord.event.server-switch"),
 
     COMMAND_ONLINEPLAYERS_RESPONSE("discord.command.onlineplayers.response"),
     COMMAND_PLAYERLIST_INVALID_SERVER("discord.command.playerlist.invalid-server"),

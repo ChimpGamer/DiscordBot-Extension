@@ -52,9 +52,8 @@ class CloudBugCommand(private val discordBot: DiscordBot) {
 
                 val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.BUGREPORT_ALERT))
                 val embedBuilder = EmbedBuilder.fromData(data).apply {
-                    val title = data.getString("title", null)?.apply {
-                        replace("%bug%", message).replace("%server%", player.server ?: "null")
-                    }
+                    val title = data.getString("title", null)?.replace("%bug%", message)
+                        ?.replace("%server%", player.server ?: "null")
                     setTitle(title)
                     parsePlaceholdersToFields { text ->
                         Placeholders.setPlaceholders(
