@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -41,12 +42,12 @@ class DiscordManager(private val discordBot: DiscordBot) {
             guilds.isEmpty() -> {
                 discordBot.platform.warn("The Bot is not a member of a guild!")
             }
-            guilds.size > 1 -> {
+            guilds.size > discordBot.settings.getInt(Setting.DISCORD_MAX_GUILDS) -> {
                 discordBot.platform.warn("The Bot is a member of too many guilds!")
             }
 
             else -> {
-                guild = guilds[0]
+                guild = jda.getGuildById(discordBot.settings.getString(Setting.DISCORD_MAIN_GUILD)) ?: guilds[0]
                 success = true
             }
         }
@@ -211,5 +212,9 @@ class DiscordManager(private val discordBot: DiscordBot) {
             val roles = guild.getRolesByName(query, true)
             roles.firstOrNull { it.name.equals(query, ignoreCase = true) }
         }
+    }
+
+    fun getTextChannelById(id: String): TextChannel? {
+        return jda.guilds.firstNotNullOfOrNull { it.getTextChannelById(id) }
     }
 }

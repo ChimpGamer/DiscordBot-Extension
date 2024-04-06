@@ -42,31 +42,22 @@ class Settings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFo
         }
     }
 
-    fun getString(setting: Setting): String {
-        return getString(setting.path, setting.defaultValue as String)
-    }
-
-    fun getBoolean(setting: Setting): Boolean {
-        return getBoolean(setting.path, setting.defaultValue as Boolean)
-    }
-
-    fun getStringList(setting: Setting): List<String> {
-        return getStringList(setting.path)
-    }
+    fun getString(setting: Setting): String = getString(setting.path, setting.defaultValue as String)
+    fun getInt(setting: Setting): Int = getInt(setting.path, setting.defaultValue as Int)
+    fun getBoolean(setting: Setting): Boolean = getBoolean(setting.path, setting.defaultValue as Boolean)
+    fun getStringList(setting: Setting): List<String> = getStringList(setting.path)
 
     @Suppress("UNCHECKED_CAST")
     fun getMap(setting: Setting): Map<String, String> {
-        val map: MutableMap<String, String> = HashMap()
         val mapSection = config.getConfigurationSection(setting.path) ?: return setting.defaultValue as Map<String, String>
-        for (key in mapSection.getKeys(false)) {
-            map[key] = getString("${setting.path}.$key")!!
-        }
-        return map
+        return mapSection.getKeys(false).associateWith { mapSection.getString(it) }
     }
 }
 
 enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_TOKEN("bot.discord.token", "YourBotTokenHere"),
+    DISCORD_MAX_GUILDS("bot.discord.max-guilds", 1),
+    DISCORD_MAIN_GUILD("bot.discord.max-guilds", "000000000000000000"),
     DISCORD_STATUS_ENABLED("bot.discord.status.enabled", true),
     DISCORD_STATUS_TYPE("bot.discord.status.type", "watching"),
     DISCORD_STATUS_MESSAGE("bot.discord.status.message", "%players% players on your server"),
@@ -74,7 +65,10 @@ enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_REGISTER_ADD_ROLE_ROLE_NAME("bot.discord.register.addRole.roleName", "YourVerifiedRoleNameHere"),
     DISCORD_REGISTER_EXECUTE_COMMANDS("bot.discord.register.executeCommands", "[]"),
     DISCORD_UNREGISTER_KICK_ENABLED("bot.discord.unregister.kick.enabled", false),
-    DISCORD_UNREGISTER_KICK_REASON("bot.discord.unregister.kick.reason", "You have been kicked from the ... discord because your account got unlinked!"),
+    DISCORD_UNREGISTER_KICK_REASON(
+        "bot.discord.unregister.kick.reason",
+        "You have been kicked from the ... discord because your account got unlinked!"
+    ),
     DISCORD_UNREGISTER_EXECUTE_COMMANDS("bot.discord.unregister.executeCommands", "[]"),
     DISCORD_SYNC_USERNAME_ENABLED("bot.discord.sync.username.enabled", false),
     DISCORD_SYNC_USERNAME_FORMAT("bot.discord.sync.username.format", "%playername%"),
