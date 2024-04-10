@@ -455,3 +455,17 @@ discord:
       "title": "__Server Moderation__",
       "showTimestamp": true
     }
+  maintenance-mode-alert: |-
+    {
+      "fields": [
+        {
+          "name": "State",
+          "value": "%state%",
+          "inline": true
+        }
+      ],
+      "description": "**MAINTENANCE MODE**",
+      "color": -2551040,
+      "title": "__Server Moderation__",
+      "showTimestamp": true
+    }

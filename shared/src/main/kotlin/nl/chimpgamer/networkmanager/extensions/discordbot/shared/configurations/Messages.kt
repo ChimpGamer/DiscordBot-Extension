@@ -50,6 +50,7 @@ enum class DCMessage(val path: String) {
     BUGREPORT_ALERT("discord.bugreport-alert"),
     SUGGESTION_ALERT("discord.suggestion-alert"),
     CHATLOG_ALERT("discord.chatlog-alert"),
+    MAINTENANCE_MODE_ALERT("discord.maintenance-mode-alert")
 }
 
 enum class MCMessage(val path: String) {
