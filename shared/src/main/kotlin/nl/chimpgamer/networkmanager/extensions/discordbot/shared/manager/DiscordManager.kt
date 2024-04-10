@@ -214,7 +214,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         }
     }
 
-    fun getTextChannelById(id: String): TextChannel? {
-        return jda.guilds.firstNotNullOfOrNull { it.getTextChannelById(id) }
-    }
+    fun getTextChannelById(id: String): TextChannel? = jda.getTextChannelById(id)
+
+    fun getTextChannelById(setting: Setting): TextChannel? = getTextChannelById(discordBot.settings.getString(setting))
 }

@@ -43,8 +43,7 @@ class CloudSuggestionCommand(private val discordBot: DiscordBot) {
                     return@handler
                 }
 
-                val suggestionsChannel =
-                    discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_SUGGESTION_CHANNEL))
+                val suggestionsChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_SUGGESTION_CHANNEL)
                 if (suggestionsChannel == null) {
                     player.sendRichMessage("<red>Invalid TextChannel Id")
                     return@handler

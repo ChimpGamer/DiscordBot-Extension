@@ -43,9 +43,7 @@ class LiteBansListener(private val discordBot: DiscordBot) {
     }
 
     private fun sendMessageToPunishmentChannel(entry: Entry, dcMessage: DCMessage) {
-        val punishmentsChannel =
-            discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_PUNISHMENT_CHANNEL))
-                ?: return
+        val punishmentsChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_PUNISHMENT_CHANNEL) ?: return
 
         val data = DataObject.fromJson(discordBot.messages.getString(dcMessage))
         val embedBuilder = EmbedBuilder.fromData(data).apply {

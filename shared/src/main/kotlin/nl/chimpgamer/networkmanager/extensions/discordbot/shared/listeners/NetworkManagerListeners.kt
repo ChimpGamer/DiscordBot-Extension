@@ -30,9 +30,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
     private fun onStaffChat(event: StaffChatEvent) {
         if (event.isCancelled) return
-        val staffChatChannel =
-            discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL))
-                ?: return
+        val staffChatChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL) ?: return
         sendChannelMessage(
             staffChatChannel,
             discordBot.messages.getString(DCMessage.EVENT_STAFFCHAT)
@@ -45,9 +43,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
     private fun onAdminChat(event: AdminChatEvent) {
         if (event.isCancelled) return
-        val adminChatChannel =
-            discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL))
-                ?: return
+        val adminChatChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL) ?: return
         sendChannelMessage(
             adminChatChannel,
             discordBot.messages.getString(DCMessage.EVENT_ADMINCHAT)
@@ -84,9 +80,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             return
         }
         if (event.punishment.type === Punishment.Type.REPORT) {
-            val reportChannel =
-                discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_REPORT_CHANNEL))
-                    ?: return
+            val reportChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_REPORT_CHANNEL) ?: return
             if (event.punishment.isActive) {
                 val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.REPORT_ALERT))
                 val embedBuilder = EmbedBuilder.fromData(data).apply {
@@ -101,7 +95,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             }
         } else {
             val punishmentsChannel =
-                discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_PUNISHMENT_CHANNEL))
+                discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_PUNISHMENT_CHANNEL)
                     ?: return
 
             val dcMessage = if (event.punishment.isActive) DCMessage.PUNISHMENT_ALERT else DCMessage.UNPUNISHMENT_ALERT
@@ -123,9 +117,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         if (event.isCancelled) {
             return
         }
-        val helpOPChannel =
-            discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_HELPOP_CHANNEL))
-                ?: return
+        val helpOPChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_HELPOP_CHANNEL) ?: return
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.HELPOP_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
@@ -143,9 +135,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         if (event.isCancelled) {
             return
         }
-        val ticketChannel =
-            discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_TICKETS_CHANNEL))
-                ?: return
+        val ticketChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_TICKETS_CHANNEL) ?: return
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.TICKET_CREATE_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
@@ -160,9 +150,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     }
 
     private fun onChatLogCreated(event: ChatLogCreatedEvent) {
-        val chatLogChannel =
-            discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_CHATLOG_CHANNEL))
-                ?: return
+        val chatLogChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_CHATLOG_CHANNEL) ?: return
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.CHATLOG_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
@@ -197,7 +185,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
         if (event.hasLoggedInBefore) {
             val channel =
-                discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_LOGIN_CHANNEL))
+                discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_LOGIN_CHANNEL)
                     ?: return
             sendChannelMessage(
                 channel,
@@ -205,7 +193,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             )
         } else {
             val channel =
-                discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_FIRST_LOGIN_CHANNEL))
+                discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_FIRST_LOGIN_CHANNEL)
                     ?: return
             sendChannelMessage(
                 channel,
@@ -217,7 +205,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     private fun onDisconnect(event: PlayerDisconnectEvent) {
         val player = event.player
         val channel =
-            discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_DISCONNECT_CHANNEL))
+            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_DISCONNECT_CHANNEL)
                 ?: return
         sendChannelMessage(channel, Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_DISCONNECT)))
     }
@@ -228,7 +216,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val previousServer = event.previousServer ?: return
 
         val channel =
-            discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_DISCONNECT_CHANNEL))
+            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_DISCONNECT_CHANNEL)
                 ?: return
 
         val message = Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_SERVER_SWITCH)
@@ -247,7 +235,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             .replace("%ip%", server.ip)
             .replace("%port%", server.port.toString())
             .replace("%groups%", server.serverGroups.joinToString { it.groupName })
-            .replace("%isrestricted%", server.restricted.toString())
+            .replace("%restricted%", server.restricted.toString())
     }
 
     private fun insertHelpOPPlaceholders(s: String?, event: HelpOPRequestEvent): String {

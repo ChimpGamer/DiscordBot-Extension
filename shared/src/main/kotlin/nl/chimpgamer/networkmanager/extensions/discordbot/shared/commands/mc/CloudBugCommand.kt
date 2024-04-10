@@ -43,8 +43,7 @@ class CloudBugCommand(private val discordBot: DiscordBot) {
                     return@handler
                 }
 
-                val bugReportChannel =
-                    discordBot.discordManager.getTextChannelById(discordBot.settings.getString(Setting.DISCORD_EVENTS_BUGREPORT_CHANNEL))
+                val bugReportChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_BUGREPORT_CHANNEL)
                 if (bugReportChannel == null) {
                     player.sendRichMessage("<red>Invalid TextChannel Id")
                     return@handler
