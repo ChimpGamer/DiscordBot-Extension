@@ -33,6 +33,8 @@ subprojects {
 
         compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.2")
 
+        compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.15.0-SNAPSHOT")
+
         /*implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
         implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")*/
     }
