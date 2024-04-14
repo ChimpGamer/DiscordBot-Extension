@@ -12,7 +12,9 @@ import nl.chimpgamer.networkmanager.api.models.punishments.Punishment
 import nl.chimpgamer.networkmanager.api.models.servers.Server
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
+import nl.chimpgamer.networkmanager.api.utils.adventure.parse
 import nl.chimpgamer.networkmanager.api.utils.adventure.toLegacy
+import nl.chimpgamer.networkmanager.api.utils.adventure.toPlainText
 import nl.chimpgamer.networkmanager.api.utils.stripColors
 import nl.chimpgamer.networkmanager.api.values.Message
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
@@ -229,9 +231,10 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     private fun insertServerPlaceholders(s: String?, server: Server): String {
         if (s == null) return ""
         return s.replace("%id%", server.id.toString())
-            .replace("%name%", server.displayName.stripColors())
-            .replace("%servername%", server.displayName.stripColors())
-            .replace("%motd%", server.motd?.stripColors() ?: "No MOTD")
+            .replace("%name%", server.displayName.parse().toPlainText())
+            .replace("%servername%", server.serverName)
+            .replace("%displayname%", server.displayName.parse().toPlainText())
+            .replace("%motd%", server.motd?.parse()?.toPlainText() ?: "No MOTD")
             .replace("%ip%", server.ip)
             .replace("%port%", server.port.toString())
             .replace("%groups%", server.serverGroups.joinToString { it.groupName })
