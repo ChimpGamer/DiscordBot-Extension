@@ -1,28 +1,40 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations
 
-import nl.chimpgamer.networkmanager.api.utils.FileUtils
+import dev.dejvokep.boostedyaml.YamlDocument
+import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning
+import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings
+import dev.dejvokep.boostedyaml.settings.general.GeneralSettings
+import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings
+import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 
-class CommandSettings(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFolder.absolutePath, "commands.yml") {
-    fun init() {
-        setupFile(discordBot.platform.getResource("commands.yml"))
-        for (commandSetting in CommandSetting.entries) {
-            addDefault(commandSetting.path, commandSetting.defaultValue)
+class CommandSettings(private val discordBot: DiscordBot) {
+    private val config: YamlDocument
+
+    init {
+        val file = discordBot.dataFolder.resolve("commands.yml")
+        val inputStream = discordBot.platform.getResource("commands.yml")
+        val loaderSettings = LoaderSettings.builder().setAutoUpdate(true).build()
+        val updaterSettings = UpdaterSettings.builder().setVersioning(BasicVersioning("config-version")).build()
+        config = if (inputStream != null) {
+            YamlDocument.create(file, inputStream, GeneralSettings.DEFAULT, loaderSettings, DumperSettings.DEFAULT, updaterSettings)
+        } else {
+            YamlDocument.create(file, GeneralSettings.DEFAULT, loaderSettings, DumperSettings.DEFAULT, updaterSettings)
         }
-        copyDefaults(true)
-        save()
     }
 
+    fun reload() = runCatching { config.reload() }
+
     fun getBoolean(commandSetting: CommandSetting): Boolean {
-        return getBoolean(commandSetting.path, commandSetting.defaultValue as Boolean)
+        return config.getBoolean(commandSetting.path, commandSetting.defaultValue as Boolean)
     }
 
     fun getString(commandSetting: CommandSetting): String {
-        return getString(commandSetting.path, commandSetting.defaultValue as String)
+        return config.getString(commandSetting.path, commandSetting.defaultValue as String)
     }
 
     fun getInt(commandSetting: CommandSetting): Int {
-        return getInt(commandSetting.path, commandSetting.defaultValue as Int)
+        return config.getInt(commandSetting.path, commandSetting.defaultValue as Int)
     }
 }
 

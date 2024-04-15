@@ -1,0 +1,62 @@
+bot:
+  discord:
+    token: YourBotTokenHere
+    main-guild: '000000000000000000'
+    max-guilds: 1
+    status:
+      enabled: true
+      type: watching
+      message: '%players% players on your server'
+    register:
+      addRole:
+        enabled: false
+        roleName: YourVerifiedRoleNameHere
+      executeCommands: '[]'
+    unregister:
+      kick:
+        enabled: false
+        reason: You have been kicked from the ... discord because your account got
+          unlinked!
+      executeCommands: '[]'
+    sync:
+      username:
+        enabled: false
+        format: '%playername%'
+      ranks:
+        enabled: false
+        map:
+          vip: VIP
+          supervip: SuperVIP
+    events:
+      staffchat:
+        channel: '000000000000000000'
+      adminchat:
+        channel: '000000000000000000'
+      tickets:
+        channel: '000000000000000000'
+      helpop:
+        channel: '000000000000000000'
+      punishment:
+        channel: '000000000000000000'
+      report:
+        channel: '000000000000000000'
+      chatlog:
+        channel: '000000000000000000'
+      suggestion:
+        channel: '000000000000000000'
+      bugreport:
+        channel: '000000000000000000'
+      chat:
+        all: '000000000000000000'
+      serverStatus:
+        all: '000000000000000000'
+      login:
+        channel: '000000000000000000'
+      firstlogin:
+        channel: '000000000000000000'
+      disconnect:
+        channel: '000000000000000000'
+      server-switch:
+        channel: '000000000000000000'
+
+config-version: 1

@@ -1,36 +1,50 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared.commands.mc
 
-import cloud.commandframework.annotations.CommandMethod
-import cloud.commandframework.annotations.CommandPermission
-import nl.chimpgamer.networkmanager.api.models.player.Player
+import cloud.commandframework.CommandManager
+import nl.chimpgamer.networkmanager.api.models.sender.Sender
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.MCMessage
 
-//TODO: Get rid of annotations
 class CloudNetworkManagerBotCommand(private val discordBot: DiscordBot) {
 
-    @CommandMethod("networkmanagerbot|nmbot reload config")
-    @CommandPermission("networkmanagerbot.command.reload")
-    fun networkManagerBotCommandReloadConfig(player: Player) {
-        discordBot.settings.reload()
-        player.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_CONFIG))
-    }
+    fun registerCommands(commandManager: CommandManager<Sender>) {
+        val builder = commandManager.commandBuilder("networkmanagerbot", "nmbot")
 
-    @CommandMethod("networkmanagerbot|nmbot reload messages")
-    @CommandPermission("networkmanagerbot.command.reload")
-    fun networkManagerBotCommandReloadMessages(player: Player) {
-        discordBot.messages.reload()
-        player.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_MESSAGES))
-    }
+        commandManager.command(builder
+            .literal("reload")
+            .literal("config")
+            .permission("networkmanagerbot.command.reload")
+            .handler { context ->
+                val sender = context.sender
+                discordBot.settings.reload()
+                sender.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_CONFIG))
+            }
+        )
 
-    @CommandMethod("networkmanagerbot|nmbot reload jda")
-    @CommandPermission("networkmanagerbot.command.reload")
-    fun networkManagerBotCommandReloadJDA(player: Player) {
-        val success = discordBot.discordManager.restartJDA()
-        if (success) {
-            player.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_SUCCESS))
-        } else {
-            player.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_FAILED))
-        }
+        commandManager.command(builder
+            .literal("reload")
+            .literal("messages")
+            .permission("networkmanagerbot.command.reload")
+            .handler { context ->
+                val sender = context.sender
+                discordBot.messages.reload()
+                sender.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_MESSAGES))
+            }
+        )
+
+        commandManager.command(builder
+            .literal("reload")
+            .literal("jda")
+            .permission("networkmanagerbot.command.reload")
+            .handler { context ->
+                val sender = context.sender
+                val success = discordBot.discordManager.restartJDA()
+                if (success) {
+                    sender.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_SUCCESS))
+                } else {
+                    sender.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_FAILED))
+                }
+            }
+        )
     }
 }

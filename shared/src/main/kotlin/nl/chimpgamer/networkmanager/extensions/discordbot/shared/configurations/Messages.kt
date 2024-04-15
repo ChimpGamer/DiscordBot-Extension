@@ -1,19 +1,36 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations
 
-import nl.chimpgamer.networkmanager.api.utils.FileUtils
+import dev.dejvokep.boostedyaml.YamlDocument
+import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning
+import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings
+import dev.dejvokep.boostedyaml.settings.general.GeneralSettings
+import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings
+import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 
-class Messages(private val discordBot: DiscordBot) : FileUtils(discordBot.dataFolder.absolutePath, "messages.yml") {
-    fun init() {
-        setupFile(discordBot.platform.getResource("messages.yml"))
+class Messages(private val discordBot: DiscordBot) {
+    private val config: YamlDocument
+
+    init {
+        val file = discordBot.dataFolder.resolve("messages.yml")
+        val inputStream = discordBot.platform.getResource("messages.yml")
+        val loaderSettings = LoaderSettings.builder().setAutoUpdate(true).build()
+        val updaterSettings = UpdaterSettings.builder().setVersioning(BasicVersioning("config-version")).build()
+        config = if (inputStream != null) {
+            YamlDocument.create(file, inputStream, GeneralSettings.DEFAULT, loaderSettings, DumperSettings.DEFAULT, updaterSettings)
+        } else {
+            YamlDocument.create(file, GeneralSettings.DEFAULT, loaderSettings, DumperSettings.DEFAULT, updaterSettings)
+        }
     }
 
+    fun reload() = runCatching { config.reload() }
+
     fun getString(dcMessage: DCMessage): String {
-        return getString(dcMessage.path) ?: error("The message ${dcMessage.path} does not exist!")
+        return config.getString(dcMessage.path) ?: error("The message ${dcMessage.path} does not exist!")
     }
 
     fun getString(mcMessage: MCMessage): String {
-        return getString(mcMessage.path) ?: error("The message ${mcMessage.path} does not exist!")
+        return config.getString(mcMessage.path) ?: error("The message ${mcMessage.path} does not exist!")
     }
 }
 

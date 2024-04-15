@@ -62,6 +62,7 @@ subprojects {
             relocate("cloud.commandframework", "$libPackage.cloud")
             relocate("com.fasterxml.jackson", "$shadedPackage.jackson")
             relocate("net.dv8tion.jda", "$shadedPackage.jda")
+            relocate("dev.dejvokep.boostedyaml", "$libPackage.boostedyaml")
         }
 
         build {

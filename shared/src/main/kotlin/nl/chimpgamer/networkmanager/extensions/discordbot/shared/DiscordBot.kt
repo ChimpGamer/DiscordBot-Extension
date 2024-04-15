@@ -4,10 +4,7 @@ import net.dv8tion.jda.api.entities.Guild
 import nl.chimpgamer.networkmanager.api.Scheduler
 import nl.chimpgamer.networkmanager.common_proxy.plugin.NetworkManagerPluginProxyBase
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.commands.mc.*
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.CommandSetting
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Settings
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.CommandSettings
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Messages
+import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners.LiteBansListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners.NetworkManagerListeners
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.manager.DiscordManager
@@ -32,7 +29,7 @@ class DiscordBot(val platform: Platform) {
     // Configuration files
     val settings = Settings(this)
     val commandSettings = CommandSettings(this)
-    lateinit var messages: Messages
+    val messages = Messages(this)
 
     val mySQL = MySQL(this)
     val discordUserManager = DiscordUserManager(this)
@@ -59,12 +56,6 @@ class DiscordBot(val platform: Platform) {
             return
         }
         Utils.initialize(this)
-
-        // Initialize configuration files
-        settings.init()
-        commandSettings.init()
-        messages = Messages(this)
-        messages.init()
 
         discordUserManager.load()
 
@@ -125,7 +116,8 @@ class DiscordBot(val platform: Platform) {
         platform.cloudCommandManager.commandManager.command(
             CloudUnregisterCommand(this)
             .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), *commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES).split(", ").toTypedArray()))
-        platform.cloudCommandManager.annotationParser.parse(CloudNetworkManagerBotCommand(this))
+
+        CloudNetworkManagerBotCommand(this).registerCommands(platform.cloudCommandManager.commandManager)
     }
 
     private fun expireTokens() {

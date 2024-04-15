@@ -1,8 +1,7 @@
 dependencies {
-    compileOnly("com.github.Carleslc:Simple-YAML:1.8.4")
+    compileOnly("dev.dejvokep:boosted-yaml:1.3.4")
 
     compileOnly("cloud.commandframework:cloud-core:1.8.4")
-    compileOnly("cloud.commandframework:cloud-annotations:1.8.4")
 
     compileOnly("com.google.code.gson:gson:2.10.1")
 

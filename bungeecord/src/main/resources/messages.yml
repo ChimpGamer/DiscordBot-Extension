@@ -469,3 +469,5 @@ discord:
       "title": "__Server Moderation__",
       "showTimestamp": true
     }
+
+config-version: 1

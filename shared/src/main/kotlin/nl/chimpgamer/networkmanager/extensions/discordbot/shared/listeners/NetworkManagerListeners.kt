@@ -218,7 +218,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val previousServer = event.previousServer ?: return
 
         val channel =
-            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_DISCONNECT_CHANNEL)
+            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_SERVER_SWITCH_CHANNEL)
                 ?: return
 
         val message = Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_SERVER_SWITCH)
