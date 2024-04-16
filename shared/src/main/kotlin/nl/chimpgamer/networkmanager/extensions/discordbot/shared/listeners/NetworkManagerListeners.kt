@@ -337,6 +337,21 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         serverChatTextChannel?.sendMessage(message)?.queue()
     }
 
+    private fun onMaintenanceModeToggle(event: MaintenanceModeToggleEvent) {
+        val channel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_MAINTENANCE_MODE_CHANNEL) ?: return
+        val message = if (event.enabled) DCMessage.MAINTENANCE_MODE_ALERT_ENABLED else DCMessage.MAINTENANCE_MODE_ALERT_DISABLED
+        val data = DataObject.fromJson(discordBot.messages.getString(message))
+        val embedBuilder = EmbedBuilder.fromData(data).apply {
+            val title = data.getString("title", null)?.replace("%state%", event.enabled.toString())
+            val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.replace("%state%", event.enabled.toString())
+            setTitle(title)
+            setDescription(description)
+            parsePlaceholdersToFields { text -> text.replace("%state%", event.enabled.toString()) }
+        }
+
+        sendChannelMessage(channel, embedBuilder.build())
+    }
+
     init {
         discordBot.platform.eventBus.run {
             subscribe(StaffChatEvent::class.java, ::onStaffChat)
@@ -350,6 +365,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             subscribe(PlayerDisconnectEvent::class.java, ::onDisconnect)
             subscribe(ServerConnectedEvent::class.java, ::onServerConnected)
             subscribe(PlayerChatEvent::class.java, ::onPlayerChat, PostOrders.LAST)
+            subscribe(MaintenanceModeToggleEvent::class.java, ::onMaintenanceModeToggle, PostOrders.LAST)
         }
     }
 }

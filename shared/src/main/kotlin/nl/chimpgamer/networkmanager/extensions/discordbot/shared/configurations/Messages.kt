@@ -8,7 +8,7 @@ import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 
-class Messages(private val discordBot: DiscordBot) {
+class Messages(discordBot: DiscordBot) {
     private val config: YamlDocument
 
     init {
@@ -67,7 +67,8 @@ enum class DCMessage(val path: String) {
     BUGREPORT_ALERT("discord.bugreport-alert"),
     SUGGESTION_ALERT("discord.suggestion-alert"),
     CHATLOG_ALERT("discord.chatlog-alert"),
-    MAINTENANCE_MODE_ALERT("discord.maintenance-mode-alert")
+    MAINTENANCE_MODE_ALERT_ENABLED("discord.maintenance-mode-alert.enabled"),
+    MAINTENANCE_MODE_ALERT_DISABLED("discord.maintenance-mode-alert.disabled"),
 }
 
 enum class MCMessage(val path: String) {

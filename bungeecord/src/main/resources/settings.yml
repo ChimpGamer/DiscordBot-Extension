@@ -58,5 +58,7 @@ bot:
         channel: '000000000000000000'
       server-switch:
         channel: '000000000000000000'
+      maintenance-mode:
+        channel: '000000000000000000'
 
-config-version: 1
+config-version: 2
