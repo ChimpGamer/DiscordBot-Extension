@@ -216,5 +216,9 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     fun getTextChannelById(id: String): TextChannel? = jda.getTextChannelById(id)
 
-    fun getTextChannelById(setting: Setting): TextChannel? = getTextChannelById(discordBot.settings.getString(setting))
+    fun getTextChannelById(setting: Setting): TextChannel? {
+        val channelId = discordBot.settings.getString(setting)
+        if (channelId == "000000000000000000") return null
+        return requireNotNull(getTextChannelById(channelId)) { "Could not find a channel with id $channelId" }
+    }
 }
