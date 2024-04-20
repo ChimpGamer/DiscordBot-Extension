@@ -1,64 +1,72 @@
 plugins {
-    kotlin("jvm") version "1.6.21"
-    `maven-publish`
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.github.slimjar") version "1.3.0"
+    kotlin("jvm") version "1.9.23"
+    //`maven-publish`
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-repositories {
-    mavenLocal()
-    jcenter()
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
+allprojects {
+    group = "nl.chimpgamer.networkmanager.extensions"
+    version = "1.8.2-SNAPSHOT"
 
-    maven("https://m2.dv8tion.net/releases")
-
-    maven("https://jitpack.io")
-
-    maven("https://repo.md-5.net/content/repositories/snapshots/")
-
-    maven("https://nexus.velocitypowered.com/repository/maven-public/")
-
-    maven("https://repo.codemc.org/repository/maven-public")
-
-    maven("https://repo.networkmanager.xyz/repository/maven-public/")
-
-    // Slimjar repository
-    // Doesn't work anymore
-    //maven("https://repo.vshnv.tech/releases")
-
-    // For slimjar
-    maven("https://repo.glaremasters.me/repository/public/")
-}
-
-dependencies {
-    compileOnly("io.github.slimjar:slimjar:1.2.6")
-    compileOnly(kotlin("stdlib-jdk8"))
-    implementation("com.jagrosh:jda-utilities-command:3.0.4")
-    compileOnly("net.md-5:bungeecord-api:1.16-R0.4")
-
-    compileOnly("nl.chimpgamer.networkmanager:bungeecord:2.11.0-SNAPSHOT") {
-        exclude("org.bstats:bstats-bungeecord:1.7")
+    repositories {
+        mavenCentral()
     }
-    slim("net.dv8tion:JDA:4.4.0_350") {
-        exclude("club.minnced", "opus-java")
-    }
-    compileOnly("com.github.Carleslc:Simple-YAML:1.7.2")
-    compileOnly("com.imaginarycode.minecraft:RedisBungee:0.3.8-SNAPSHOT")
-
-    compileOnly("cloud.commandframework:cloud-core:1.6.2")
-    compileOnly("cloud.commandframework:cloud-annotations:1.6.2")
-
-    compileOnly("com.velocitypowered:velocity-api:3.1.0")
-    //kapt("com.velocitypowered:velocity-api:3.1.0")
 }
 
-group = "nl.chimpgamer.networkmanager.extensions"
-version = "1.6.1-SNAPSHOT"
+subprojects {
+    apply {
+        plugin("kotlin")
+        plugin("com.github.johnrengelman.shadow")
+    }
 
-publishing {
-    publications {
-        register("mavenJava", MavenPublication::class) {
-            from(components["java"])
+    repositories {
+        mavenLocal()
+
+        maven("https://jitpack.io") // For RedisBungee
+
+        //maven("https://repo.networkmanager.xyz/repository/maven-public/") // NetworkManager repository
+    }
+
+    dependencies {
+        compileOnly(kotlin("stdlib-jdk8"))
+
+
+        compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.2")
+
+        compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.15.0-SNAPSHOT")
+
+        /*implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
+        implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")*/
+    }
+
+    tasks {
+        compileKotlin {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+        compileTestKotlin {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+
+        processResources {
+            expand("version" to project.version)
+        }
+
+        shadowJar {
+            archiveFileName.set("DiscordBot-${project.name}-v${project.version}.jar")
+
+            val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
+            val libPackage = "nl.chimpgamer.networkmanager.lib"
+
+            relocate("kotlin", "$libPackage.kotlin")
+            relocate("org.simpleyaml", "nl.chimpgamer.networkmanager.lib.simpleyaml")
+            relocate("cloud.commandframework", "$libPackage.cloud")
+            relocate("com.fasterxml.jackson", "$shadedPackage.jackson")
+            relocate("net.dv8tion.jda", "$shadedPackage.jda")
+            relocate("dev.dejvokep.boostedyaml", "$libPackage.boostedyaml")
+        }
+
+        build {
+            dependsOn(shadowJar)
         }
     }
 }
@@ -69,41 +77,6 @@ tasks {
     }
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
-    }
-
-    processResources {
-        expand("version" to project.version)
-    }
-
-    shadowJar {
-        archiveFileName.set("${project.name}-v${project.version}.jar")
-
-        dependencies {
-            include(dependency("nl.chimpgamer.networkmanager.extensions:.*"))
-            include(dependency("com.jagrosh:.*"))
-        }
-
-        val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
-        val libPackage = "nl.chimpgamer.networkmanager.lib"
-        relocate("io.github.slimjar", "$shadedPackage.slimjar")
-        relocate("net.kyori", "$shadedPackage.kyori")
-
-        relocate("kotlin", "$libPackage.kotlin")
-        relocate("org.simpleyaml", "$libPackage.simpleyaml")
-        //relocate("org.eclipse.jetty", "$libPackage.jetty")
-        //relocate("javax.servlet", "$libPackage.javax.servlet")
-        relocate("com.jagrosh.jdautilities", "$shadedPackage.com.jagrosh.jdautilities")
-        relocate("cloud.commandframework", "$libPackage.cloud")
-    }
-
-    slimJar {
-        shade = false
-
-        relocate("net.dv8tion.jda", "nl.chimpgamer.networkmanager.lib.jda")
-    }
-
-    build {
-        dependsOn(shadowJar)
     }
 
     jar {
