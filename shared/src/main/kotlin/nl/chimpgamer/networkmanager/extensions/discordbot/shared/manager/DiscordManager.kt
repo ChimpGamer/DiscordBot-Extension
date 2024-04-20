@@ -218,7 +218,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
 
     fun getTextChannelById(setting: Setting): TextChannel? {
         val channelId = discordBot.settings.getString(setting)
-        if (channelId == "000000000000000000") return null
+        if (channelId.isEmpty() || channelId == "000000000000000000") return null
         return requireNotNull(getTextChannelById(channelId)) { "Could not find a channel with id $channelId" }
     }
 }
