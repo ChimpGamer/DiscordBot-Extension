@@ -60,5 +60,7 @@ bot:
         channel: '000000000000000000'
       maintenance-mode:
         channel: '000000000000000000'
+      registration-alerts:
+        channel: '000000000000000000'
 
-config-version: 2
+config-version: 3

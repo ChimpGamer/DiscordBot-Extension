@@ -2,6 +2,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.shared
 
 import net.dv8tion.jda.api.entities.Guild
 import nl.chimpgamer.networkmanager.api.Scheduler
+import nl.chimpgamer.networkmanager.api.models.languages.Language
 import nl.chimpgamer.networkmanager.common_proxy.plugin.NetworkManagerPluginProxyBase
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.commands.mc.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.*
@@ -124,5 +125,12 @@ class DiscordBot(val platform: Platform) {
         for (token in this.discordUserManager.tokens) {
             this.scheduler.runSync(TokenExpiryTask(this, token))
         }
+    }
+
+    fun getDefaultLanguage(): Language {
+        val cachedValues = networkManager.cacheManager.cachedValues
+        val cachedLanguages = networkManager.cacheManager.cachedLanguages
+        val defaultLanguage = cachedValues.getString(nl.chimpgamer.networkmanager.api.values.Setting.LANGUAGE_DEFAULT)
+        return runCatching { cachedLanguages.getLanguage(defaultLanguage) }.getOrElse { cachedLanguages.getLanguage(1) }
     }
 }

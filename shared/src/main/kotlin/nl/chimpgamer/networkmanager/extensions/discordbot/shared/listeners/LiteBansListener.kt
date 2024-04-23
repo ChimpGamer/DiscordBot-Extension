@@ -66,7 +66,7 @@ class LiteBansListener(private val discordBot: DiscordBot) {
         } catch (ex: IllegalArgumentException) {
             null
         }
-        val languageId = 1
+        val language = discordBot.getDefaultLanguage()
 
         val parsed = s
             .replace("%id%", entry.id.toString())
@@ -88,18 +88,18 @@ class LiteBansListener(private val discordBot: DiscordBot) {
             .replace("%unbanreason%", entry.removalReason.toString())
             .replace("%punisher%", entry.executorName.toString())
             .replace(
-                "%time%", SimpleDateFormat(networkManager.getMessage(languageId, Message.PUNISHMENT_DATETIME_FORMAT))
+                "%time%", SimpleDateFormat(networkManager.getMessage(language, Message.PUNISHMENT_DATETIME_FORMAT))
                     .format(Date(entry.dateStart))
             )
             .replace(
-                "%ends%", SimpleDateFormat(networkManager.getMessage(languageId, Message.PUNISHMENT_DATETIME_FORMAT))
+                "%ends%", SimpleDateFormat(networkManager.getMessage(language, Message.PUNISHMENT_DATETIME_FORMAT))
                     .format(Date(entry.dateEnd))
             )
             .replace(
                 "%expires%",
-                if (entry.dateEnd == -1L) networkManager.getMessage(languageId, Message.NEVER)
+                if (entry.dateEnd == -1L) networkManager.getMessage(language, Message.NEVER)
                 else TimeUtils.getTimeString(
-                    languageId,
+                    language,
                     Utils.ceilDiv(entry.dateEnd - System.currentTimeMillis(), 1000)
                 )
             )

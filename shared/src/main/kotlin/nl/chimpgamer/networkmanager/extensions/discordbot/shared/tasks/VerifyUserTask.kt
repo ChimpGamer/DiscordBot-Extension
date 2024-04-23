@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
+import nl.chimpgamer.networkmanager.api.utils.TimeUtils
+import nl.chimpgamer.networkmanager.api.values.Message
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.api.events.PlayerRegisteredEvent
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.api.models.Token
@@ -13,7 +15,10 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.RedisBungeeUtils
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
+import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.parsePlaceholdersToFields
 import java.sql.SQLException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class VerifyUserTask(private val discordBot: DiscordBot, private val player: Player, private val token: Token) :
     Runnable {
@@ -78,6 +83,37 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                                 .replace("%playername%", player.name))
                         }
                     }
+
+                    val registrationAlertsChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_REGISTRATION_ALERTS_CHANNEL)
+                    if (registrationAlertsChannel != null) {
+                        val language = discordBot.getDefaultLanguage()
+
+                        val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.REGISTRATION_COMPLETED_ALERT))
+                        val date = SimpleDateFormat(discordBot.networkManager.getMessage(language, Message.LOOKUP_DATETIME_FORMAT))
+                        val firstLoginFormatted = date.format(Date(player.firstlogin))
+                        val embedBuilder = EmbedBuilder.fromData(data).apply {
+                            val title = data.getString("title", null)?.replace("%player_name%", player.name)
+                                ?.replace("%discord_member_name%", member.user.name)
+                            val thumbnail = data.getString("")
+                            setTitle(title)
+                            parsePlaceholdersToFields { text ->
+                                Placeholders.setPlaceholders(
+                                    player, text
+                                        .replace("%discord_member_name%", member.user.name)
+                                        .replace("%discord_member_mention%", member.asMention)
+                                        .replace("%discord_member_roles%", member.roles.joinToString { it.name })
+                                        .replace("%discord_member_highest_role%", member.roles.maxByOrNull { it.position }?.name ?: "No Roles")
+                                        .replace("%player_name%", player.name)
+                                        .replace("%player_uuid%", player.uuid.toString())
+                                        .replace("%player_first_login%", firstLoginFormatted)
+                                        .replace("%player_playtime%", TimeUtils.getTimeString(language, player.livePlaytime / 1000))
+                                        .replace("%server%", player.server ?: "null")
+                                )
+                            }
+                        }
+                        Utils.sendChannelMessage(registrationAlertsChannel, embedBuilder.build())
+                    }
+
                 }
             } catch (ex: SQLException) {
                 player.sendRichMessage(discordBot.messages.getString(MCMessage.REGISTER_ERROR))

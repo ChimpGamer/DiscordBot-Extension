@@ -186,6 +186,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 event.reply_("You need to link your account before you can use this command!").setEphemeral(true).await()
                 return@onCommand
             }
+            val language = discordBot.getDefaultLanguage()
             if (discordBot.networkManager.isPlayerOnline(uuid, true)) {
                 val player = discordBot.networkManager.getPlayer(uuid) ?: return@onCommand
 
@@ -194,7 +195,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     val title = data.getString("title", null)?.replace("%playername%", player.name)
                     setTitle(title)
                     parsePlaceholdersToFields { text ->
-                        val formattedPlaytime = TimeUtils.getTimeString(1, player.playtime / 1000)
+                        val formattedPlaytime = TimeUtils.getTimeString(language, player.playtime / 1000)
                         text.replace("%playername%", player.name)
                             .replace("%playtime%", formattedPlaytime)
                             .replace("%liveplaytime%", formattedPlaytime)
@@ -223,7 +224,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     val title = data.getString("title", null)?.replace("%playername%", userName)
                     setTitle(title)
                     parsePlaceholdersToFields { text ->
-                        val formattedPlaytime = TimeUtils.getTimeString(1, playtime / 1000)
+                        val formattedPlaytime = TimeUtils.getTimeString(language, playtime / 1000)
                         text.replace("%playername%", userName)
                             .replace("%playtime%", formattedPlaytime)
                             .replace("%liveplaytime%", formattedPlaytime)
@@ -237,8 +238,9 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
         jda.onCommand(uptimeCommandName) { event ->
             if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_UPTIME_ENABLED)) return@onCommand
 
+            val language = discordBot.getDefaultLanguage()
             val uptime = ManagementFactory.getRuntimeMXBean().startTime
-            event.reply(TimeUtils.getTimeString(1, (System.currentTimeMillis() - uptime) / 1000)).await()
+            event.reply(TimeUtils.getTimeString(language, (System.currentTimeMillis() - uptime) / 1000)).await()
         }
     }
 

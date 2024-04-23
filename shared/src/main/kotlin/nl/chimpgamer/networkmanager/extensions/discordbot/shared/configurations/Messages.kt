@@ -56,6 +56,7 @@ enum class DCMessage(val path: String) {
     REGISTRATION_IN_PROCESS("discord.registration.in-process"),
     REGISTRATION_COMPLETED("discord.registration.completed"),
     REGISTRATION_UNREGISTER_NOTIFICATION("discord.registration.unregistered.notification"),
+    REGISTRATION_COMPLETED_ALERT("discord.registration.completed-alert"),
 
     SERVER_STATUS_ONLINE("discord.server-status.online"),
     SERVER_STATUS_OFFLINE("discord.server-status.offline"),

@@ -255,7 +255,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val cachedPlayers = networkManager.cacheManager.cachedPlayers
         val punishment = event.punishment
         // TODO: Make setting to define this value
-        val languageId = 1
+        val language = discordBot.getDefaultLanguage()
 
 
         val parsed = s
@@ -274,17 +274,17 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
                 if (cachedPlayers.isConsole(punishment.punisher)) "Console" else punishment.punisherName ?: "Unknown"
             )
             .replace(
-                "%time%", SimpleDateFormat(networkManager.getMessage(languageId, Message.PUNISHMENT_DATETIME_FORMAT))
+                "%time%", SimpleDateFormat(networkManager.getMessage(language, Message.PUNISHMENT_DATETIME_FORMAT))
                     .format(Date(punishment.time))
             )
             .replace(
-                "%ends%", SimpleDateFormat(networkManager.getMessage(languageId, Message.PUNISHMENT_DATETIME_FORMAT))
+                "%ends%", SimpleDateFormat(networkManager.getMessage(language, Message.PUNISHMENT_DATETIME_FORMAT))
                     .format(Date(punishment.end))
             ).replace(
                 "%expires%",
-                if (punishment.end == -1L) networkManager.getMessage(languageId, Message.NEVER)
+                if (punishment.end == -1L) networkManager.getMessage(language, Message.NEVER)
                 else TimeUtils.getTimeString(
-                    languageId,
+                    language,
                     Utils.ceilDiv(punishment.end - System.currentTimeMillis(), 1000)
                 )
             )

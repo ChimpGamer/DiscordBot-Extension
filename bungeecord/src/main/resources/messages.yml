@@ -95,6 +95,44 @@ discord:
           "description": "You can register your Account again with /register",
           "color": 3535678
         }
+    completed-alert: |-
+      {
+        "title": "%discord_member_name% got verified",
+        "description": "A new member has linked his minecraft account.",
+        "color": 14269728,
+        "fields": [
+          {
+            "name": "Discord",
+            "value": "%discord_member_mention%",
+            "inline": true
+          },
+          {
+            "name": "Minecraft",
+            "value": "%player_name%",
+            "inline": true
+          },
+          {
+            "name": "UUID",
+            "value": "%player_uuid%",
+            "inline": true
+          },
+          {
+            "name": "First Login",
+            "value": "%player_first_login%",
+            "inline": true
+          },
+          {
+            "name": "Role",
+            "value": "%discord_member_highest_role%",
+            "inline": true
+          },
+          {
+            "name": "Playtime",
+            "value": "%player_playtime%",
+            "inline": true
+          }
+        ]
+      }
 
   ticket-create-alert: |-
     {
@@ -485,4 +523,4 @@ discord:
         "showTimestamp": true
       }
 
-config-version: 2
+config-version: 3

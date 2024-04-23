@@ -102,4 +102,5 @@ enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_EVENTS_DISCONNECT_CHANNEL("bot.discord.events.disconnect.channel", "000000000000000000"),
     DISCORD_EVENTS_SERVER_SWITCH_CHANNEL("bot.discord.events.server-switch.channel", "000000000000000000"),
     DISCORD_EVENTS_MAINTENANCE_MODE_CHANNEL("bot.discord.events.maintenance-mode.channel", "000000000000000000"),
+    DISCORD_EVENTS_REGISTRATION_ALERTS_CHANNEL("bot.discord.events.registration-alerts.channel", "000000000000000000"),
 }
