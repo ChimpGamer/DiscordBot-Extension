@@ -14,12 +14,13 @@ class Settings(private val discordBot: DiscordBot) {
     init {
         val file = discordBot.dataFolder.resolve("settings.yml")
         val inputStream = discordBot.platform.getResource("settings.yml")
+        val generalSettings = GeneralSettings.builder().setUseDefaults(false).build()
         val loaderSettings = LoaderSettings.builder().setAutoUpdate(true).build()
         val updaterSettings = UpdaterSettings.builder().setVersioning(BasicVersioning("config-version")).build()
         config = if (inputStream != null) {
-            YamlDocument.create(file, inputStream, GeneralSettings.DEFAULT, loaderSettings, DumperSettings.DEFAULT, updaterSettings)
+            YamlDocument.create(file, inputStream, generalSettings, loaderSettings, DumperSettings.DEFAULT, updaterSettings)
         } else {
-            YamlDocument.create(file, GeneralSettings.DEFAULT, loaderSettings, DumperSettings.DEFAULT, updaterSettings)
+            YamlDocument.create(file, generalSettings, loaderSettings, DumperSettings.DEFAULT, updaterSettings)
         }
 
         convertRolesListToMap()
