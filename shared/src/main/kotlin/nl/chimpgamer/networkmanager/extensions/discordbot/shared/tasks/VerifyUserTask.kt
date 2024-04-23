@@ -19,6 +19,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.parsePlac
 import java.sql.SQLException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 class VerifyUserTask(private val discordBot: DiscordBot, private val player: Player, private val token: Token) :
     Runnable {
@@ -94,8 +95,11 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                         val embedBuilder = EmbedBuilder.fromData(data).apply {
                             val title = data.getString("title", null)?.replace("%player_name%", player.name)
                                 ?.replace("%discord_member_name%", member.user.name)
-                            val thumbnail = data.getString("")
+                            data.optObject("thumbnail").map { it.getString("url") }.getOrNull()
+                            val thumbnail = data.optObject("thumbnail").map { it.getString("url") }.getOrNull()?.replace("%player_uuid%", player.uuid.toString())
+                                ?.replace("%discord_member_effective_avatar_url%", member.effectiveAvatarUrl)
                             setTitle(title)
+                            setThumbnail(thumbnail)
                             parsePlaceholdersToFields { text ->
                                 Placeholders.setPlaceholders(
                                     player, text

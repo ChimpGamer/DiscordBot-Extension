@@ -131,7 +131,10 @@ discord:
             "value": "%player_playtime%",
             "inline": true
           }
-        ]
+        ],
+        "thumbnail": {
+          "url": "https://minotar.net/helm/%player_uuid%/35"
+        }
       }
 
   ticket-create-alert: |-
