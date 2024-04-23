@@ -111,7 +111,7 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                                         .replace("%player_uuid%", player.uuid.toString())
                                         .replace("%player_first_login%", firstLoginFormatted)
                                         .replace("%player_playtime%", TimeUtils.getTimeString(language, player.livePlaytime / 1000))
-                                        .replace("%server%", player.server ?: "null")
+                                        .replace("%player_server%", player.server ?: "null")
                                 )
                             }
                         }
