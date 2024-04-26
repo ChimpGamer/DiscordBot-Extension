@@ -19,6 +19,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners.DiscordCommandsListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners.DiscordListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
+import java.util.logging.Level
 import javax.security.auth.login.LoginException
 
 class DiscordManager(private val discordBot: DiscordBot) {
@@ -161,8 +162,8 @@ class DiscordManager(private val discordBot: DiscordBot) {
         discordBot.platform.info("Setting nickname for " + member.effectiveName)
         try {
             member.guild.modifyNickname(member, finalNickname)
-                .queue({ return@queue discordBot.platform.info("Successfully changed nickname of ${member.user.name} to $nickName") })
-            { discordBot.platform.info("Failed to change nickname of ${member.effectiveName} to $nickName"); return@queue discordBot.platform.info(it.localizedMessage) }
+                .queue({ discordBot.platform.info("Successfully changed nickname of ${member.user.name} to $nickName") })
+            { discordBot.platform.logger.log(Level.WARNING, "Failed to change nickname of ${member.effectiveName} to $nickName", it) }
         } catch (ex: PermissionException) {
             if (ex.permission === Permission.UNKNOWN) {
                 discordBot.platform.warn("Could not set the nickname for " + member.effectiveName + " because " + ex.message)
@@ -176,7 +177,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         try {
             member.guild.addRoleToMember(member, role)
                 .queue({ return@queue discordBot.platform.info("Successfully assigned ${role.name} role to ${member.effectiveName}") })
-                { discordBot.platform.info("Failed to assign ${role.name} role to ${member.effectiveName}"); return@queue discordBot.platform.info(it.localizedMessage) }
+                { discordBot.platform.logger.log(Level.WARNING, "Failed to assign ${role.name} role to ${member.effectiveName}", it) }
         } catch (ex: PermissionException) {
             if (ex.permission === Permission.UNKNOWN) {
                 discordBot.platform.warn("Could not set the role for " + member.effectiveName + " because " + ex.message)
@@ -195,7 +196,8 @@ class DiscordManager(private val discordBot: DiscordBot) {
         discordBot.platform.info("Setting nickname and role for " + member.user.name)
 
         try {
-            member.guild.modifyNickname(member, finalNickname).and(member.guild.addRoleToMember(member, role)).queue()
+            member.guild.modifyNickname(member, finalNickname).and(member.guild.addRoleToMember(member, role)).queue({ })
+            { discordBot.platform.logger.log(Level.WARNING, "Something went wrong trying to set nickname and role", it)}
         } catch (ex: PermissionException) {
             if (ex.permission === Permission.UNKNOWN) {
                 discordBot.platform.warn("Could not set the role for " + member.effectiveName + " because " + ex.message)
