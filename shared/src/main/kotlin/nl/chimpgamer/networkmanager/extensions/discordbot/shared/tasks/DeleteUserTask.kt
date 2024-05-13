@@ -59,9 +59,7 @@ class DeleteUserTask(private val discordBot: DiscordBot, private val player: Pla
                 if (unregisterNotification.isNotEmpty()) {
                     val data = DataObject.fromJson(unregisterNotification)
                     val embedBuilder = EmbedBuilder.fromData(data)
-                    member?.user?.openPrivateChannel()?.queue {
-                        it.sendMessageEmbeds(embedBuilder.build()).queue()
-                    }
+                    member?.user?.openPrivateChannel()?.flatMap { channel -> channel.sendMessageEmbeds(embedBuilder.build()) }?.queue()
                 }
 
                 if (discordBot.settings.getBoolean(Setting.DISCORD_UNREGISTER_KICK_ENABLED)) {
