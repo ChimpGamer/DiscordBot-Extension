@@ -134,9 +134,6 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     }
 
     private fun onTicketCreate(event: TicketCreateEvent) {
-        if (event.isCancelled) {
-            return
-        }
         val ticketChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_TICKETS_CHANNEL) ?: return
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.TICKET_CREATE_ALERT))

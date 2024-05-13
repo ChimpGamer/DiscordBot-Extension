@@ -30,21 +30,23 @@ subprojects {
     dependencies {
         compileOnly(kotlin("stdlib-jdk8"))
 
-
         compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.2")
 
-        compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.15.0-SNAPSHOT")
-
-        /*implementation("com.fasterxml.jackson.core:jackson-core:2.14.2")
-        implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")*/
+        compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.15.2-SNAPSHOT")
     }
 
     tasks {
+        compileJava {
+            sourceCompatibility = "11"
+        }
+        compileTestJava {
+            sourceCompatibility = "11"
+        }
         compileKotlin {
-            kotlinOptions.jvmTarget = "1.8"
+            kotlinOptions.jvmTarget = "11"
         }
         compileTestKotlin {
-            kotlinOptions.jvmTarget = "1.8"
+            kotlinOptions.jvmTarget = "11"
         }
 
         processResources {
@@ -58,9 +60,8 @@ subprojects {
             val libPackage = "nl.chimpgamer.networkmanager.lib"
 
             relocate("kotlin", "$libPackage.kotlin")
-            relocate("org.simpleyaml", "nl.chimpgamer.networkmanager.lib.simpleyaml")
             relocate("cloud.commandframework", "$libPackage.cloud")
-            relocate("com.fasterxml.jackson", "$shadedPackage.jackson")
+            relocate("com.fasterxml.jackson", "$libPackage.jackson")
             relocate("net.dv8tion.jda", "$shadedPackage.jda")
             relocate("dev.dejvokep.boostedyaml", "$libPackage.boostedyaml")
         }
@@ -73,10 +74,10 @@ subprojects {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "11"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "11"
     }
 
     jar {
