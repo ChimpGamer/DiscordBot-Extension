@@ -10,7 +10,6 @@ import dev.minn.jda.ktx.interactions.commands.updateCommands
 import dev.minn.jda.ktx.interactions.components.Modal
 import dev.minn.jda.ktx.interactions.components.TextInput
 import dev.minn.jda.ktx.messages.reply_
-import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
