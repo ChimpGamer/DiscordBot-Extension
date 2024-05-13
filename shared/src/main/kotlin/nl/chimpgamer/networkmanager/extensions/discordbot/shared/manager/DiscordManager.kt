@@ -18,6 +18,7 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Setting
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners.DiscordCommandsListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners.DiscordListener
+import nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners.modals.TicketModalListener
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
 import java.util.logging.Level
 import javax.security.auth.login.LoginException
@@ -80,7 +81,8 @@ class DiscordManager(private val discordBot: DiscordBot) {
             setMemberCachePolicy(MemberCachePolicy.ALL)
             addEventListeners(
                 DiscordListener(discordBot),
-                DiscordCommandsListener(discordBot)
+                DiscordCommandsListener(discordBot),
+                TicketModalListener(discordBot)
             )
             setAutoReconnect(true)
             setMaxReconnectDelay(180)

@@ -7,7 +7,10 @@ import dev.minn.jda.ktx.interactions.commands.option
 import dev.minn.jda.ktx.interactions.commands.restrict
 import dev.minn.jda.ktx.interactions.commands.slash
 import dev.minn.jda.ktx.interactions.commands.updateCommands
+import dev.minn.jda.ktx.interactions.components.Modal
+import dev.minn.jda.ktx.interactions.components.TextInput
 import dev.minn.jda.ktx.messages.reply_
+import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
@@ -16,6 +19,8 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
 import nl.chimpgamer.networkmanager.common.utils.ExpiringMap
@@ -77,6 +82,10 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             }
 
             slash(uptimeCommandName, uptimeCommandDescription) {
+                restrict(guild = true, Permission.MESSAGE_SEND)
+            }
+
+            slash("ticket", "Create a new ticket") {
                 restrict(guild = true, Permission.MESSAGE_SEND)
             }
         }.await()
@@ -183,7 +192,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             val uuid = discordBot.discordUserManager.getUuidByDiscordId(event.user.id)
             if (uuid == null) {
                 discordBot.platform.warn("${event.user.name} tried to use the playtime command but is not registered!")
-                event.reply_("You need to link your account before you can use this command!").setEphemeral(true).await()
+                event.reply_("You need to link your account before you can use this command!", ephemeral = true).await()
                 return@onCommand
             }
             val language = discordBot.getDefaultLanguage()
@@ -241,6 +250,34 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             val language = discordBot.getDefaultLanguage()
             val uptime = ManagementFactory.getRuntimeMXBean().startTime
             event.reply(TimeUtils.getTimeString(language, (System.currentTimeMillis() - uptime) / 1000)).await()
+        }
+
+        jda.onCommand("ticket") { event ->
+            val member = event.member ?: return@onCommand
+            val isLinked = runCatching { discordBot.discordUserManager.checkUserByDiscordId(member.id) }.getOrDefault(false)
+            if (!isLinked) {
+                event.reply_("You'll have to link your account before you can open a ticket using this command!", ephemeral = true).await()
+                return@onCommand
+            }
+
+            val titleInput = TextInput(
+                "title",
+                discordBot.messages.discordCommandTicketModalInputTitleLabel,
+                TextInputStyle.SHORT,
+                required = true,
+                placeholder = discordBot.messages.discordCommandTicketModalInputTitlePlaceholder
+            )
+            val messageInput = TextInput(
+                "message",
+                discordBot.messages.discordCommandTicketModalInputMessageLabel,
+                TextInputStyle.PARAGRAPH,
+                required = true,
+                placeholder = discordBot.messages.discordCommandTicketModalInputMessagePlaceholder
+            )
+
+            val modal = Modal("create-ticket", discordBot.messages.discordCommandTicketModalTitle, listOf(ActionRow.of(titleInput), ActionRow.of(messageInput)))
+
+            event.replyModal(modal).await()
         }
     }
 

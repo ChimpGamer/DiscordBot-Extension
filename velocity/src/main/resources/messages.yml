@@ -59,6 +59,23 @@ discord:
           "title": "Playtime of %playername%",
           "showTimestamp": true
         }
+    ticket:
+      modal:
+        title: 'Create Ticket'
+        input:
+          title:
+            label: 'Title'
+            placeholder: 'Ticket Title'
+          message:
+            label: 'Message'
+            placeholder: 'Ticket Message'
+      success: |-
+        {
+          "title": "Ticket Created!",
+          "description": "Successfully created ticket #%ticket_id%!",
+          "color": 3535678
+        }
+
 
   registration:
     not-in-server: 'You cannot register yourself if you haven''t joined our discord server!'
@@ -526,4 +543,4 @@ discord:
         "showTimestamp": true
       }
 
-config-version: 3
+config-version: 4

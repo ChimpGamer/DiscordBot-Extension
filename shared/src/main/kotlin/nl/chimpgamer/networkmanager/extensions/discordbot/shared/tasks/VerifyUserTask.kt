@@ -117,7 +117,6 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                         }
                         Utils.sendChannelMessage(registrationAlertsChannel, embedBuilder.build())
                     }
-
                 }
             } catch (ex: SQLException) {
                 player.sendRichMessage(discordBot.messages.getString(MCMessage.REGISTER_ERROR))

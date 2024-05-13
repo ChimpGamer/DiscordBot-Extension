@@ -23,6 +23,16 @@ class Messages(discordBot: DiscordBot) {
         }
     }
 
+    val discordCommandTicketModalTitle: String get() = config.getString("discord.command.ticket.modal.title")
+
+    val discordCommandTicketModalInputTitleLabel: String get() = config.getString("discord.command.ticket.modal.input.title.label")
+    val discordCommandTicketModalInputTitlePlaceholder: String get() = config.getString("discord.command.ticket.modal.input.title.placeholder")
+
+    val discordCommandTicketModalInputMessageLabel: String get() = config.getString("discord.command.ticket.modal.input.message.label")
+    val discordCommandTicketModalInputMessagePlaceholder: String get() = config.getString("discord.command.ticket.modal.input.message.placeholder")
+
+    val discordCommandTicketSuccess: String get() = config.getString("discord.command.ticket.success")
+
     fun reload() = runCatching { config.reload() }
 
     fun getString(dcMessage: DCMessage): String {
