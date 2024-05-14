@@ -1,12 +1,12 @@
 plugins {
     kotlin("jvm") version "1.9.23"
     //`maven-publish`
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.github.goooler.shadow") version "8.1.7"
 }
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "1.8.3-SNAPSHOT"
+    version = "1.8.4-SNAPSHOT"
 
     repositories {
         mavenCentral()
@@ -16,7 +16,7 @@ allprojects {
 subprojects {
     apply {
         plugin("kotlin")
-        plugin("com.github.johnrengelman.shadow")
+        plugin("io.github.goooler.shadow")
     }
 
     repositories {
@@ -63,7 +63,10 @@ subprojects {
             relocate("cloud.commandframework", "$libPackage.cloud")
             relocate("com.fasterxml.jackson", "$libPackage.jackson")
             relocate("net.dv8tion.jda", "$shadedPackage.jda")
+            relocate("dev.minn.jda.ktx", "$shadedPackage.jda-ktx")
             relocate("dev.dejvokep.boostedyaml", "$libPackage.boostedyaml")
+            relocate("okhttp3", "$shadedPackage.okhttp3")
+            relocate("okio", "$shadedPackage.okio")
         }
 
         build {
