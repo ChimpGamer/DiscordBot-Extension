@@ -1,12 +1,12 @@
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "1.9.24"
     //`maven-publish`
     id("io.github.goooler.shadow") version "8.1.7"
 }
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "1.8.4-SNAPSHOT"
+    version = "1.8.4"
 
     repositories {
         mavenCentral()
@@ -32,7 +32,7 @@ subprojects {
 
         compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.2")
 
-        compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.15.2-SNAPSHOT")
+        compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.16.0-SNAPSHOT")
     }
 
     tasks {
@@ -60,7 +60,7 @@ subprojects {
             val libPackage = "nl.chimpgamer.networkmanager.lib"
 
             relocate("kotlin", "$libPackage.kotlin")
-            relocate("cloud.commandframework", "$libPackage.cloud")
+            relocate("org.incendo.cloud", "$libPackage.cloud")
             relocate("com.fasterxml.jackson", "$libPackage.jackson")
             relocate("net.dv8tion.jda", "$shadedPackage.jda")
             relocate("dev.minn.jda.ktx", "$shadedPackage.jda-ktx")

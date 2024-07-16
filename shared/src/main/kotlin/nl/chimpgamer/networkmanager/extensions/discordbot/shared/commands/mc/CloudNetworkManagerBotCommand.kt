@@ -1,9 +1,9 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared.commands.mc
 
-import cloud.commandframework.CommandManager
 import nl.chimpgamer.networkmanager.api.models.sender.Sender
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.MCMessage
+import org.incendo.cloud.CommandManager
 
 class CloudNetworkManagerBotCommand(private val discordBot: DiscordBot) {
 
@@ -15,7 +15,7 @@ class CloudNetworkManagerBotCommand(private val discordBot: DiscordBot) {
             .literal("config")
             .permission("networkmanagerbot.command.reload")
             .handler { context ->
-                val sender = context.sender
+                val sender = context.sender()
                 discordBot.settings.reload()
                 sender.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_CONFIG))
             }
@@ -26,7 +26,7 @@ class CloudNetworkManagerBotCommand(private val discordBot: DiscordBot) {
             .literal("messages")
             .permission("networkmanagerbot.command.reload")
             .handler { context ->
-                val sender = context.sender
+                val sender = context.sender()
                 discordBot.messages.reload()
                 sender.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_MESSAGES))
             }
@@ -37,7 +37,7 @@ class CloudNetworkManagerBotCommand(private val discordBot: DiscordBot) {
             .literal("jda")
             .permission("networkmanagerbot.command.reload")
             .handler { context ->
-                val sender = context.sender
+                val sender = context.sender()
                 val success = discordBot.discordManager.restartJDA()
                 if (success) {
                     sender.sendRichMessage(discordBot.messages.getString(MCMessage.RELOAD_JDA_SUCCESS))

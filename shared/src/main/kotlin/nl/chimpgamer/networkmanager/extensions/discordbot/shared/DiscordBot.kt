@@ -97,28 +97,24 @@ class DiscordBot(val platform: Platform) {
     }
 
     private fun registerCommands() {
-        if (commandSettings.getBoolean(CommandSetting.MINECRAFT_BUG_ENABLED)) {
-            platform.cloudCommandManager.commandManager.command(
-                CloudBugCommand(this)
-                .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_BUG_COMMAND)))
+        val commandManager = platform.cloudCommandManager.commandManager
+        if (commandSettings.minecraftBugEnabled) {
+            CloudBugCommand(this).registerCommands(commandManager, commandSettings.minecraftBugCommand)
         }
-        if (commandSettings.getBoolean(CommandSetting.MINECRAFT_SUGGESTION_ENABLED)) {
-            platform.cloudCommandManager.commandManager.command(
-                CloudSuggestionCommand(this)
-                .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_SUGGESTION_COMMAND)))
+        if (commandSettings.minecraftSuggestionEnabled) {
+            CloudSuggestionCommand(this)
+                .registerCommands(commandManager, commandSettings.minecraftSuggestionCommand)
         }
-        if (commandSettings.getBoolean(CommandSetting.MINECRAFT_DISCORD_ENABLED)) {
-            platform.cloudCommandManager.commandManager.command(CloudDiscordCommand(this).getCommand("discord"))
+        if (commandSettings.minecraftDiscordEnabled) {
+            CloudDiscordCommand(this).registerCommands(commandManager, "discord")
         }
 
-        platform.cloudCommandManager.commandManager.command(
-            CloudRegisterCommand(this)
-            .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_COMMAND), *commandSettings.getString(CommandSetting.MINECRAFT_REGISTER_ALIASES).split(", ").toTypedArray()))
-        platform.cloudCommandManager.commandManager.command(
-            CloudUnregisterCommand(this)
-            .getCommand(commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_COMMAND), *commandSettings.getString(CommandSetting.MINECRAFT_UNREGISTER_ALIASES).split(", ").toTypedArray()))
+        CloudRegisterCommand(this)
+            .registerCommands(commandManager, commandSettings.minecraftRegisterCommand, *commandSettings.minecraftRegisterAlias.split(", ").toTypedArray())
+        CloudUnregisterCommand(this)
+            .registerCommands(commandManager, commandSettings.minecraftUnregisterCommand, *commandSettings.minecraftUnregisterAlias.split(", ").toTypedArray())
 
-        CloudNetworkManagerBotCommand(this).registerCommands(platform.cloudCommandManager.commandManager)
+        CloudNetworkManagerBotCommand(this).registerCommands(commandManager)
     }
 
     private fun expireTokens() {

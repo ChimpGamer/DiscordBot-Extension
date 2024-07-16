@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
 import nl.chimpgamer.networkmanager.common.utils.ExpiringMap
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
-import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.CommandSetting
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks.CreateTokenTask
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
@@ -47,22 +46,22 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
     private suspend fun handleCommands(jda: JDA) {
         val commandSettings = discordBot.commandSettings
-        val registerCommandName = commandSettings.getString(CommandSetting.DISCORD_REGISTER_COMMAND)
-        val registerCommandDescription = commandSettings.getString(CommandSetting.DISCORD_REGISTER_DESCRIPTION)
+        val registerCommandName = commandSettings.discordRegisterCommand
+        val registerCommandDescription = commandSettings.discordRegisterDescription
 
-        val playerListCommandName = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_COMMAND)
-        val playerListCommandDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_DESCRIPTION)
-        val playerListCommandOptionServerName = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_OPTIONS_SERVERNAME_NAME)
-        val playerListCommandOptionServerNameDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYERLIST_OPTIONS_SERVERNAME_DESCRIPTION)
+        val playerListCommandName = commandSettings.discordPlayerListCommand
+        val playerListCommandDescription = commandSettings.discordPlayerListDescription
+        val playerListCommandOptionServerName = commandSettings.discordPlayerListOptionsServerName
+        val playerListCommandOptionServerNameDescription = commandSettings.discordPlayerListOptionsServerDescription
 
-        val playersCommandName = commandSettings.getString(CommandSetting.DISCORD_PLAYERS_COMMAND)
-        val playersCommandDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYERS_DESCRIPTION)
+        val playersCommandName = commandSettings.discordPlayersCommand
+        val playersCommandDescription = commandSettings.discordPlayersDescription
 
-        val playtimeCommandName = commandSettings.getString(CommandSetting.DISCORD_PLAYTIME_COMMAND)
-        val playtimeCommandDescription = commandSettings.getString(CommandSetting.DISCORD_PLAYTIME_DESCRIPTION)
+        val playtimeCommandName = commandSettings.discordPlaytimeCommand
+        val playtimeCommandDescription = commandSettings.discordPlaytimeDescription
 
-        val uptimeCommandName = commandSettings.getString(CommandSetting.DISCORD_UPTIME_COMMAND)
-        val uptimeCommandDescription = commandSettings.getString(CommandSetting.DISCORD_UPTIME_DESCRIPTION)
+        val uptimeCommandName = commandSettings.discordUptimeCommand
+        val uptimeCommandDescription = commandSettings.discordUptimeDescription
 
         jda.updateCommands {
             slash(registerCommandName, registerCommandDescription)
@@ -137,7 +136,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
         }
 
         jda.onCommand(playerListCommandName) { event ->
-            if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYERLIST_ENABLED)) return@onCommand
+            if (!discordBot.commandSettings.discordPlayerListEnabled) return@onCommand
 
             if (event.options.isEmpty()) {
                 val sb = StringBuilder()
@@ -176,7 +175,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
         }
 
         jda.onCommand(playersCommandName) { event ->
-            if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYERS_ENABLED)) return@onCommand
+            if (!discordBot.commandSettings.discordPlayersEnabled) return@onCommand
 
             event.reply(
                 discordBot.messages.getString(DCMessage.COMMAND_ONLINEPLAYERS_RESPONSE)
@@ -186,7 +185,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
         }
 
         jda.onCommand(playtimeCommandName) { event ->
-            if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_PLAYTIME_ENABLED)) return@onCommand
+            if (!discordBot.commandSettings.discordPlaytimeEnabled) return@onCommand
 
             val uuid = discordBot.discordUserManager.getUuidByDiscordId(event.user.id)
             if (uuid == null) {
@@ -244,7 +243,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
         }
 
         jda.onCommand(uptimeCommandName) { event ->
-            if (!discordBot.commandSettings.getBoolean(CommandSetting.DISCORD_UPTIME_ENABLED)) return@onCommand
+            if (!discordBot.commandSettings.discordUptimeEnabled) return@onCommand
 
             val language = discordBot.getDefaultLanguage()
             val uptime = ManagementFactory.getRuntimeMXBean().startTime

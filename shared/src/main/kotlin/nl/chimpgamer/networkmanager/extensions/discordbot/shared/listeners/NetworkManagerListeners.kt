@@ -78,9 +78,6 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     }
 
     private fun onPunishment(event: PunishmentEvent) {
-        if (event.punishment.type === Punishment.Type.NOTE) {
-            return
-        }
         if (event.punishment.type === Punishment.Type.REPORT) {
             val reportChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_REPORT_CHANNEL) ?: return
             if (event.punishment.isActive) {

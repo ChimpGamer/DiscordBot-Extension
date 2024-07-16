@@ -8,8 +8,47 @@ import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 
-class CommandSettings(private val discordBot: DiscordBot) {
+class CommandSettings(discordBot: DiscordBot) {
     private val config: YamlDocument
+
+    val discordPlayerListEnabled: Boolean get() = config.getBoolean("commands.discord.playerlist.enabled", true)
+    val discordPlayerListCommand: String get() = config.getString("commands.discord.playerlist.command", "playerlist")
+    val discordPlayerListDescription: String get() = config.getString("commands.discord.playerlist.description", "List the players that are currently online on the minecraft server")
+    val discordPlayerListOptionsServerName: String get() = config.getString("commands.discord.playerlist.options.servername.name", "servername")
+    val discordPlayerListOptionsServerDescription: String get() = config.getString("commands.discord.playerlist.options.servername.description", "Name of a server on the minecraft server")
+
+    val discordPlayersEnabled: Boolean get() = config.getBoolean("commands.discord.players.enabled", true)
+    val discordPlayersCommand: String get() = config.getString("commands.discord.players.command", "players")
+    val discordPlayersDescription: String get() = config.getString("commands.discord.players.description", "Shows the amount of players that are currently online on the minecraft server")
+
+    val discordPlaytimeEnabled: Boolean get() = config.getBoolean("commands.discord.playtime.enabled", true)
+    val discordPlaytimeCommand: String get() = config.getString("commands.discord.playtime.command", "playtime")
+    val discordPlaytimeDescription: String get() = config.getString("commands.discord.playtime.description", "Shows your current playtime")
+
+    val discordUptimeEnabled: Boolean get() = config.getBoolean("commands.discord.uptime.enabled", true)
+    val discordUptimeCommand: String get() = config.getString("commands.discord.uptime.command", "uptime")
+    val discordUptimeDescription: String get() = config.getString("commands.discord.uptime.description", "Shows the current uptime of the network.")
+
+    val discordRegisterCommand: String get() = config.getString("commands.discord.register.command", "register")
+    val discordRegisterDescription: String get() = config.getString("commands.discord.register.description", "Register your discord account with your minecraft account on our server")
+
+    val minecraftDiscordEnabled: Boolean get() = config.getBoolean("commands.minecraft.discord.enabled", false)
+
+    val minecraftSuggestionEnabled: Boolean get() = config.getBoolean("commands.minecraft.suggestion.enabled", false)
+    val minecraftSuggestionCommand: String get() = config.getString("commands.minecraft.suggestion.command", "suggestion")
+    val minecraftSuggestionCooldown: Int get() = config.getInt("commands.minecraft.suggestion.cooldown", 60)
+
+    val minecraftBugEnabled: Boolean get() = config.getBoolean("commands.minecraft.bug.enabled", false)
+    val minecraftBugCommand: String get() = config.getString("commands.minecraft.bug.command", "bug")
+    val minecraftBugCooldown: Int get() = config.getInt("commands.minecraft.bug.cooldown", 60)
+
+    val minecraftRegisterCommand: String get() = config.getString("commands.minecraft.register.command", "register")
+    val minecraftRegisterAlias: String get() = config.getString("commands.minecraft.register.alias", "link")
+
+    val minecraftUnregisterCommand: String get() = config.getString("commands.minecraft.unregister.command", "unregister")
+    val minecraftUnregisterAlias: String get() = config.getString("commands.minecraft.unregister.alias", "unlink")
+
+    fun reload() = runCatching { config.reload() }
 
     init {
         val file = discordBot.dataFolder.resolve("commands.yml")
@@ -22,53 +61,4 @@ class CommandSettings(private val discordBot: DiscordBot) {
             YamlDocument.create(file, GeneralSettings.DEFAULT, loaderSettings, DumperSettings.DEFAULT, updaterSettings)
         }
     }
-
-    fun reload() = runCatching { config.reload() }
-
-    fun getBoolean(commandSetting: CommandSetting): Boolean {
-        return config.getBoolean(commandSetting.path, commandSetting.defaultValue as Boolean)
-    }
-
-    fun getString(commandSetting: CommandSetting): String {
-        return config.getString(commandSetting.path, commandSetting.defaultValue as String)
-    }
-
-    fun getInt(commandSetting: CommandSetting): Int {
-        return config.getInt(commandSetting.path, commandSetting.defaultValue as Int)
-    }
-}
-
-enum class CommandSetting(val path: String, val defaultValue: Any) {
-    DISCORD_PLAYERLIST_ENABLED("commands.discord.playerlist.enabled", true),
-    DISCORD_PLAYERLIST_COMMAND("commands.discord.playerlist.command", "playerlist"),
-    DISCORD_PLAYERLIST_DESCRIPTION("commands.discord.playerlist.description", "List the players that are currently online on the minecraft server"),
-    DISCORD_PLAYERLIST_OPTIONS_SERVERNAME_NAME("commands.discord.playerlist.options.servername.name", "servername"),
-    DISCORD_PLAYERLIST_OPTIONS_SERVERNAME_DESCRIPTION("commands.discord.playerlist.options.servername.description", "Name of a server on the minecraft server"),
-
-    DISCORD_PLAYERS_ENABLED("commands.discord.players.enabled", true),
-    DISCORD_PLAYERS_COMMAND("commands.discord.players.command", "players"),
-    DISCORD_PLAYERS_DESCRIPTION("commands.discord.players.description", "Shows the amount of players that are currently online on the minecraft server"),
-
-    DISCORD_PLAYTIME_ENABLED("commands.discord.playtime.enabled", true),
-    DISCORD_PLAYTIME_COMMAND("commands.discord.playtime.command", "playtime"),
-    DISCORD_PLAYTIME_DESCRIPTION("commands.discord.playtime.description", "Shows your current playtime"),
-
-    DISCORD_UPTIME_ENABLED("commands.discord.uptime.enabled", true),
-    DISCORD_UPTIME_COMMAND("commands.discord.uptime.command", "uptime"),
-    DISCORD_UPTIME_DESCRIPTION("commands.discord.uptime.description", "Shows the current uptime of the network."),
-
-    DISCORD_REGISTER_COMMAND("commands.discord.register.command", "register"),
-    DISCORD_REGISTER_DESCRIPTION("commands.discord.register.description", "Register your discord account with your minecraft account on our server"),
-
-    MINECRAFT_DISCORD_ENABLED("commands.minecraft.discord.enabled", false),
-    MINECRAFT_SUGGESTION_ENABLED("commands.minecraft.suggestion.enabled", false),
-    MINECRAFT_SUGGESTION_COMMAND("commands.minecraft.suggestion.command", "suggestion"),
-    MINECRAFT_SUGGESTION_COOLDOWN("commands.minecraft.suggestion.cooldown", 60),
-    MINECRAFT_BUG_ENABLED("commands.minecraft.bug.enabled", false),
-    MINECRAFT_BUG_COMMAND("commands.minecraft.bug.command", "bug"),
-    MINECRAFT_BUG_COOLDOWN("commands.minecraft.bug.cooldown", 60),
-    MINECRAFT_REGISTER_COMMAND("commands.minecraft.register.command", "register"),
-    MINECRAFT_REGISTER_ALIASES("commands.minecraft.register.aliases", "link"),
-    MINECRAFT_UNREGISTER_COMMAND("commands.minecraft.unregister.command", "unregister"),
-    MINECRAFT_UNREGISTER_ALIASES("commands.minecraft.unregister.aliases", "unlink"),
 }

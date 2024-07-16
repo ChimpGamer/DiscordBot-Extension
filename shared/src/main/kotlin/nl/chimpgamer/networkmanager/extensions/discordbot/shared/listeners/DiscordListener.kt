@@ -114,10 +114,12 @@ class DiscordListener(private val discordBot: DiscordBot) : CoroutineEventListen
             val playerUUID = discordBot.discordUserManager.getUuidByDiscordId(member.id) ?: return
             val player = cachedPlayers.getIfLoaded(playerUUID) ?: return
 
+            val role = member.roles.find { it.color == member.color }
             val chatMessageComponent = eventChatMessageFormat.parse(player, mapOf(
                 "mention" to member.asMention,
                 "discordname" to member.effectiveName,
                 "textchannel" to channel.name,
+                "discord_member_role" to role?.name,
                 "message" to message
             ))
 

@@ -89,33 +89,37 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
                     if (registrationAlertsChannel != null) {
                         val language = discordBot.getDefaultLanguage()
 
-                        val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.REGISTRATION_COMPLETED_ALERT))
-                        val date = SimpleDateFormat(discordBot.networkManager.getMessage(language, Message.LOOKUP_DATETIME_FORMAT))
-                        val firstLoginFormatted = date.format(Date(player.firstlogin))
-                        val embedBuilder = EmbedBuilder.fromData(data).apply {
-                            val title = data.getString("title", null)?.replace("%player_name%", player.name)
-                                ?.replace("%discord_member_name%", member.user.name)
-                            data.optObject("thumbnail").map { it.getString("url") }.getOrNull()
-                            val thumbnail = data.optObject("thumbnail").map { it.getString("url") }.getOrNull()?.replace("%player_uuid%", player.uuid.toString())
-                                ?.replace("%discord_member_effective_avatar_url%", member.effectiveAvatarUrl)
-                            setTitle(title)
-                            setThumbnail(thumbnail)
-                            parsePlaceholdersToFields { text ->
-                                Placeholders.setPlaceholders(
-                                    player, text
-                                        .replace("%discord_member_name%", member.user.name)
-                                        .replace("%discord_member_mention%", member.asMention)
-                                        .replace("%discord_member_roles%", member.roles.joinToString { it.name })
-                                        .replace("%discord_member_highest_role%", member.roles.maxByOrNull { it.position }?.name ?: "No Roles")
-                                        .replace("%player_name%", player.name)
-                                        .replace("%player_uuid%", player.uuid.toString())
-                                        .replace("%player_first_login%", firstLoginFormatted)
-                                        .replace("%player_playtime%", TimeUtils.getTimeString(language, player.livePlaytime / 1000))
-                                        .replace("%player_server%", player.server ?: "null")
-                                )
+                        // Hopefully all placeholder values are available when this runs.
+                        discordBot.scheduler.runDelayed({
+                            val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.REGISTRATION_COMPLETED_ALERT))
+                            val date = SimpleDateFormat(discordBot.networkManager.getMessage(language, Message.LOOKUP_DATETIME_FORMAT))
+                            val firstLoginFormatted = date.format(Date(player.firstlogin))
+                            val embedBuilder = EmbedBuilder.fromData(data).apply {
+                                val title = data.getString("title", null)?.replace("%player_name%", player.name)
+                                    ?.replace("%discord_member_name%", member.user.name)
+                                data.optObject("thumbnail").map { it.getString("url") }.getOrNull()
+                                val thumbnail = data.optObject("thumbnail").map { it.getString("url") }.getOrNull()?.replace("%player_uuid%", player.uuid.toString())
+                                    ?.replace("%discord_member_effective_avatar_url%", member.effectiveAvatarUrl)
+                                setTitle(title)
+                                setThumbnail(thumbnail)
+                                parsePlaceholdersToFields { text ->
+                                    Placeholders.setPlaceholders(
+                                        player, text
+                                            .replace("%discord_member_name%", member.user.name)
+                                            .replace("%discord_member_mention%", member.asMention)
+                                            .replace("%discord_member_roles%", member.roles.joinToString { it.name })
+                                            .replace("%discord_member_highest_role%", member.roles.maxByOrNull { it.position }?.name ?: "No Roles")
+                                            .replace("%player_name%", player.name)
+                                            .replace("%player_uuid%", player.uuid.toString())
+                                            .replace("%player_first_login%", firstLoginFormatted)
+                                            .replace("%player_playtime%", TimeUtils.getTimeString(language, player.livePlaytime / 1000))
+                                            .replace("%player_server%", player.server ?: "null")
+                                    )
+                                }
                             }
-                        }
-                        Utils.sendChannelMessage(registrationAlertsChannel, embedBuilder.build())
+
+                            Utils.sendChannelMessage(registrationAlertsChannel, embedBuilder.build())
+                        }, 5)
                     }
                 }
             } catch (ex: SQLException) {
