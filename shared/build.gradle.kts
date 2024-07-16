@@ -7,7 +7,7 @@ dependencies {
 
     compileOnly("com.gitlab.ruany", "LiteBansAPI", "0.3.5")
 
-    implementation("net.dv8tion:JDA:5.0.0") {
+    implementation("net.dv8tion:JDA:5.0.1") {
         exclude("club.minnced", "opus-java")
     }
 
