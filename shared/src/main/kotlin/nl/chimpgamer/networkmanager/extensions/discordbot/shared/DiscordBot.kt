@@ -56,6 +56,7 @@ class DiscordBot(val platform: Platform) {
             platform.disable()
             return
         }
+        instance = this
         Utils.initialize(this)
 
         discordUserManager.load()
@@ -128,5 +129,9 @@ class DiscordBot(val platform: Platform) {
         val cachedLanguages = networkManager.cacheManager.cachedLanguages
         val defaultLanguage = cachedValues.getString(nl.chimpgamer.networkmanager.api.values.Setting.LANGUAGE_DEFAULT)
         return runCatching { cachedLanguages.getLanguage(defaultLanguage) }.getOrElse { cachedLanguages.getLanguage(1) }
+    }
+
+    companion object {
+        lateinit var instance: DiscordBot
     }
 }
