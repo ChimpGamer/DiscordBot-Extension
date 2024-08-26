@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.event.events.ticket.TicketCreateEvent
-import nl.chimpgamer.networkmanager.common.modules.NMCachedTickets
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.parsePlaceholdersToFields
 import kotlin.jvm.optionals.getOrNull
@@ -24,7 +23,7 @@ class TicketModalListener(private val discordBot: DiscordBot) : CoroutineEventLi
             val title = event.getValue("title")?.asString ?: return
             val message = event.getValue("message")?.asString ?: return
 
-            val cachedTickets = discordBot.networkManager.cacheManager.cachedTickets as NMCachedTickets
+            val cachedTickets = discordBot.networkManager.cacheManager.cachedTickets
             val ticket = cachedTickets.createTicketBuilder()
                 .creator(playerUUID)
                 .creatorName(playerName)

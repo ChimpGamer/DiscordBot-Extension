@@ -7,13 +7,8 @@ import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.kyori.adventure.text.Component
 import nl.chimpgamer.networkmanager.api.utils.adventure.parse
 import nl.chimpgamer.networkmanager.api.values.Command
-import nl.chimpgamer.networkmanager.api.values.Message
-import nl.chimpgamer.networkmanager.common.messaging.data.PlayerMessageData
-import nl.chimpgamer.networkmanager.common.messaging.handlers.AdminChatMessageHandler
-import nl.chimpgamer.networkmanager.common.messaging.handlers.StaffChatMessageHandler
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.MCMessage
@@ -45,63 +40,13 @@ class DiscordListener(private val discordBot: DiscordBot) : CoroutineEventListen
             val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
             val player = cachedPlayers.getPlayer(uuid) ?: return
             if (cachedValues.getBoolean(Command.ADMINCHAT_ENABLED)) {
-                val perm1 = "networkmanager.command.adminchat"
-                val perm2 = "networkmanager.admin"
-                if (discordBot.networkManager.isRedisBungee) {
-                    val data = PlayerMessageData(player.uuid, Component.text(message))
-                    data.permissions.apply {
-                        add(perm1)
-                        add(perm2)
-                    }
-                    val handler =
-                        discordBot.networkManager.messagingServiceManager.getHandler(AdminChatMessageHandler::class.java)
-                    handler?.send(data)
-                } else {
-                    val replacements = mapOf(
-                        "playername" to player.name,
-                        "displayname" to player.name,
-                        "server" to "Discord",
-                        "message" to message
-                    )
-
-                    discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(
-                        Message.ADMINCHAT_MESSAGE,
-                        perm1,
-                        perm2,
-                        replacements = replacements
-                    )
-                }
+                discordBot.networkManager.chatManager.sendAdminChatMessage(player, message)
             }
         } else if (channel.id == discordBot.settings.getString(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL)) {
             val uuid = discordUserManager.getUuidByDiscordId(user.id) ?: return
             val player = cachedPlayers.getPlayer(uuid) ?: return
             if (cachedValues.getBoolean(Command.STAFFCHAT_ENABLED)) {
-                val perm1 = "networkmanager.command.staffchat"
-                val perm2 = "networkmanager.admin"
-                if (discordBot.networkManager.isRedisBungee) {
-                    val data = PlayerMessageData(player.uuid, Component.text(message))
-                    data.permissions.apply {
-                        add(perm1)
-                        add(perm2)
-                    }
-                    val handler =
-                        discordBot.networkManager.messagingServiceManager.getHandler(StaffChatMessageHandler::class.java)
-                    handler?.send(data)
-                } else {
-                    val replacements = mapOf(
-                        "playername" to player.name,
-                        "displayname" to player.name,
-                        "server" to "Discord",
-                        "message" to message
-                    )
-
-                    discordBot.networkManager.universalUtils.sendTranslatableMessageToStaff(
-                        Message.STAFFCHAT_MESSAGE,
-                        perm1,
-                        perm2,
-                        replacements = replacements
-                    )
-                }
+                discordBot.networkManager.chatManager.sendStaffChatMessage(player, message)
             }
         } else {
             val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)

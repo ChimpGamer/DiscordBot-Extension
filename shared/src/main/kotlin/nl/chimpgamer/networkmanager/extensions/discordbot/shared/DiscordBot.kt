@@ -1,9 +1,9 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared
 
 import net.dv8tion.jda.api.entities.Guild
+import nl.chimpgamer.networkmanager.api.NetworkManagerPlugin
 import nl.chimpgamer.networkmanager.api.Scheduler
 import nl.chimpgamer.networkmanager.api.models.languages.Language
-import nl.chimpgamer.networkmanager.common_proxy.plugin.NetworkManagerPluginProxyBase
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.commands.mc.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.*
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners.LiteBansListener
@@ -24,8 +24,8 @@ class DiscordBot(val platform: Platform) {
     val scheduler: Scheduler
         get() = platform.scheduler
 
-    val networkManager: NetworkManagerPluginProxyBase
-        get() = platform.networkManager as NetworkManagerPluginProxyBase
+    val networkManager: NetworkManagerPlugin
+        get() = platform.networkManager
 
     // Configuration files
     val settings = Settings(this)

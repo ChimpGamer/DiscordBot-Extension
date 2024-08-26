@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "1.8.5"
+    version = "1.8.6-SNAPSHOT"
 
     repositories {
         mavenCentral()
@@ -24,15 +24,15 @@ subprojects {
 
         maven("https://jitpack.io") // For RedisBungee
 
-        //maven("https://repo.networkmanager.xyz/repository/maven-public/") // NetworkManager repository
+        maven("https://repo.networkmanager.xyz/repository/maven-public/") // NetworkManager repository
     }
 
     dependencies {
-        compileOnly(kotlin("stdlib-jdk8"))
+        compileOnly(kotlin("stdlib"))
 
         compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.2")
 
-        compileOnly("nl.chimpgamer.networkmanager:common-proxy:2.16.0-SNAPSHOT")
+        compileOnly("nl.chimpgamer.networkmanager:api:2.16.5-SNAPSHOT")
     }
 
     tasks {

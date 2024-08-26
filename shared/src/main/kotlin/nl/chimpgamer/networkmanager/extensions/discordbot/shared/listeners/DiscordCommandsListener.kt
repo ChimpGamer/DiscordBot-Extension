@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
-import nl.chimpgamer.networkmanager.common.utils.ExpiringMap
+import nl.chimpgamer.networkmanager.api.utils.ExpiringMap
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks.CreateTokenTask
@@ -194,22 +194,13 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 return@onCommand
             }
             val language = discordBot.getDefaultLanguage()
+            val username: String
+            val playtime: Long
+
             if (discordBot.networkManager.isPlayerOnline(uuid, true)) {
                 val player = discordBot.networkManager.getPlayer(uuid) ?: return@onCommand
-
-                val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
-                val embedBuilder = EmbedBuilder.fromData(data).apply {
-                    val title = data.getString("title", null)?.replace("%playername%", player.name)
-                    setTitle(title)
-                    parsePlaceholdersToFields { text ->
-                        val formattedPlaytime = TimeUtils.getTimeString(language, player.playtime / 1000)
-                        text.replace("%playername%", player.name)
-                            .replace("%playtime%", formattedPlaytime)
-                            .replace("%liveplaytime%", formattedPlaytime)
-                    }
-                }
-
-                event.hook.sendMessageEmbeds(embedBuilder.build()).await()
+               username = player.name
+               playtime = player.livePlaytime
             } else {
                 event.deferReply().queue()
                 val result = if (playtimeCache.contains(uuid)) {
@@ -219,27 +210,27 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                     playtimeCache[uuid] = playtimeData
                     playtimeData
                 }
-                val userName = result.first
-                val playtime = result.second
-                if (userName.isEmpty() || playtime == 0L) {
-                    event.reply_("Something went wrong trying to get your playtime data.").setEphemeral(true).await()
-                    return@onCommand
-                }
-
-                val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
-                val embedBuilder = EmbedBuilder.fromData(data).apply {
-                    val title = data.getString("title", null)?.replace("%playername%", userName)
-                    setTitle(title)
-                    parsePlaceholdersToFields { text ->
-                        val formattedPlaytime = TimeUtils.getTimeString(language, playtime / 1000)
-                        text.replace("%playername%", userName)
-                            .replace("%playtime%", formattedPlaytime)
-                            .replace("%liveplaytime%", formattedPlaytime)
-                    }
-                }
-
-                event.hook.sendMessageEmbeds(embedBuilder.build()).await()
+                username = result.first
+                playtime = result.second
             }
+            if (username.isEmpty() || playtime == 0L) {
+                event.reply_("Something went wrong trying to get your playtime data.").setEphemeral(true).await()
+                return@onCommand
+            }
+
+            val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.COMMAND_PLAYTIME_RESPONSE))
+            val embedBuilder = EmbedBuilder.fromData(data).apply {
+                val title = data.getString("title", null)?.replace("%playername%", username)
+                setTitle(title)
+                parsePlaceholdersToFields { text ->
+                    val formattedPlaytime = TimeUtils.getTimeString(language, playtime / 1000)
+                    text.replace("%playername%", username)
+                        .replace("%playtime%", formattedPlaytime)
+                        .replace("%liveplaytime%", formattedPlaytime)
+                }
+            }
+
+            event.hook.sendMessageEmbeds(embedBuilder.build()).await()
         }
 
         jda.onCommand(uptimeCommandName) { event ->
@@ -281,24 +272,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
     private suspend fun getOfflinePlayerPlaytime(uuid: UUID): Pair<String, Long> {
         return withContext(Dispatchers.IO) {
-            var pair = Pair("", 0L)
-            try {
-                discordBot.mySQL.connection.use { connection ->
-                    connection.prepareStatement("SELECT `username`, `playtime` FROM nm_players WHERE `uuid`=?;").use { ps ->
-                        ps.setString(1, uuid.toString())
-                        ps.executeQuery().use { rs ->
-                            if (rs.next()) {
-                                val username = rs.getString("username")
-                                val playtime = rs.getLong("playtime")
-                                pair = Pair(username, playtime)
-                            }
-                        }
-                    }
-                }
-            } catch (ex: SQLException) {
-                ex.printStackTrace()
-            }
-            pair
+            discordBot.networkManager.storage.dao.playersDao.getPlayerNameAndPlaytime(uuid)
         }
     }
 }
