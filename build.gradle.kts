@@ -75,7 +75,6 @@ subprojects {
             relocate("com.neovisionaries.ws", "$shadedPackage.nv-websocket-client")
             relocate("org.apache.commons.collections4", "$shadedPackage.commons-collections4")
             relocate("gnu.trove", "$shadedPackage.trove")
-            relocate("org.slf4j", "$shadedPackage.slf4j")
         }
 
         build {
