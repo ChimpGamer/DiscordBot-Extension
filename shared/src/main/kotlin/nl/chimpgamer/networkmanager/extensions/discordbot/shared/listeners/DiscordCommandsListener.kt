@@ -95,18 +95,19 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 checkNotNull(guild) { "The discord bot has not been connected to a discord server. Connect it to a discord server." }
                 val member = event.member ?: guild.getMember(event.user)
                 if (member == null) {
-                    event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_NOT_IN_SERVER)).setEphemeral(true).await()
+                    event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_NOT_IN_SERVER)).setEphemeral(true)
+                        .await()
                     return@onCommand
                 }
                 if (member.isPending) {
-                    event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_MEMBERSHIP_SCREENING_REQUIREMENTS_NOT_MET)).setEphemeral(true).await()
+                    event.reply(discordBot.messages.getString(DCMessage.REGISTRATION_MEMBERSHIP_SCREENING_REQUIREMENTS_NOT_MET))
+                        .setEphemeral(true).await()
                     return@onCommand
                 }
 
                 if (discordUserManager.containsDiscordID(member.id)) {
                     val registrationInProcessMessage = discordBot.messages.getString(DCMessage.REGISTRATION_IN_PROCESS)
                     if (Utils.isJsonValid(registrationInProcessMessage)) {
-
                         val data = DataObject.fromJson(registrationInProcessMessage)
                         val embedBuilder = EmbedBuilder.fromData(data)
                         event.replyEmbeds(embedBuilder.build()).setEphemeral(true).await()
@@ -155,9 +156,11 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             } else {
                 val serverName = event.getOption("servername")?.asString
                 if (serverName == null || !discordBot.networkManager.getAllServerNames().contains(serverName)) {
-                    event.reply(discordBot.messages.getString(DCMessage.COMMAND_PLAYERLIST_INVALID_SERVER)
-                        .replace("%mention%", event.user.asMention)
-                        .replace("%server%", serverName.toString())).await()
+                    event.reply(
+                        discordBot.messages.getString(DCMessage.COMMAND_PLAYERLIST_INVALID_SERVER)
+                            .replace("%mention%", event.user.asMention)
+                            .replace("%server%", serverName.toString())
+                    ).await()
                     return@onCommand
                 }
 
@@ -199,8 +202,8 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
             if (discordBot.networkManager.isPlayerOnline(uuid, true)) {
                 val player = discordBot.networkManager.getPlayer(uuid) ?: return@onCommand
-               username = player.name
-               playtime = player.livePlaytime
+                username = player.name
+                playtime = player.livePlaytime
             } else {
                 event.deferReply().queue()
                 val result = if (playtimeCache.contains(uuid)) {
@@ -243,9 +246,13 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
         jda.onCommand("ticket") { event ->
             val member = event.member ?: return@onCommand
-            val isLinked = runCatching { discordBot.discordUserManager.checkUserByDiscordId(member.id) }.getOrDefault(false)
+            val isLinked =
+                runCatching { discordBot.discordUserManager.checkUserByDiscordId(member.id) }.getOrDefault(false)
             if (!isLinked) {
-                event.reply_("You'll have to link your account before you can open a ticket using this command!", ephemeral = true).await()
+                event.reply_(
+                    "You'll have to link your account before you can open a ticket using this command!",
+                    ephemeral = true
+                ).await()
                 return@onCommand
             }
 
@@ -264,7 +271,11 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 placeholder = discordBot.messages.discordCommandTicketModalInputMessagePlaceholder
             )
 
-            val modal = Modal("create-ticket", discordBot.messages.discordCommandTicketModalTitle, listOf(ActionRow.of(titleInput), ActionRow.of(messageInput)))
+            val modal = Modal(
+                "create-ticket",
+                discordBot.messages.discordCommandTicketModalTitle,
+                listOf(ActionRow.of(titleInput), ActionRow.of(messageInput))
+            )
 
             event.replyModal(modal).await()
         }

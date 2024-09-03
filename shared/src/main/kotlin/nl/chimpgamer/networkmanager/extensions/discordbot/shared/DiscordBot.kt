@@ -125,10 +125,7 @@ class DiscordBot(val platform: Platform) {
     }
 
     fun getDefaultLanguage(): Language {
-        val cachedValues = networkManager.cacheManager.cachedValues
-        val cachedLanguages = networkManager.cacheManager.cachedLanguages
-        val defaultLanguage = cachedValues.getString(nl.chimpgamer.networkmanager.api.values.Setting.LANGUAGE_DEFAULT)
-        return runCatching { cachedLanguages.getLanguage(defaultLanguage) }.getOrElse { cachedLanguages.getLanguage(1) }
+        return networkManager.cacheManager.cachedLanguages.getDefaultLanguage()
     }
 
     companion object {

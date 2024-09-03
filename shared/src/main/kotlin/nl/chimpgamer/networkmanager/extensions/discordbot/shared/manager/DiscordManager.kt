@@ -145,8 +145,6 @@ class DiscordManager(private val discordBot: DiscordBot) {
                     .replace("%players%", players.toString())
             )
 
-            //println(statusMessage)
-
             setActivity(Activity.of(activityType, statusMessage))
         }
     }

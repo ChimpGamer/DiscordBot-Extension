@@ -98,10 +98,7 @@ class LiteBansListener(private val discordBot: DiscordBot) {
             .replace(
                 "%expires%",
                 if (entry.dateEnd == -1L) networkManager.getMessage(language, Message.NEVER)
-                else TimeUtils.getTimeString(
-                    language,
-                    Utils.ceilDiv(entry.dateEnd - System.currentTimeMillis(), 1000)
-                )
+                else TimeUtils.getTimeString(language, entry.duration)
             )
 
         return parsed.stripColors()

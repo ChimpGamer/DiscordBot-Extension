@@ -6,7 +6,7 @@ import java.sql.Connection
 import java.sql.SQLException
 
 class MySQL(private val discordBot: DiscordBot) {
-    lateinit var nmStorage: Storage
+    private lateinit var nmStorage: Storage
 
     fun initialize(): Boolean {
         var result = false

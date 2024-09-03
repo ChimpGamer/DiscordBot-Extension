@@ -7,5 +7,11 @@ dependencies {
 
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
 
-    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Velocity:0.11.2")
+    compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-Velocity:0.11.4")
+}
+
+tasks {
+    shadowJar {
+        archiveFileName.set("DiscordBot-Velocity-v${project.version}.jar")
+    }
 }

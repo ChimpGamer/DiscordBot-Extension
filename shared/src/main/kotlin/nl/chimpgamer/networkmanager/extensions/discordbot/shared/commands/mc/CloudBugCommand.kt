@@ -29,16 +29,9 @@ class CloudBugCommand(private val discordBot: DiscordBot) {
                     val message = context.get<String>("message")
 
                     if (Cooldown.isInCooldown(player.uuid, name)) {
-                        player.sendMessage(
-                            discordBot.messages.getString(MCMessage.BUG_COOLDOWN).parse(
-                                mapOf(
-                                    "cooldown" to TimeUtils.getTimeString(
-                                        player.language,
-                                        Cooldown.getTimeLeft(player.uuid, name).toLong()
-                                    )
-                                )
-                            )
-                        )
+                        val cooldownMessage = discordBot.messages.getString(MCMessage.BUG_COOLDOWN)
+                        val cooldownFormatted = TimeUtils.getTimeString(player, Cooldown.getTimeLeft(player.uuid, name).toLong())
+                        player.sendMessage(cooldownMessage.parse(mapOf("cooldown" to cooldownFormatted)))
                         return@handler
                     }
 

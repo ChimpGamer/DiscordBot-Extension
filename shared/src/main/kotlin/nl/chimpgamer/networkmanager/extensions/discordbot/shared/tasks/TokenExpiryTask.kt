@@ -11,8 +11,6 @@ class TokenExpiryTask(private val discordBot: DiscordBot, private val token: Tok
 
     override fun run() {
         if (!this.discordBot.discordUserManager.tokens.contains(this.token)) return
-
-
         val msgStr = discordBot.messages.getString(DCMessage.REGISTRATION_TOKEN_EXPIRED)
 
         if (Utils.isJsonValid(msgStr)) {

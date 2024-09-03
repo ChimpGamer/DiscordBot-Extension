@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.24"
+    kotlin("jvm") version "1.9.25"
     //`maven-publish`
     id("io.github.goooler.shadow") version "8.1.7"
 }
@@ -20,8 +20,6 @@ subprojects {
     }
 
     repositories {
-        mavenLocal()
-
         maven("https://jitpack.io") // For RedisBungee
 
         maven("https://repo.networkmanager.xyz/repository/maven-public/") // NetworkManager repository
@@ -30,9 +28,9 @@ subprojects {
     dependencies {
         compileOnly(kotlin("stdlib"))
 
-        compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.2")
+        compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.4")
 
-        compileOnly("nl.chimpgamer.networkmanager:api:2.16.5-SNAPSHOT")
+        compileOnly("nl.chimpgamer.networkmanager:api:2.16.5")
     }
 
     tasks {
@@ -54,19 +52,30 @@ subprojects {
         }
 
         shadowJar {
-            archiveFileName.set("DiscordBot-${project.name}-v${project.version}.jar")
+            exclude("natives/**")     // ~2 MB
+            exclude("com/sun/jna/**") // ~1 MB
+            exclude("com/google/crypto/tink/**") // ~2 MB
+            exclude("com/google/gson/**") // ~300 KB
+            exclude("com/google/protobuf/**") // ~2 MB
+            exclude("google/protobuf/**")
+            exclude("club/minnced/opus/util/*")
+            exclude("tomp2p/opuswrapper/*")
 
             val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
             val libPackage = "nl.chimpgamer.networkmanager.lib"
 
-            relocate("kotlin", "$libPackage.kotlin")
+            relocate("kotlin", "$shadedPackage.kotlin")
             relocate("org.incendo.cloud", "$libPackage.cloud")
             relocate("com.fasterxml.jackson", "$libPackage.jackson")
             relocate("net.dv8tion.jda", "$shadedPackage.jda")
-            relocate("dev.minn.jda.ktx", "$shadedPackage.jda-ktx")
+            relocate("dev.minn.jda.ktx", "$shadedPackage.jda.ktx")
             relocate("dev.dejvokep.boostedyaml", "$libPackage.boostedyaml")
             relocate("okhttp3", "$shadedPackage.okhttp3")
             relocate("okio", "$shadedPackage.okio")
+            relocate("com.neovisionaries.ws", "$shadedPackage.nv-websocket-client")
+            relocate("org.apache.commons.collections4", "$shadedPackage.commons-collections4")
+            relocate("gnu.trove", "$shadedPackage.trove")
+            relocate("org.slf4j", "$shadedPackage.slf4j")
         }
 
         build {

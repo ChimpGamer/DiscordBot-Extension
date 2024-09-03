@@ -248,7 +248,6 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val networkManager = discordBot.networkManager
         val cachedPlayers = networkManager.cacheManager.cachedPlayers
         val punishment = event.punishment
-        // TODO: Make setting to define this value
         val language = discordBot.getDefaultLanguage()
 
 
@@ -277,10 +276,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             ).replace(
                 "%expires%",
                 if (punishment.end == -1L) networkManager.getMessage(language, Message.NEVER)
-                else TimeUtils.getTimeString(
-                    language,
-                    Utils.ceilDiv(punishment.end - System.currentTimeMillis(), 1000)
-                )
+                else TimeUtils.getTimeString(language, punishment.duration())
             )
 
         return parsed.stripColors()
