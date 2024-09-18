@@ -98,7 +98,7 @@ class DiscordListener(private val discordBot: DiscordBot) : CoroutineEventListen
                 if (message.isEmpty()) {
                     return
                 }
-                member.user.openPrivateChannel().await().sendMessage(message.replace("%mention%", member.user.asMention)).await()
+                member.user.openPrivateChannel().flatMap { it.sendMessage(message.replace("%mention%", member.user.asMention)) }.await()
             }
         }
     }
