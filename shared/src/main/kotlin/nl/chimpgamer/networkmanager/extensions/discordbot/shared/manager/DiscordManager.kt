@@ -3,6 +3,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.shared.manager
 import dev.minn.jda.ktx.events.listener
 import dev.minn.jda.ktx.jdabuilder.light
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
@@ -88,10 +89,13 @@ class DiscordManager(private val discordBot: DiscordBot) {
             setMaxReconnectDelay(180)
         }.awaitReady()
 
-        jda.listener<ReadyEvent> { discordBot.platform.info("Bot is ready!") }
+        jda.listener<ReadyEvent> { discordBot.platform.info("Bot is ready!")}
     }
 
+    fun setOnlineStatus() = jda.presence.setStatus(OnlineStatus.fromKey(discordBot.settings.botDiscordOnlineStatus))
+
     private fun initializeActivity() {
+        setOnlineStatus()
         if (discordBot.settings.getBoolean(Setting.DISCORD_STATUS_ENABLED)) {
             val activityType = try {
                 Activity.ActivityType.valueOf(discordBot.settings.getString(Setting.DISCORD_STATUS_TYPE).uppercase())
@@ -119,6 +123,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
         shutdownJDA()
         try {
             initJDA()
+            initializeActivity()
             return true
         } catch (e: LoginException) {
             e.printStackTrace()

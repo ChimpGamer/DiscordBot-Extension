@@ -3,6 +3,7 @@ bot:
     token: YourBotTokenHere
     main-guild: '000000000000000000'
     max-guilds: 1
+    online-status: online
     status:
       enabled: true
       type: watching
@@ -63,4 +64,4 @@ bot:
       registration-alerts:
         channel: '000000000000000000'
 
-config-version: 3
+config-version: 4

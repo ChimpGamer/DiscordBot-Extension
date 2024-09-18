@@ -11,6 +11,8 @@ import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 class Settings(private val discordBot: DiscordBot) {
     private val config: YamlDocument
 
+    val botDiscordOnlineStatus: String get() = config.getString("bot.discord.online-status")
+
     init {
         val file = discordBot.dataFolder.resolve("settings.yml")
         val inputStream = discordBot.platform.getResource("settings.yml")
