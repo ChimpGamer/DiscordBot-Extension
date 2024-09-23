@@ -12,9 +12,7 @@ import nl.chimpgamer.networkmanager.api.models.punishments.Punishment
 import nl.chimpgamer.networkmanager.api.models.servers.Server
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
-import nl.chimpgamer.networkmanager.api.utils.adventure.parse
-import nl.chimpgamer.networkmanager.api.utils.adventure.toLegacy
-import nl.chimpgamer.networkmanager.api.utils.adventure.toPlainText
+import nl.chimpgamer.networkmanager.api.utils.adventure.*
 import nl.chimpgamer.networkmanager.api.utils.stripColors
 import nl.chimpgamer.networkmanager.api.values.Message
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
@@ -32,28 +30,26 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
     private fun onStaffChat(event: StaffChatEvent) {
         if (event.isCancelled) return
+        val sender = event.sender
         val staffChatChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL) ?: return
-        sendChannelMessage(
-            staffChatChannel,
-            discordBot.messages.getString(DCMessage.EVENT_STAFFCHAT)
-                .replace("%playername%", event.sender.name)
-                .replace("%displayname%", event.sender.displayName.toLegacy().stripColors())
-                .replace("%server%", event.sender.server!!)
-                .replace("%message%", event.message)
-        )
+        val staffChatMessage = discordBot.messages.getString(DCMessage.EVENT_STAFFCHAT).replace("%message%", event.message)
+        val componentMessage = staffChatMessage.parse(sender)
+            .replace("%playername%", sender.name())
+            .replace("%displayname%", sender.displayName)
+            .replace("%server%", sender.serverDisplay)
+        sendChannelMessage(staffChatChannel, componentMessage.toPlainText())
     }
 
     private fun onAdminChat(event: AdminChatEvent) {
         if (event.isCancelled) return
+        val sender = event.sender
         val adminChatChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL) ?: return
-        sendChannelMessage(
-            adminChatChannel,
-            discordBot.messages.getString(DCMessage.EVENT_ADMINCHAT)
-                .replace("%playername%", event.sender.name)
-                .replace("%displayname%", event.sender.displayName.toLegacy().stripColors())
-                .replace("%server%", event.sender.server!!)
-                .replace("%message%", event.message)
-        )
+        val adminChatMessage = discordBot.messages.getString(DCMessage.EVENT_ADMINCHAT) .replace("%message%", event.message)
+        val componentMessage = adminChatMessage.parse(sender)
+            .replace("%playername%", sender.name())
+            .replace("%displayname%", sender.displayName)
+            .replace("%server%", sender.serverDisplay)
+        sendChannelMessage(adminChatChannel, componentMessage.toPlainText())
     }
 
     private fun onServerStatusChange(event: ServerStatusChangeEvent) {
@@ -310,21 +306,20 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val chatEventChannels = discordBot.settings.getMap(Setting.DISCORD_EVENTS_CHAT_CHANNELS)
         val globalId = chatEventChannels["all"] ?: "000000000000000000"
         val globalChatTextChannel = discordBot.discordManager.getTextChannelById(globalId)
-        var message = discordBot.messages.getString(DCMessage.EVENT_CHAT)
-            .replace("%playername%", player.name)
-            .replace("%displayname%", player.displayName.toLegacy())
-            .replace("%server%", player.serverDisplay.toLegacy())
-            .replace(
-                "%message%", event.message
-                    .replace(Utils.USER_MENTION_REGEX, "")
-                    .replace(Utils.ROLE_MENTION_REGEX, "")
-            )
-        message = Placeholders.setPlaceholders(player, message).stripColors()
 
-        globalChatTextChannel?.sendMessage(message)?.queue()
+        val message = event.message.replace(Utils.USER_MENTION_REGEX, "").replace(Utils.ROLE_MENTION_REGEX, "")
+        var chatMessage = discordBot.messages.getString(DCMessage.EVENT_CHAT).replace("%message%", message)
+        chatMessage = Placeholders.setPlaceholders(player, chatMessage)
+        val componentMessage = chatMessage.parse(player)
+            .replace("%playername%", player.name())
+            .replace("%displayname%", player.displayName)
+            .replace("%server%", player.serverDisplay)
+        chatMessage = componentMessage.toPlainText()
+
+        globalChatTextChannel?.sendMessage(chatMessage)?.queue()
         val serverId = chatEventChannels[currentServer] ?: "000000000000000000"
         val serverChatTextChannel = discordBot.discordManager.getTextChannelById(serverId)
-        serverChatTextChannel?.sendMessage(message)?.queue()
+        serverChatTextChannel?.sendMessage(chatMessage)?.queue()
     }
 
     private fun onMaintenanceModeToggle(event: MaintenanceModeToggleEvent) {
