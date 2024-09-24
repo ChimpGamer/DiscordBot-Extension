@@ -31,8 +31,10 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     private fun onStaffChat(event: StaffChatEvent) {
         if (event.isCancelled) return
         val sender = event.sender
-        val staffChatChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL) ?: return
-        val staffChatMessage = discordBot.messages.getString(DCMessage.EVENT_STAFFCHAT).replace("%message%", event.message)
+        val staffChatChannel =
+            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_STAFFCHAT_CHANNEL) ?: return
+        val staffChatMessage =
+            discordBot.messages.getString(DCMessage.EVENT_STAFFCHAT).replace("%message%", event.message)
         val componentMessage = staffChatMessage.parse(sender)
             .replace("%playername%", sender.name())
             .replace("%displayname%", sender.displayName)
@@ -43,8 +45,10 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     private fun onAdminChat(event: AdminChatEvent) {
         if (event.isCancelled) return
         val sender = event.sender
-        val adminChatChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL) ?: return
-        val adminChatMessage = discordBot.messages.getString(DCMessage.EVENT_ADMINCHAT) .replace("%message%", event.message)
+        val adminChatChannel =
+            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_ADMINCHAT_CHANNEL) ?: return
+        val adminChatMessage =
+            discordBot.messages.getString(DCMessage.EVENT_ADMINCHAT).replace("%message%", event.message)
         val componentMessage = adminChatMessage.parse(sender)
             .replace("%playername%", sender.name())
             .replace("%displayname%", sender.displayName)
@@ -58,13 +62,16 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val globalId = serverChannels["all"] ?: "000000000000000000"
         val channelId = serverChannels[server.serverName] ?: "000000000000000000"
         val textChannel =
-            discordBot.discordManager.getTextChannelById(globalId) ?: discordBot.discordManager.getTextChannelById(channelId) ?: return
+            discordBot.discordManager.getTextChannelById(globalId) ?: discordBot.discordManager.getTextChannelById(
+                channelId
+            ) ?: return
         val dcMessage = if (event.isOnline) DCMessage.SERVER_STATUS_ONLINE else DCMessage.SERVER_STATUS_OFFLINE
 
         val data = DataObject.fromJson(discordBot.messages.getString(dcMessage))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
             val title = insertServerPlaceholders(data.getString("title", null), server)
-            val description = insertServerPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, server)
+            val description =
+                insertServerPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, server)
             setTitle(title)
             setDescription(description)
             parsePlaceholdersToFields { text -> insertServerPlaceholders(text, server) }
@@ -75,12 +82,16 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
 
     private fun onPunishment(event: PunishmentEvent) {
         if (event.punishment.type === Punishment.Type.REPORT) {
-            val reportChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_REPORT_CHANNEL) ?: return
+            val reportChannel =
+                discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_REPORT_CHANNEL) ?: return
             if (event.punishment.isActive) {
                 val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.REPORT_ALERT))
                 val embedBuilder = EmbedBuilder.fromData(data).apply {
                     val title = insertPunishmentPlaceholders(data.getString("title", null), event)
-                    val description = insertPunishmentPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
+                    val description = insertPunishmentPlaceholders(
+                        data.getString("description", "").takeIf { it.isNotEmpty() },
+                        event
+                    )
                     setTitle(title)
                     setDescription(description)
                     parsePlaceholdersToFields { text -> insertPunishmentPlaceholders(text, event) }
@@ -98,7 +109,8 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             val data = DataObject.fromJson(discordBot.messages.getString(dcMessage))
             val embedBuilder = EmbedBuilder.fromData(data).apply {
                 val title = insertPunishmentPlaceholders(data.getString("title", null), event)
-                val description = insertPunishmentPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
+                val description =
+                    insertPunishmentPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
                 setTitle(title)
                 setDescription(description)
                 parsePlaceholdersToFields { text -> insertPunishmentPlaceholders(text, event) }
@@ -112,12 +124,14 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         if (event.isCancelled) {
             return
         }
-        val helpOPChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_HELPOP_CHANNEL) ?: return
+        val helpOPChannel =
+            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_HELPOP_CHANNEL) ?: return
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.HELPOP_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
             val title = insertHelpOPPlaceholders(data.getString("title", null), event)
-            val description = insertHelpOPPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
+            val description =
+                insertHelpOPPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
             setTitle(title)
             setDescription(description)
             parsePlaceholdersToFields { text -> insertHelpOPPlaceholders(text, event) }
@@ -127,12 +141,14 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     }
 
     private fun onTicketCreate(event: TicketCreateEvent) {
-        val ticketChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_TICKETS_CHANNEL) ?: return
+        val ticketChannel =
+            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_TICKETS_CHANNEL) ?: return
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.TICKET_CREATE_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
             val title = insertTicketPlaceholders(data.getString("title", null), event)
-            val description = insertTicketPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
+            val description =
+                insertTicketPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
             setTitle(title)
             setDescription(description)
             parsePlaceholdersToFields { text -> insertTicketPlaceholders(text, event) }
@@ -142,12 +158,14 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     }
 
     private fun onChatLogCreated(event: ChatLogCreatedEvent) {
-        val chatLogChannel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_CHATLOG_CHANNEL) ?: return
+        val chatLogChannel =
+            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_CHATLOG_CHANNEL) ?: return
 
         val data = DataObject.fromJson(discordBot.messages.getString(DCMessage.CHATLOG_ALERT))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
             val title = insertChatLogPlaceholders(data.getString("title", null), event)
-            val description = insertChatLogPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
+            val description =
+                insertChatLogPlaceholders(data.getString("description", "").takeIf { it.isNotEmpty() }, event)
             setTitle(title)
             setDescription(description)
             parsePlaceholdersToFields { text -> insertChatLogPlaceholders(text, event) }
@@ -181,7 +199,10 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
                     ?: return
             sendChannelMessage(
                 channel,
-                Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_PLAYERLOGIN))
+                discordBot.messages.getString(DCMessage.EVENT_PLAYERLOGIN)
+                    .replace("%playername%", player.name)
+                    .parse(player)
+                    .toPlainText()
             )
         } else {
             val channel =
@@ -189,7 +210,10 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
                     ?: return
             sendChannelMessage(
                 channel,
-                Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_FIRST_PLAYERLOGIN))
+                discordBot.messages.getString(DCMessage.EVENT_FIRST_PLAYERLOGIN)
+                    .replace("%playername%", player.name)
+                    .parse(player)
+                    .toPlainText()
             )
         }
     }
@@ -199,7 +223,13 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val channel =
             discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_DISCONNECT_CHANNEL)
                 ?: return
-        sendChannelMessage(channel, Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_DISCONNECT)))
+        sendChannelMessage(
+            channel,
+            discordBot.messages.getString(DCMessage.EVENT_DISCONNECT)
+                .replace("%playername%", player.name)
+                .parse(player)
+                .toPlainText()
+        )
     }
 
     private fun onServerConnected(event: ServerConnectedEvent) {
@@ -211,10 +241,13 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_SERVER_SWITCH_CHANNEL)
                 ?: return
 
-        val message = Placeholders.setPlaceholders(player, discordBot.messages.getString(DCMessage.EVENT_SERVER_SWITCH)
+        val message = discordBot.messages.getString(DCMessage.EVENT_SERVER_SWITCH)
+            .replace("%playername%", player.name)
             .replace("%previous-server%", previousServer.serverName)
             .replace("%server%", server.serverName)
-        )
+            .parse(player)
+            .toPlainText()
+
         sendChannelMessage(channel, message)
     }
 
@@ -323,12 +356,15 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
     }
 
     private fun onMaintenanceModeToggle(event: MaintenanceModeToggleEvent) {
-        val channel = discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_MAINTENANCE_MODE_CHANNEL) ?: return
-        val message = if (event.enabled) DCMessage.MAINTENANCE_MODE_ALERT_ENABLED else DCMessage.MAINTENANCE_MODE_ALERT_DISABLED
+        val channel =
+            discordBot.discordManager.getTextChannelById(Setting.DISCORD_EVENTS_MAINTENANCE_MODE_CHANNEL) ?: return
+        val message =
+            if (event.enabled) DCMessage.MAINTENANCE_MODE_ALERT_ENABLED else DCMessage.MAINTENANCE_MODE_ALERT_DISABLED
         val data = DataObject.fromJson(discordBot.messages.getString(message))
         val embedBuilder = EmbedBuilder.fromData(data).apply {
             val title = data.getString("title", null)?.replace("%state%", event.enabled.toString())
-            val description = data.getString("description", "").takeIf { it.isNotEmpty() }?.replace("%state%", event.enabled.toString())
+            val description = data.getString("description", "").takeIf { it.isNotEmpty() }
+                ?.replace("%state%", event.enabled.toString())
             setTitle(title)
             setDescription(description)
             parsePlaceholdersToFields { text -> text.replace("%state%", event.enabled.toString()) }
