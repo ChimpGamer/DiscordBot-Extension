@@ -195,7 +195,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
     fun setNickNameAndAddRole(member: Member, nickName: String, role: Role) {
         var finalNickname = nickName
         if (nickName.length > 32) {
-            discordBot.platform.info("The new nickname of ${member.user.name} exceeds the maximum limit of 32 characters.")
+            discordBot.platform.warn("The new nickname of ${member.user.name} exceeds the maximum limit of 32 characters.")
             finalNickname = finalNickname.substring(0, 32)
         }
         discordBot.platform.info("Setting nickname and role for " + member.user.name)
