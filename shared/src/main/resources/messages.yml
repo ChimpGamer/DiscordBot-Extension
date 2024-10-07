@@ -60,6 +60,7 @@ discord:
           "showTimestamp": true
         }
     ticket:
+      account-not-linked: "You'll have to link your account before you can open a ticket using this command!"
       modal:
         title: 'Create Ticket'
         input:
@@ -543,4 +544,4 @@ discord:
         "showTimestamp": true
       }
 
-config-version: 4
+config-version: 5

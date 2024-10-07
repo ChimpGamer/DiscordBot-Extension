@@ -23,6 +23,8 @@ class Messages(discordBot: DiscordBot) {
         }
     }
 
+    val discordCommandTicketAccountNotLinked: String get() = config.getString("discord.command.ticket.account-not-linked")
+
     val discordCommandTicketModalTitle: String get() = config.getString("discord.command.ticket.modal.title")
 
     val discordCommandTicketModalInputTitleLabel: String get() = config.getString("discord.command.ticket.modal.input.title.label")

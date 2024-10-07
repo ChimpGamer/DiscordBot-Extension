@@ -257,10 +257,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             val isLinked =
                 runCatching { discordBot.discordUserManager.checkUserByDiscordId(member.id) }.getOrDefault(false)
             if (!isLinked) {
-                event.reply_(
-                    "You'll have to link your account before you can open a ticket using this command!",
-                    ephemeral = true
-                ).await()
+                event.reply_(discordBot.messages.discordCommandTicketAccountNotLinked, ephemeral = true).await()
                 return@onCommand
             }
 
