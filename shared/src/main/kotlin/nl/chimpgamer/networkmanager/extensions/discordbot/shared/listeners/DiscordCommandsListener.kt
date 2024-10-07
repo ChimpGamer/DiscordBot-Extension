@@ -63,6 +63,9 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
         val uptimeCommandName = commandSettings.discordUptimeCommand
         val uptimeCommandDescription = commandSettings.discordUptimeDescription
 
+        val ticketCommandName = commandSettings.discordTicketCommand
+        val ticketCommandDescription = commandSettings.discordTicketDescription
+
         jda.updateCommands {
             slash(registerCommandName, registerCommandDescription)
 
@@ -83,7 +86,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 restrict(guild = true, Permission.MESSAGE_SEND)
             }
 
-            slash("ticket", "Create a new ticket") {
+            slash(ticketCommandName, ticketCommandDescription) {
                 restrict(guild = true, Permission.MESSAGE_SEND)
             }
         }.await()

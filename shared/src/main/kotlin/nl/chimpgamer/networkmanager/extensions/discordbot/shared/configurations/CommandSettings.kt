@@ -32,6 +32,9 @@ class CommandSettings(discordBot: DiscordBot) {
     val discordRegisterCommand: String get() = config.getString("commands.discord.register.command", "register")
     val discordRegisterDescription: String get() = config.getString("commands.discord.register.description", "Register your discord account with your minecraft account on our server")
 
+    val discordTicketCommand: String get() = config.getString("commands.discord.ticket.command", "ticket")
+    val discordTicketDescription: String get() = config.getString("commands.discord.ticket.description", "Create a new ticket.")
+
     val minecraftDiscordEnabled: Boolean get() = config.getBoolean("commands.minecraft.discord.enabled", false)
 
     val minecraftSuggestionEnabled: Boolean get() = config.getBoolean("commands.minecraft.suggestion.enabled", false)
