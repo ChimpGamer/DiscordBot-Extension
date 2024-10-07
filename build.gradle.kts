@@ -28,7 +28,7 @@ subprojects {
     dependencies {
         compileOnly(kotlin("stdlib"))
 
-        compileOnly("com.github.ProxioDev.redisbungee:RedisBungee-API:0.11.4")
+        compileOnly("com.github.ProxioDev.ValioBungee:RedisBungee-API:0.11.4")
 
         compileOnly("nl.chimpgamer.networkmanager:api:2.16.5")
     }
