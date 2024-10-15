@@ -18,6 +18,7 @@ import java.math.BigInteger
 import java.security.SecureRandom
 import java.util.*
 import java.util.function.Function
+import java.util.logging.Level
 
 object Utils {
     val UUID_REGEX = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}")
@@ -35,7 +36,7 @@ object Utils {
         try {
             channel.sendMessage(message).queue()
         } catch (ex: PermissionException) {
-            discordBot.platform.warn("Could not send message to the " + channel.name + " because " + ex.message)
+            discordBot.platform.logger.log(Level.WARNING, "Could not send message to the ${channel.name} channel.", ex)
         }
     }
 
@@ -43,7 +44,7 @@ object Utils {
         try {
             channel.sendMessageEmbeds(message).queue()
         } catch (ex: PermissionException) {
-            discordBot.platform.warn("Could not send message to the " + channel.name + " because " + ex.message)
+            discordBot.platform.logger.log(Level.WARNING, "Could not send embed message to the ${channel.name} channel.", ex)
         }
     }
 

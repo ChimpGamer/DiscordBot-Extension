@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.utils.TimeUtils
 import nl.chimpgamer.networkmanager.api.utils.ExpiringMap
+import nl.chimpgamer.networkmanager.api.values.Module
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks.CreateTokenTask
@@ -46,6 +47,8 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
     private suspend fun handleCommands(jda: JDA) {
         val commandSettings = discordBot.commandSettings
+        val cachedValues = discordBot.networkManager.cacheManager.cachedValues
+
         val registerCommandName = commandSettings.discordRegisterCommand
         val registerCommandDescription = commandSettings.discordRegisterDescription
 
@@ -62,6 +65,9 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
 
         val uptimeCommandName = commandSettings.discordUptimeCommand
         val uptimeCommandDescription = commandSettings.discordUptimeDescription
+
+        val ticketCommandName = commandSettings.discordTicketCommand
+        val ticketCommandDescription = commandSettings.discordTicketDescription
 
         jda.updateCommands {
             slash(registerCommandName, registerCommandDescription)
@@ -83,8 +89,10 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 restrict(guild = true, Permission.MESSAGE_SEND)
             }
 
-            slash("ticket", "Create a new ticket") {
-                restrict(guild = true, Permission.MESSAGE_SEND)
+            if (cachedValues.getBoolean(Module.TICKETS)) {
+                slash(ticketCommandName, ticketCommandDescription) {
+                    restrict(guild = true, Permission.MESSAGE_SEND)
+                }
             }
         }.await()
 
@@ -244,15 +252,12 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             event.reply(TimeUtils.getTimeString(language, (System.currentTimeMillis() - uptime) / 1000)).await()
         }
 
-        jda.onCommand("ticket") { event ->
+        jda.onCommand(ticketCommandName) { event ->
             val member = event.member ?: return@onCommand
             val isLinked =
                 runCatching { discordBot.discordUserManager.checkUserByDiscordId(member.id) }.getOrDefault(false)
             if (!isLinked) {
-                event.reply_(
-                    "You'll have to link your account before you can open a ticket using this command!",
-                    ephemeral = true
-                ).await()
+                event.reply_(discordBot.messages.discordCommandTicketAccountNotLinked, ephemeral = true).await()
                 return@onCommand
             }
 

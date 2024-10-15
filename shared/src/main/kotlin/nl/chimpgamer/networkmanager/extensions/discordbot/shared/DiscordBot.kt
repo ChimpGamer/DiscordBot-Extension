@@ -91,6 +91,7 @@ class DiscordBot(val platform: Platform) {
         this.settings.reload()
         this.commandSettings.reload()
         this.messages.reload()
+        discordManager.setOnlineStatus()
     }
 
     private fun registerListeners() {

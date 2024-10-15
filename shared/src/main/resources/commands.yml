@@ -25,6 +25,9 @@ commands:
       command: register
       description: Register your discord account with your minecraft account on our
         server
+    ticket:
+      command: ticket
+      description: Create a new ticket.
   minecraft:
     discord:
       enabled: false
@@ -43,4 +46,4 @@ commands:
       command: unregister
       aliases: unlink
 
-config-version: 1
+config-version: 2
