@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "1.8.7"
+    version = "1.8.8-SNAPSHOT"
 
     repositories {
         mavenCentral()
