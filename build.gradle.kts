@@ -1,3 +1,6 @@
+import java.text.SimpleDateFormat
+import java.util.*
+
 plugins {
     kotlin("jvm") version "1.9.25"
     //`maven-publish`
@@ -48,7 +51,8 @@ subprojects {
         }
 
         processResources {
-            expand("version" to project.version)
+            val buildNumber = System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
+            expand("version" to project.version, "buildDate" to getDate(), "buildNumber" to buildNumber)
         }
 
         shadowJar {
@@ -81,6 +85,10 @@ subprojects {
             dependsOn(shadowJar)
         }
     }
+}
+
+fun getDate(): String {
+    return SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(Date())
 }
 
 tasks {

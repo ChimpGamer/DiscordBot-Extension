@@ -4,3 +4,6 @@ version: ${version}
 description: Discord bot for NetworkManager
 main: nl.chimpgamer.networkmanager.extensions.discordbot.bungeecord.BungeeCordPlatform
 api-version: 2.16.0
+
+build-date: ${buildDate}
+build-number: ${buildNumber}

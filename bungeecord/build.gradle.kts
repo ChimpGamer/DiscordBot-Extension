@@ -12,7 +12,13 @@ dependencies {
 
 tasks {
     shadowJar {
-        archiveFileName.set("DiscordBot-BungeeCord-v${project.version}.jar")
+        val buildNumber = System.getenv("BUILD_NUMBER")
+        if (buildNumber == null) {
+            archiveFileName.set("DiscordBot-Velocity-v${project.version}.jar")
+        } else {
+            archiveFileName.set("DiscordBot-Velocity-v${project.version}-b$buildNumber.jar")
+        }
+
         val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
         relocate("net.kyori", "$shadedPackage.kyori")
     }
