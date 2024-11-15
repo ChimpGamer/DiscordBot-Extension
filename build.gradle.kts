@@ -51,7 +51,7 @@ subprojects {
         }
 
         processResources {
-            val buildNumber = System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
+            val buildNumber = System.getenv("BUILD_NUMBER") ?: System.getenv("GITHUB_RUN_NUMBER ") ?: "SNAPSHOT"
             expand("version" to project.version, "buildDate" to getDate(), "buildNumber" to buildNumber)
         }
 
