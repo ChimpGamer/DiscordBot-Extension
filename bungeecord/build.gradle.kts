@@ -14,9 +14,9 @@ tasks {
     shadowJar {
         val buildNumber = System.getenv("BUILD_NUMBER") ?: System.getenv("GITHUB_RUN_NUMBER ")
         if (buildNumber == null) {
-            archiveFileName.set("DiscordBot-Velocity-v${project.version}.jar")
+            archiveFileName.set("DiscordBot-BungeeCord-v${project.version}.jar")
         } else {
-            archiveFileName.set("DiscordBot-Velocity-v${project.version}-b$buildNumber.jar")
+            archiveFileName.set("DiscordBot-BungeeCord-v${project.version}-b$buildNumber.jar")
         }
 
         val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
