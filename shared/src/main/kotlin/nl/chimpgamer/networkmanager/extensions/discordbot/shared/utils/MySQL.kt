@@ -11,17 +11,17 @@ class MySQL(private val discordBot: DiscordBot) {
     fun initialize(): Boolean {
         var result = false
         if (discordBot.networkManager.storage.ping()) {
-            discordBot.networkManager.debug("&c| &cSuccessfully connected with MySQL! (NetworkManagerBot)")
+            discordBot.platform.debug { "<red>| <green>Successfully connected with MySQL! (NetworkManagerBot)" }
             nmStorage = discordBot.networkManager.storage
             try {
                 create()
-                discordBot.networkManager.debug("&c| &cDone with Creating MySQL things! (NetworkManagerBot)")
+                discordBot.platform.debug { "<red>| <green>Done with Creating MySQL things! (NetworkManagerBot)" }
                 result = true
             } catch (ex: SQLException) {
                 ex.printStackTrace()
             }
         } else {
-            discordBot.platform.error("&c| &cNo connection to Database (NetworkManagerBot)")
+            discordBot.platform.error("<red>| <red>No connection to Database (NetworkManagerBot)")
         }
         return result
     }
