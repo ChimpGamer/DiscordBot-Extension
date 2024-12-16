@@ -1,3 +1,6 @@
+import java.text.SimpleDateFormat
+import java.util.*
+
 plugins {
     kotlin("jvm") version "1.9.25"
     //`maven-publish`
@@ -6,7 +9,7 @@ plugins {
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "1.8.7"
+    version = "1.8.8"
 
     repositories {
         mavenCentral()
@@ -30,7 +33,7 @@ subprojects {
 
         compileOnly("com.github.ProxioDev.ValioBungee:RedisBungee-API:0.11.4")
 
-        compileOnly("nl.chimpgamer.networkmanager:api:2.16.5")
+        compileOnly("nl.chimpgamer.networkmanager:api:2.16.8")
     }
 
     tasks {
@@ -48,7 +51,8 @@ subprojects {
         }
 
         processResources {
-            expand("version" to project.version)
+            val buildNumber = System.getenv("BUILD_NUMBER") ?: System.getenv("GITHUB_RUN_NUMBER ") ?: "SNAPSHOT"
+            expand("version" to project.version, "buildDate" to getDate(), "buildNumber" to buildNumber)
         }
 
         shadowJar {
@@ -81,6 +85,10 @@ subprojects {
             dependsOn(shadowJar)
         }
     }
+}
+
+fun getDate(): String {
+    return SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(Date())
 }
 
 tasks {

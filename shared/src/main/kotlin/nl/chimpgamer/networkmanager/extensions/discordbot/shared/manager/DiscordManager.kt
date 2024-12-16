@@ -40,6 +40,7 @@ class DiscordManager(private val discordBot: DiscordBot) {
             ex.printStackTrace()
         }
         val guilds = jda.guilds
+        discordBot.platform.info("Bot is connected to ${guilds.size} guilds. Guilds: " + guilds.mapNotNull { it.name }.joinToString())
 
         when {
             guilds.isEmpty() -> {

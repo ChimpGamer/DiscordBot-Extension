@@ -262,6 +262,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             .replace("%port%", server.port.toString())
             .replace("%groups%", server.serverGroups.joinToString { it.groupName })
             .replace("%restricted%", server.restricted.toString())
+            .replace("%player_count%", server.playerCount.toString())
     }
 
     private fun insertHelpOPPlaceholders(s: String?, event: HelpOPRequestEvent): String {
