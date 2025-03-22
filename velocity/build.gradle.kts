@@ -12,7 +12,7 @@ dependencies {
 
 tasks {
     shadowJar {
-        val buildNumber = System.getenv("BUILD_NUMBER") ?: System.getenv("GITHUB_RUN_NUMBER ")
+        val buildNumber = System.getenv("BUILD_NUMBER") ?: System.getenv("GITHUB_RUN_NUMBER")
         if (buildNumber == null) {
             archiveFileName.set("DiscordBot-Velocity-v${project.version}.jar")
         } else {
