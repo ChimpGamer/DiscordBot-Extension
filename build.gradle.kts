@@ -88,7 +88,7 @@ subprojects {
 }
 
 fun getDate(): String {
-    return SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(Date())
+    return SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Date())
 }
 
 tasks {
