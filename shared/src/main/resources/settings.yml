@@ -12,6 +12,9 @@ bot:
       addRole:
         enabled: false
         roleName: YourVerifiedRoleNameHere
+      remove-role:
+        enabled: false
+        role-name: YourNotVerifiedRoleNameHere
       executeCommands: '[]'
     unregister:
       kick:

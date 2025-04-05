@@ -2,6 +2,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks
 
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.utils.data.DataObject
 import nl.chimpgamer.networkmanager.api.models.player.Player
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
@@ -58,6 +59,14 @@ class VerifyUserTask(private val discordBot: DiscordBot, private val player: Pla
 
                     val syncUsername = discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)
                     val addVerifiedRole = discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED) && discordBot.discordManager.verifiedRole != null
+
+                    val removeRole = discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_REMOVE_ROLE_ENABLED)
+                    if (removeRole) {
+                        val roleToRemove = discordBot.discordManager.getRole(discordBot.settings.getString(Setting.DISCORD_REGISTER_REMOVE_ROLE_ROLE_NAME))
+                        if (roleToRemove != null) {
+                            Utils.modifyRolesOfMember(member, mutableSetOf(), mutableSetOf(roleToRemove))
+                        }
+                    }
 
                     if (syncUsername && addVerifiedRole) {
                         val nickname = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))

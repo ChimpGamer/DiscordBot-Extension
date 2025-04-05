@@ -1,10 +1,12 @@
 package nl.chimpgamer.networkmanager.extensions.discordbot.shared.tasks
 
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Role
 import nl.chimpgamer.networkmanager.api.utils.Placeholders
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.DiscordBot
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.DCMessage
 import nl.chimpgamer.networkmanager.extensions.discordbot.shared.configurations.Setting
+import nl.chimpgamer.networkmanager.extensions.discordbot.shared.utils.Utils
 import java.sql.SQLException
 import java.util.UUID
 
@@ -22,6 +24,13 @@ class GuildJoinCheckTask(private val discordBot: DiscordBot, private val member:
 
                             val syncUsername = discordBot.settings.getBoolean(Setting.DISCORD_SYNC_USERNAME_ENABLED)
                             val addVerifiedRole = discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_ADD_ROLE_ENABLED) && discordBot.discordManager.verifiedRole != null
+                            val removeRole = discordBot.settings.getBoolean(Setting.DISCORD_REGISTER_REMOVE_ROLE_ENABLED)
+                            if (removeRole) {
+                                val roleToRemove = discordBot.discordManager.getRole(discordBot.settings.getString(Setting.DISCORD_REGISTER_REMOVE_ROLE_ROLE_NAME))
+                                if (roleToRemove != null) {
+                                    Utils.modifyRolesOfMember(member, mutableSetOf(), mutableSetOf(roleToRemove))
+                                }
+                            }
 
                             if (syncUsername && addVerifiedRole) {
                                 val nickname = Placeholders.setPlaceholders(player, discordBot.settings.getString(Setting.DISCORD_SYNC_USERNAME_FORMAT))
