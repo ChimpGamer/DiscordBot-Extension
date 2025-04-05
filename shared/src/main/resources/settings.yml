@@ -67,4 +67,4 @@ bot:
       registration-alerts:
         channel: '000000000000000000'
 
-config-version: 4
+config-version: 5
