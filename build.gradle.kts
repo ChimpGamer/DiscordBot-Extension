@@ -33,7 +33,7 @@ subprojects {
 
         compileOnly("com.github.ProxioDev.ValioBungee:RedisBungee-API:0.11.4")
 
-        compileOnly("nl.chimpgamer.networkmanager:api:2.16.8")
+        compileOnly("nl.chimpgamer.networkmanager:api:2.17.2")
     }
 
     tasks {
