@@ -111,10 +111,14 @@ class DiscordBot(val platform: Platform) {
             CloudDiscordCommand(this).registerCommands(commandManager, "discord")
         }
 
-        CloudRegisterCommand(this)
-            .registerCommands(commandManager, commandSettings.minecraftRegisterCommand, *commandSettings.minecraftRegisterAlias.split(", ").toTypedArray())
-        CloudUnregisterCommand(this)
-            .registerCommands(commandManager, commandSettings.minecraftUnregisterCommand, *commandSettings.minecraftUnregisterAlias.split(", ").toTypedArray())
+        if (commandSettings.minecraftRegisterEnabled) {
+            CloudRegisterCommand(this)
+                .registerCommands(commandManager, commandSettings.minecraftRegisterCommand, *commandSettings.minecraftRegisterAlias.split(", ").toTypedArray())
+        }
+        if (commandSettings.minecraftUnregisterEnabled) {
+            CloudUnregisterCommand(this)
+                .registerCommands(commandManager, commandSettings.minecraftUnregisterCommand, *commandSettings.minecraftUnregisterAlias.split(", ").toTypedArray())
+        }
 
         CloudNetworkManagerBotCommand(this).registerCommands(commandManager)
     }

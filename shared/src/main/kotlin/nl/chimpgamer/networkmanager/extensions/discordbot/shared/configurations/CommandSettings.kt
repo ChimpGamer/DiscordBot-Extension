@@ -45,9 +45,11 @@ class CommandSettings(discordBot: DiscordBot) {
     val minecraftBugCommand: String get() = config.getString("commands.minecraft.bug.command", "bug")
     val minecraftBugCooldown: Int get() = config.getInt("commands.minecraft.bug.cooldown", 60)
 
+    val minecraftRegisterEnabled: Boolean get() = config.getBoolean("commands.minecraft.register.enabled", true)
     val minecraftRegisterCommand: String get() = config.getString("commands.minecraft.register.command", "register")
     val minecraftRegisterAlias: String get() = config.getString("commands.minecraft.register.alias", "link")
 
+    val minecraftUnregisterEnabled: Boolean get() = config.getBoolean("commands.minecraft.unregister.enabled", true)
     val minecraftUnregisterCommand: String get() = config.getString("commands.minecraft.unregister.command", "unregister")
     val minecraftUnregisterAlias: String get() = config.getString("commands.minecraft.unregister.alias", "unlink")
 
