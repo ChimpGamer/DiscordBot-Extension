@@ -40,10 +40,12 @@ commands:
       command: bug
       cooldown: 60
     register:
+      enabled: true
       command: register
       aliases: link
     unregister:
+      enabled: true
       command: unregister
       aliases: unlink
 
-config-version: 2
+config-version: 3

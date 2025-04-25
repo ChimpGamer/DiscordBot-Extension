@@ -279,6 +279,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
         val cachedPlayers = networkManager.cacheManager.cachedPlayers
         val punishment = event.punishment
         val language = discordBot.getDefaultLanguage()
+        val unknown = networkManager.getMessage(language, Message.UNKNOWN)
 
 
         val parsed = s
@@ -286,15 +287,15 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
             .replace("%type%",
                 punishment.type.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() })
             .replace("%uuid%", punishment.uuid.toString())
-            .replace("%playername%", punishment.username ?: "Unknown")
-            .replace("%username%", punishment.username ?: "Unknown")
+            .replace("%playername%", punishment.username ?: unknown)
+            .replace("%username%", punishment.username ?: unknown)
             .replace("%ip%", punishment.ip)
             .replace("%server%", punishment.server ?: "Global")
             .replace("%reason%", punishment.reason)
             .replace("%unbanreason%", punishment.unbanReason ?: "None")
             .replace(
                 "%punisher%",
-                if (cachedPlayers.isConsole(punishment.punisher)) "Console" else punishment.punisherName ?: "Unknown"
+                if (cachedPlayers.isConsole(punishment.punisher)) "Console" else punishment.punisherName ?: unknown
             )
             .replace(
                 "%time%", SimpleDateFormat(networkManager.getMessage(language, Message.PUNISHMENT_DATETIME_FORMAT))
@@ -308,6 +309,7 @@ class NetworkManagerListeners(private val discordBot: DiscordBot) {
                 if (punishment.end == -1L) networkManager.getMessage(language, Message.NEVER)
                 else TimeUtils.getTimeString(language, punishment.duration())
             )
+            .replace("%unbanner%", punishment.unbannerName ?: cachedPlayers.getName(punishment.unbanner) ?: unknown)
 
         return parsed.stripColors()
     }

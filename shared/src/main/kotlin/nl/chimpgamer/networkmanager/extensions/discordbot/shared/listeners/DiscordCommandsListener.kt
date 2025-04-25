@@ -3,10 +3,7 @@ package nl.chimpgamer.networkmanager.extensions.discordbot.shared.listeners
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.events.CoroutineEventListener
 import dev.minn.jda.ktx.events.onCommand
-import dev.minn.jda.ktx.interactions.commands.option
-import dev.minn.jda.ktx.interactions.commands.restrict
-import dev.minn.jda.ktx.interactions.commands.slash
-import dev.minn.jda.ktx.interactions.commands.updateCommands
+import dev.minn.jda.ktx.interactions.commands.*
 import dev.minn.jda.ktx.interactions.components.Modal
 import dev.minn.jda.ktx.interactions.components.TextInput
 import dev.minn.jda.ktx.messages.reply_
@@ -35,7 +32,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEventListener {
-    private val playtimeCache = ExpiringMap<UUID, Pair<String, Long>>(1L, TimeUnit.MINUTES)
+    private val playtimeCache = ExpiringMap.newExpiringMap<UUID, Pair<String, Long>>(1L, TimeUnit.MINUTES)
 
     override suspend fun onEvent(event: GenericEvent) {
         if (event !is GuildReadyEvent && event !is GuildJoinEvent) return
@@ -92,6 +89,9 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             if (cachedValues.getBoolean(Module.TICKETS)) {
                 slash(ticketCommandName, ticketCommandDescription) {
                     restrict(guild = true, Permission.MESSAGE_SEND)
+                    subcommand("register", "") {
+                        option<String>("password", "", true)
+                    }
                 }
             }
         }.await()
@@ -257,6 +257,21 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 runCatching { discordBot.discordUserManager.checkUserByDiscordId(member.id) }.getOrDefault(false)
             if (!isLinked) {
                 event.reply_(discordBot.messages.discordCommandTicketAccountNotLinked, ephemeral = true).await()
+                return@onCommand
+            }
+
+            if (event.subcommandName == "register") {
+                val password = event.getOption("password")?.asString ?: return@onCommand
+                val cachedTickets = discordBot.networkManager.cacheManager.cachedTickets
+                val uuid = discordBot.discordUserManager.getUuidByDiscordId(member.id) ?: return@onCommand
+                if (!cachedTickets.hasAccount(uuid)) {
+                    event.reply_("You already have a ticket account!", ephemeral = true).await()
+                    return@onCommand
+                }
+                val nmPlayer = discordBot.networkManager.cacheManager.cachedPlayers.getPlayer(uuid) ?: return@onCommand
+
+                cachedTickets.registerAccount(uuid, nmPlayer.name, password)
+                event.reply_("Successfully registered ticket account. Browse to https://tickets.example.com to sign in!", ephemeral = true).await()
                 return@onCommand
             }
 

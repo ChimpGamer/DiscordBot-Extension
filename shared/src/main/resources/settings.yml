@@ -12,6 +12,9 @@ bot:
       addRole:
         enabled: false
         roleName: YourVerifiedRoleNameHere
+      remove-role:
+        enabled: false
+        role-name: YourNotVerifiedRoleNameHere
       executeCommands: '[]'
     unregister:
       kick:
@@ -64,4 +67,4 @@ bot:
       registration-alerts:
         channel: '000000000000000000'
 
-config-version: 4
+config-version: 5

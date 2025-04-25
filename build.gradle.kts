@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "1.8.8"
+    version = "1.8.9"
 
     repositories {
         mavenCentral()
@@ -33,7 +33,7 @@ subprojects {
 
         compileOnly("com.github.ProxioDev.ValioBungee:RedisBungee-API:0.11.4")
 
-        compileOnly("nl.chimpgamer.networkmanager:api:2.16.8")
+        compileOnly("nl.chimpgamer.networkmanager:api:2.17.4")
     }
 
     tasks {
@@ -88,7 +88,7 @@ subprojects {
 }
 
 fun getDate(): String {
-    return SimpleDateFormat("dd-MM-yyyy hh:mm:ss").format(Date())
+    return SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Date())
 }
 
 tasks {

@@ -3,7 +3,7 @@ authors: [ChimpGamer]
 version: ${version}
 description: Discord bot for NetworkManager
 main: nl.chimpgamer.networkmanager.extensions.discordbot.velocity.VelocityPlatform
-api-version: 2.16.8
+api-version: 2.17.4
 
 build-date: ${buildDate}
 build-number: ${buildNumber}

@@ -78,6 +78,8 @@ enum class Setting(val path: String, val defaultValue: Any) {
     DISCORD_STATUS_MESSAGE("bot.discord.status.message", "%players% players on your server"),
     DISCORD_REGISTER_ADD_ROLE_ENABLED("bot.discord.register.addRole.enabled", false),
     DISCORD_REGISTER_ADD_ROLE_ROLE_NAME("bot.discord.register.addRole.roleName", "YourVerifiedRoleNameHere"),
+    DISCORD_REGISTER_REMOVE_ROLE_ENABLED("bot.discord.register.remove-role.enabled", false),
+    DISCORD_REGISTER_REMOVE_ROLE_ROLE_NAME("bot.discord.register.remove-role.role-name", "YourVerifiedRoleNameHere"),
     DISCORD_REGISTER_EXECUTE_COMMANDS("bot.discord.register.executeCommands", "[]"),
     DISCORD_UNREGISTER_KICK_ENABLED("bot.discord.unregister.kick.enabled", false),
     DISCORD_UNREGISTER_KICK_REASON(
