@@ -32,7 +32,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEventListener {
-    private val playtimeCache = ExpiringMap<UUID, Pair<String, Long>>(1L, TimeUnit.MINUTES)
+    private val playtimeCache = ExpiringMap.newExpiringMap<UUID, Pair<String, Long>>(1L, TimeUnit.MINUTES)
 
     override suspend fun onEvent(event: GenericEvent) {
         if (event !is GuildReadyEvent && event !is GuildJoinEvent) return
