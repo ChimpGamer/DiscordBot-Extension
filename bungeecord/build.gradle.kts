@@ -1,11 +1,9 @@
-repositories {
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-}
-
 dependencies {
     api(project(":shared"))
 
-    compileOnly("net.md-5:bungeecord-api:1.19-R0.1-SNAPSHOT")
+    compileOnly("net.md-5:bungeecord-api:1.20-R0.1") {
+        exclude("net.md-5", "brigadier") // Does not seem available.
+    }
 
     compileOnly("com.github.ProxioDev.ValioBungee:RedisBungee-Bungee:0.11.4")
 }
