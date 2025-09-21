@@ -38,16 +38,16 @@ subprojects {
 
     tasks {
         compileJava {
-            sourceCompatibility = "11"
+            sourceCompatibility = "17"
         }
         compileTestJava {
-            sourceCompatibility = "11"
+            sourceCompatibility = "17"
         }
         compileKotlin {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
         compileTestKotlin {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
 
         processResources {
@@ -93,10 +93,10 @@ fun getDate(): String {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
     }
 
     jar {
