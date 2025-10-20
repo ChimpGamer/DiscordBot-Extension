@@ -213,7 +213,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 username = player.name
                 playtime = player.livePlaytime
             } else {
-                event.deferReply().queue()
+                event.deferReply().await()
                 val result = if (playtimeCache.contains(uuid)) {
                     playtimeCache[uuid]!!
                 } else {
