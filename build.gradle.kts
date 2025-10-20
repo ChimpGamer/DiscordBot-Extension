@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "1.8.10"
+    version = "1.8.11-SNAPSHOT"
 
     repositories {
         mavenCentral()
@@ -33,7 +33,7 @@ subprojects {
 
         compileOnly("com.github.ProxioDev.ValioBungee:RedisBungee-API:0.11.4")
 
-        compileOnly("nl.chimpgamer.networkmanager:api:2.17.4")
+        compileOnly("nl.chimpgamer.networkmanager:api:2.17.9")
     }
 
     tasks {
