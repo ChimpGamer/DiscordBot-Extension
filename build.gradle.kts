@@ -4,7 +4,7 @@ import java.util.*
 plugins {
     kotlin("jvm") version "1.9.25"
     //`maven-publish`
-    id("io.github.goooler.shadow") version "8.1.7"
+    id("com.gradleup.shadow") version "8.3.5"
 }
 
 allprojects {
@@ -19,7 +19,7 @@ allprojects {
 subprojects {
     apply {
         plugin("kotlin")
-        plugin("io.github.goooler.shadow")
+        plugin("com.gradleup.shadow")
     }
 
     repositories {
