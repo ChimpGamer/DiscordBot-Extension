@@ -68,7 +68,7 @@ subprojects {
             val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
             val libPackage = "nl.chimpgamer.networkmanager.lib"
 
-            relocate("kotlin", "$shadedPackage.kotlin")
+            relocate("kotlin", "$libPackage.kotlin")
             relocate("org.incendo.cloud", "$libPackage.cloud")
             relocate("com.fasterxml.jackson", "$libPackage.jackson")
             relocate("net.dv8tion.jda", "$shadedPackage.jda")
