@@ -9,7 +9,10 @@ dependencies {
 
     implementation("net.dv8tion:JDA:5.6.1") {
         exclude("club.minnced", "opus-java")
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
     }
 
-    implementation("club.minnced:jda-ktx:0.12.0")
+    implementation("club.minnced:jda-ktx:0.12.0") {
+        exclude("org.jetbrains.kotlin", "kotlin-stdlib")
+    }
 }
