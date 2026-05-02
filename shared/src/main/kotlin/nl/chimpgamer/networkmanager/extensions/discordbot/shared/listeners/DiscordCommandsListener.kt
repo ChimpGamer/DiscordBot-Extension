@@ -87,10 +87,11 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
             }
 
             if (cachedValues.getBoolean(Module.TICKETS)) {
+                // TODO: Just make this a modal so you can't accidentally leak your password in a chat.
                 slash(ticketCommandName, ticketCommandDescription) {
                     restrict(guild = true, Permission.MESSAGE_SEND)
-                    subcommand("register", "") {
-                        option<String>("password", "", true)
+                    subcommand("register", "Register a new account") {
+                        option<String>("password", "Password used to login in the ticket system.", true)
                     }
                 }
             }
@@ -212,7 +213,7 @@ class DiscordCommandsListener(private val discordBot: DiscordBot) : CoroutineEve
                 username = player.name
                 playtime = player.livePlaytime
             } else {
-                event.deferReply().queue()
+                event.deferReply().await()
                 val result = if (playtimeCache.contains(uuid)) {
                     playtimeCache[uuid]!!
                 } else {

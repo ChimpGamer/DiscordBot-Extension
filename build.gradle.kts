@@ -4,12 +4,12 @@ import java.util.*
 plugins {
     kotlin("jvm") version "1.9.25"
     //`maven-publish`
-    id("io.github.goooler.shadow") version "8.1.7"
+    id("com.gradleup.shadow") version "8.3.5"
 }
 
 allprojects {
     group = "nl.chimpgamer.networkmanager.extensions"
-    version = "1.8.9"
+    version = "1.8.11"
 
     repositories {
         mavenCentral()
@@ -19,7 +19,7 @@ allprojects {
 subprojects {
     apply {
         plugin("kotlin")
-        plugin("io.github.goooler.shadow")
+        plugin("com.gradleup.shadow")
     }
 
     repositories {
@@ -33,21 +33,21 @@ subprojects {
 
         compileOnly("com.github.ProxioDev.ValioBungee:RedisBungee-API:0.11.4")
 
-        compileOnly("nl.chimpgamer.networkmanager:api:2.17.4")
+        compileOnly("nl.chimpgamer.networkmanager:api:2.17.9")
     }
 
     tasks {
         compileJava {
-            sourceCompatibility = "11"
+            sourceCompatibility = "17"
         }
         compileTestJava {
-            sourceCompatibility = "11"
+            sourceCompatibility = "17"
         }
         compileKotlin {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
         compileTestKotlin {
-            kotlinOptions.jvmTarget = "11"
+            kotlinOptions.jvmTarget = "17"
         }
 
         processResources {
@@ -68,7 +68,7 @@ subprojects {
             val shadedPackage = "nl.chimpgamer.networkmanager.shaded"
             val libPackage = "nl.chimpgamer.networkmanager.lib"
 
-            relocate("kotlin", "$shadedPackage.kotlin")
+            relocate("kotlin", "$libPackage.kotlin")
             relocate("org.incendo.cloud", "$libPackage.cloud")
             relocate("com.fasterxml.jackson", "$libPackage.jackson")
             relocate("net.dv8tion.jda", "$shadedPackage.jda")
@@ -93,10 +93,10 @@ fun getDate(): String {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "17"
     }
 
     jar {
